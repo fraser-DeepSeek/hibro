@@ -1,849 +1,595 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>邻里帮帮帮 · 社区互助</title>
-  <!-- 最新简洁风格，邻里互助主题 -->
-  <style>
-    /* 全局重置与字体 */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>邻里帮帮帮</title>
+<style>
+  :root{ --green:#4CAF50; --deep:#2f5d2f; --line:#a5d8a0; }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body{
+    margin:0; min-height:100vh; padding:40px 16px 80px;
+    background:linear-gradient(180deg,#e3f9dd 0%,#c6f0bd 55%,#b0e9a6 100%);
+    background-attachment:fixed;
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    text-align:center;
+  }
+  .title{ margin:0; color:#1565c0; font-size:clamp(30px,9vw,50px); letter-spacing:2px; text-shadow:0 2px 0 rgba(255,255,255,.8); }
+  .slogan{ margin:12px 0 0; color:var(--deep); font-weight:600; font-size:clamp(15px,4vw,20px); line-height:1.6; }
+  .slogan p{ margin:0; }
+  .subtitle{ margin:18px 0 0; color:#d32f2f; font-size:clamp(26px,7vw,42px); font-weight:700; }
+  .hint{ margin:6px 0 0; color:#557a55; font-size:clamp(14px,3.6vw,18px); }
 
-    body {
-      background: #f7f9fc;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
-      padding: 20px 16px 40px;
-    }
+  .input-row{ display:flex; gap:10px; width:100%; max-width:600px; margin:24px auto 0; }
+  #demandInput{
+    flex:1 1 auto; min-width:0; font-size:17px; padding:14px 18px;
+    border:none; border-radius:999px; outline:none; text-align:center;
+    color:#222; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.08); font-family:inherit;
+  }
+  #demandInput:focus{ box-shadow:0 0 0 3px rgba(76,175,80,.45); }
+  #submitBtn{
+    flex:0 0 auto; font-size:17px; font-weight:700; padding:14px 26px;
+    border:none; border-radius:999px; background:#ffd400; color:#4a3b00;
+    cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,.12);
+    transition:transform .15s, background .2s; font-family:inherit;
+  }
+  #submitBtn:hover{ background:#ffc400; }
+  #submitBtn:active{ transform:scale(.96); }
 
-    /* 主容器 — 类似手机卡片的柔和界面 */
-    .app-container {
-      max-width: 580px;
-      width: 100%;
-      background: #ffffff;
-      border-radius: 36px;
-      box-shadow: 0 20px 40px rgba(0, 20, 30, 0.08), 0 8px 20px rgba(0, 0, 0, 0.02);
-      overflow: hidden;
-      padding: 24px 20px 28px;
-      transition: all 0.2s ease;
-    }
+  .select-row{ display:flex; flex-wrap:wrap; justify-content:center; gap:10px; max-width:600px; margin:16px auto 0; }
+  .select-group{ flex:1 1 45%; min-width:140px; text-align:left; }
+  .select-group label{ display:block; font-size:13px; font-weight:600; color:#4c6b4c; margin-bottom:5px; padding-left:4px; }
+  .select-group select{
+    width:100%; font-size:15px; font-family:inherit; padding:10px 12px;
+    border:1.5px solid #a5d8a0; border-radius:10px; background:#fff; color:#222;
+    outline:none; cursor:pointer; appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%234c6b4c' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 12px center; padding-right:32px;
+  }
+  .select-group select:focus{ border-color:var(--green); box-shadow:0 0 0 3px rgba(76,175,80,.25); }
+  .select-group select:disabled{ background:#eceff1; color:#9e9e9e; cursor:not-allowed; }
 
-    /* 头部区域 */
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
+  .chip-row{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; max-width:600px; margin:14px auto 0; }
+  .chip-row .label{ width:100%; text-align:center; font-size:13px; color:#4c6b4c; margin-bottom:2px; font-weight:600; }
+  .chip{
+    font-size:14px; font-family:inherit; padding:8px 15px; border-radius:999px;
+    border:1.5px solid transparent; background:rgba(255,255,255,.7); color:#4c6b4c;
+    cursor:pointer; transition:all .18s; white-space:nowrap;
+  }
+  .chip:hover{ background:#fff; }
+  .chip.active{ background:var(--green); border-color:#3d8b40; color:#fff; font-weight:700; box-shadow:0 2px 8px rgba(76,175,80,.45); }
 
-    .logo-area {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+  #list{ width:100%; max-width:600px; margin:32px auto 0; text-align:left; }
+  .item{ position:relative; display:flex; gap:12px; padding-bottom:18px; }
+  .item::before{ content:""; position:absolute; left:7px; top:20px; bottom:-2px; width:2px; background:var(--line); }
+  .item:last-child::before{ display:none; }
 
-    .logo-icon {
-      font-size: 34px;
-      line-height: 1;
-      filter: drop-shadow(0 2px 4px rgba(0, 120, 80, 0.2));
-    }
+  .dot{
+    flex:0 0 auto; width:16px; height:16px; margin-top:8px; border-radius:50%;
+    background:#bdbdbd; box-shadow:0 0 0 4px rgba(255,255,255,.75); z-index:1; transition:background .3s;
+  }
+  .item.latest .dot{ background:var(--green); }
+  .item.done .dot{ background:#9e9e9e; }
 
-    .title-group h1 {
-      font-size: 24px;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-      color: #1a3b32;
-      line-height: 1.2;
-    }
+  .bubble{
+    flex:1 1 auto; min-width:0; padding:12px 14px; border-radius:14px;
+    background:rgba(255,255,255,.55); opacity:.72;
+    transition:opacity .3s, background .3s, box-shadow .3s;
+  }
+  .item.latest .bubble{ opacity:1; background:#fff; box-shadow:0 4px 14px rgba(0,0,0,.10); }
+  .item.done .bubble{ opacity:.6; background:rgba(255,255,255,.45); }
 
-    .title-group .subhead {
-      font-size: 13px;
-      color: #6c8b7e;
-      font-weight: 400;
-      margin-top: 2px;
-    }
+  .bubble-head{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px; }
+  .tag{ display:inline-block; font-size:12px; font-weight:600; padding:3px 10px; border-radius:999px; white-space:nowrap; background:#eceff1; color:#455a64; }
+  .tag.repair{ background:#e3f2fd; color:#1565c0; }
+  .tag.buy   { background:#fff3e0; color:#e65100; }
+  .tag.care  { background:#fce4ec; color:#ad1457; }
+  .tag.borrow{ background:#f3e5f5; color:#6a1b9a; }
+  .tag.other { background:#eceff1; color:#455a64; }
+  .tag.zone-tag{ background:#e8f5e9; color:#2e7d32; }
 
-    .neighbor-badge {
-      background: #e6f3ed;
-      padding: 8px 14px;
-      border-radius: 40px;
-      font-size: 14px;
-      font-weight: 500;
-      color: #1e6b4e;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
-      border: 1px solid #cbe5da;
-    }
+  .done-badge{ margin-left:auto; font-size:11px; font-weight:700; padding:3px 9px; border-radius:999px; background:#e0e0e0; color:#616161; white-space:nowrap; }
 
-    /* 欢迎横幅 */
-    .welcome-banner {
-      background: linear-gradient(135deg, #d9f0e6 0%, #eef9f4 100%);
-      border-radius: 24px;
-      padding: 16px 18px;
-      margin-bottom: 24px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border: 1px solid #c3e2d4;
-    }
+  .text{ margin:0; font-size:18px; line-height:1.5; color:#222; word-break:break-word; white-space:pre-wrap; }
+  .item.done .text{ text-decoration:line-through; color:#7a8c7a; }
 
-    .banner-emoji {
-      font-size: 32px;
-      background: white;
-      width: 54px;
-      height: 54px;
-      border-radius: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 8px rgba(0, 60, 30, 0.06);
-    }
+  .meta{ display:flex; align-items:center; gap:8px; margin-top:10px; }
+  .time{ margin-right:auto; font-size:12px; color:#7a8c7a; }
 
-    .banner-text {
-      font-size: 15px;
-      line-height: 1.4;
-      color: #175b41;
-      font-weight: 500;
-    }
+  .done-btn{
+    font-size:12px; font-family:inherit; padding:4px 12px; border-radius:999px;
+    border:1.5px solid var(--green); background:transparent; color:#2e7d32;
+    cursor:pointer; white-space:nowrap; transition:all .18s;
+  }
+  .done-btn:hover{ background:var(--green); color:#fff; }
+  .item.done .done-btn{ border-color:#bdbdbd; color:#757575; }
+  .item.done .done-btn:hover{ background:#bdbdbd; color:#fff; }
 
-    .banner-text strong {
-      font-weight: 700;
-      color: #0b3d2b;
-    }
+  .del{
+    flex:0 0 auto; width:22px; height:22px; padding:0; border:none; border-radius:50%;
+    background:#ff8a80; color:#fff; font-size:15px; line-height:22px; cursor:pointer;
+    opacity:0; transition:opacity .2s, transform .15s;
+  }
+  .item:hover .del, .item:focus-within .del{ opacity:1; }
+  .del:active{ transform:scale(.9); }
+  @media (hover:none){ .del{ opacity:1; } }
 
-    /* 快捷操作 —— 发布栏 */
-    .publish-bar {
-      background: #f2f6f4;
-      border-radius: 26px;
-      display: flex;
-      align-items: center;
-      padding: 6px 6px 6px 18px;
-      margin-bottom: 26px;
-      border: 1px solid #e0eae5;
-    }
-
-    .publish-bar input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      outline: none;
-      font-size: 15px;
-      padding: 12px 0;
-      color: #1a2e26;
-    }
-
-    .publish-bar input::placeholder {
-      color: #93aaa0;
-      font-weight: 400;
-    }
-
-    .publish-bar button {
-      background: #1e6b4e;
-      border: none;
-      color: white;
-      font-weight: 600;
-      font-size: 14px;
-      padding: 12px 22px;
-      border-radius: 26px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      transition: background 0.15s, transform 0.1s;
-      box-shadow: 0 4px 8px rgba(0, 80, 40, 0.15);
-      white-space: nowrap;
-    }
-
-    .publish-bar button:hover {
-      background: #135a40;
-    }
-
-    .publish-bar button:active {
-      transform: scale(0.96);
-    }
-
-    /* 分类选择器 */
-    .filter-row {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 8px;
-      margin-bottom: 18px;
-      scrollbar-width: thin;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .filter-row::-webkit-scrollbar {
-      height: 4px;
-    }
-
-    .filter-row::-webkit-scrollbar-thumb {
-      background: #cbdcd4;
-      border-radius: 4px;
-    }
-
-    .filter-chip {
-      background: white;
-      border: 1px solid #d2e2da;
-      color: #255e48;
-      font-weight: 500;
-      font-size: 14px;
-      padding: 9px 18px;
-      border-radius: 40px;
-      white-space: nowrap;
-      cursor: pointer;
-      transition: all 0.1s;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .filter-chip.active {
-      background: #1e6b4e;
-      border-color: #1e6b4e;
-      color: white;
-      box-shadow: 0 4px 10px rgba(30, 107, 78, 0.2);
-    }
-
-    .filter-chip .chip-emoji {
-      font-size: 16px;
-      line-height: 1;
-    }
-
-    /* 帮帮卡片列表 —— 核心区 */
-    .feed-list {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      margin-bottom: 24px;
-      max-height: 480px;
-      overflow-y: auto;
-      padding-right: 4px;
-      scrollbar-width: thin;
-    }
-
-    .feed-list::-webkit-scrollbar {
-      width: 5px;
-    }
-
-    .feed-list::-webkit-scrollbar-track {
-      background: #eff6f2;
-      border-radius: 8px;
-    }
-
-    .feed-list::-webkit-scrollbar-thumb {
-      background: #bcd9cd;
-      border-radius: 8px;
-    }
-
-    /* 单个互助卡片 */
-    .help-card {
-      background: #ffffff;
-      border: 1px solid #e3efe8;
-      border-radius: 22px;
-      padding: 18px 18px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      box-shadow: 0 6px 14px rgba(0, 30, 20, 0.02);
-      transition: all 0.2s;
-      animation: fadeIn 0.3s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .help-card:hover {
-      border-color: #b8d9ca;
-      box-shadow: 0 10px 20px rgba(30, 80, 60, 0.06);
-    }
-
-    .card-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .avatar {
-      width: 46px;
-      height: 46px;
-      background: #d9f0e6;
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      flex-shrink: 0;
-      border: 1px solid #c3e2d4;
-    }
-
-    .user-info {
-      flex: 1;
-    }
-
-    .user-name {
-      font-weight: 700;
-      font-size: 16px;
-      color: #0b3d2b;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .distance-tag {
-      font-size: 12px;
-      font-weight: 500;
-      color: #5b7b6e;
-      background: #edf6f2;
-      padding: 2px 8px;
-      border-radius: 30px;
-      display: inline-flex;
-      align-items: center;
-      gap: 2px;
-    }
-
-    .time-meta {
-      font-size: 12px;
-      color: #7b998b;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      margin-top: 3px;
-    }
-
-    .card-content {
-      font-size: 15px;
-      line-height: 1.5;
-      color: #1c2f28;
-      padding-left: 2px;
-      font-weight: 450;
-      word-break: break-word;
-    }
-
-    .card-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 2px;
-    }
-
-    .tag {
-      background: #eef6f1;
-      font-size: 12px;
-      font-weight: 500;
-      color: #236e51;
-      padding: 5px 12px;
-      border-radius: 40px;
-      border: 1px solid #d6e8df;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .card-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 4px;
-      border-top: 1px solid #ecf3ef;
-      padding-top: 12px;
-    }
-
-    .status-badge {
-      font-size: 12px;
-      font-weight: 600;
-      padding: 6px 14px;
-      border-radius: 40px;
-      background: #f0f7f3;
-      color: #1e6b4e;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid #cde3d8;
-    }
-
-    .status-badge.urgent {
-      background: #fff1e6;
-      color: #b1531a;
-      border-color: #ffd9bd;
-    }
-
-    .action-buttons {
-      display: flex;
-      gap: 8px;
-    }
-
-    .action-btn {
-      background: white;
-      border: 1px solid #d2e2da;
-      border-radius: 50px;
-      padding: 8px 16px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #1e6b4e;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      transition: all 0.1s;
-      white-space: nowrap;
-    }
-
-    .action-btn:hover {
-      background: #e9f3ee;
-      border-color: #b4d5c6;
-    }
-
-    .action-btn.primary {
-      background: #1e6b4e;
-      border-color: #1e6b4e;
-      color: white;
-      box-shadow: 0 2px 8px rgba(30, 107, 78, 0.2);
-    }
-
-    .action-btn.primary:hover {
-      background: #135a40;
-    }
-
-    /* 底部导航 / 邻里圈 */
-    .bottom-nav {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      border-top: 1px solid #e3eee8;
-      padding-top: 18px;
-      margin-top: 10px;
-    }
-
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      font-size: 12px;
-      font-weight: 500;
-      color: #7e9a8e;
-      cursor: pointer;
-      transition: color 0.1s;
-      padding: 6px 12px;
-      border-radius: 30px;
-    }
-
-    .nav-item.active {
-      color: #1e6b4e;
-      font-weight: 600;
-      background: #eaf4ef;
-    }
-
-    .nav-item span:first-child {
-      font-size: 22px;
-      line-height: 1;
-    }
-
-    /* 无结果提示 */
-    .no-result {
-      text-align: center;
-      padding: 40px 16px;
-      color: #8aa79b;
-      font-size: 15px;
-      background: #f9fdfb;
-      border-radius: 28px;
-      border: 1px dashed #c2dbcf;
-    }
-
-    /* 帮助总数小标签 */
-    .stats-badge {
-      font-size: 13px;
-      color: #2d6e55;
-      background: #e6f3ed;
-      padding: 4px 12px;
-      border-radius: 40px;
-      font-weight: 500;
-    }
-
-    /* 工具类 */
-    .text-muted {
-      color: #8aa79b;
-    }
-
-    .mt-1 { margin-top: 4px; }
-    .mb-2 { margin-bottom: 8px; }
-    .flex { display: flex; align-items: center; }
-    .gap-2 { gap: 8px; }
-  </style>
+  .empty{ padding:28px 0; text-align:center; color:#6b8a6b; font-size:16px; }
+  .count{ margin-top:10px; text-align:center; color:#5b7a5b; font-size:14px; }
+</style>
 </head>
 <body>
-  <div class="app-container">
-    <!-- 头部 -->
-    <div class="header">
-      <div class="logo-area">
-        <div class="logo-icon">🤝</div>
-        <div class="title-group">
-          <h1>邻里帮帮帮</h1>
-          <div class="subhead">有求必应 · 近邻胜远亲</div>
-        </div>
-      </div>
-      <div class="neighbor-badge">
-        <span>🏡</span> 枫林社区
-      </div>
-    </div>
 
-    <!-- 欢迎横幅 -->
-    <div class="welcome-banner">
-      <div class="banner-emoji">🌟</div>
-      <div class="banner-text">
-        <strong>今日已有 23 位邻居</strong> 伸出援手<br>
-        远亲不如近邻，一起让社区更温暖
-      </div>
-    </div>
+  <h1 class="title">邻里帮帮帮</h1>
 
-    <!-- 发布快捷栏 -->
-    <div class="publish-bar">
-      <input type="text" id="publishInput" placeholder="需要什么帮助？或分享闲置…" aria-label="发布求助或闲置">
-      <button id="publishBtn">
-        <span>📣</span> 发布
-      </button>
-    </div>
+  <div class="slogan">
+    <p>天生我材必有用，无论青、老、少、小</p>
+    <p>三人行，必有我师。</p>
+  </div>
 
-    <!-- 分类过滤器 -->
-    <div class="filter-row" id="filterRow">
-      <div class="filter-chip active" data-category="all">
-        <span class="chip-emoji">📋</span> 全部
-      </div>
-      <div class="filter-chip" data-category="urgent">
-        <span class="chip-emoji">⚡</span> 紧急
-      </div>
-      <div class="filter-chip" data-category="tool">
-        <span class="chip-emoji">🔧</span> 借工具
-      </div>
-      <div class="filter-chip" data-category="errand">
-        <span class="chip-emoji">🛒</span> 代跑腿
-      </div>
-      <div class="filter-chip" data-category="pet">
-        <span class="chip-emoji">🐕</span> 宠物
-      </div>
-      <div class="filter-chip" data-category="chat">
-        <span class="chip-emoji">💬</span> 闲聊
-      </div>
-    </div>
+  <p class="subtitle">住户互助平台</p>
+  <p class="hint">有事您说话，邻居来帮忙</p>
 
-    <!-- 信息统计/标题行 -->
-    <div class="flex" style="justify-content: space-between; margin-bottom: 14px;">
-      <span style="font-weight: 600; color: #1a3b32; font-size: 16px;">📌 邻里互助墙</span>
-      <span class="stats-badge" id="helpCount">共 6 条互助</span>
-    </div>
+  <div class="input-row">
+    <input id="demandInput" type="text" maxlength="60" placeholder="输入你的需求..." aria-label="输入你的需求">
+    <button id="submitBtn" type="button">发布</button>
+  </div>
 
-    <!-- 互助卡片列表 (动态渲染) -->
-    <div class="feed-list" id="feedList">
-      <!-- 卡片会通过 JavaScript 动态渲染，确保最新内容 -->
+  <div class="select-row">
+    <div class="select-group">
+      <label for="publishState">📍 州/直辖区：</label>
+      <select id="publishState" aria-label="选择州或联邦直辖区"></select>
     </div>
-
-    <!-- 底部导航 -->
-    <div class="bottom-nav">
-      <div class="nav-item active">
-        <span>🏘️</span>
-        <span>邻里圈</span>
-      </div>
-      <div class="nav-item">
-        <span>🔔</span>
-        <span>消息</span>
-      </div>
-      <div class="nav-item">
-        <span>👤</span>
-        <span>我的</span>
-      </div>
+    <div class="select-group">
+      <label for="publishDistrict">🏘️ 县/分区：</label>
+      <select id="publishDistrict" aria-label="选择县或分区"></select>
     </div>
   </div>
 
-  <script>
-    (function() {
-      // ---------- 数据 ----------
-      // 互助数据 (模拟最新邻里动态)
-      const helpData = [
-        {
-          id: 1,
-          name: '王阿姨',
-          avatar: '👩',
-          distance: '3号楼',
-          time: '8分钟前',
-          content: '家里水管有点漏水，哪位邻居有扳手借用一下？急！',
-          tags: ['紧急', '工具'],
-          category: 'urgent',
-          status: '待帮助',
-          urgent: true,
-          statusIcon: '⏳'
-        },
-        {
-          id: 2,
-          name: '李叔',
-          avatar: '👨',
-          distance: '7号楼',
-          time: '25分钟前',
-          content: '下午去超市，可以帮5号楼的张奶奶带点蔬菜，有需要的邻居吗？',
-          tags: ['跑腿', '爱心'],
-          category: 'errand',
-          status: '进行中',
-          urgent: false,
-          statusIcon: '🛒'
-        },
-        {
-          id: 3,
-          name: '小张同学',
-          avatar: '🧑',
-          distance: '12号楼',
-          time: '1小时前',
-          content: '谁家有电钻？想借来装个书架，用完马上归还～',
-          tags: ['借工具', '工具'],
-          category: 'tool',
-          status: '待帮助',
-          urgent: false,
-          statusIcon: '🔧'
-        },
-        {
-          id: 4,
-          name: '陈姐',
-          avatar: '👩‍🦱',
-          distance: '5号楼',
-          time: '2小时前',
-          content: '临时出差，有没有邻居能帮忙喂一下我家猫咪？猫粮已备好。',
-          tags: ['宠物', '帮忙'],
-          category: 'pet',
-          status: '已完成',
-          urgent: false,
-          statusIcon: '🐱'
-        },
-        {
-          id: 5,
-          name: '老赵',
-          avatar: '👴',
-          distance: '2号楼',
-          time: '3小时前',
-          content: '周末想找人一起下棋、喝茶，有邻居来吗？就在小区亭子。',
-          tags: ['闲聊', '交友'],
-          category: 'chat',
-          status: '待帮助',
-          urgent: false,
-          statusIcon: '☕'
-        },
-        {
-          id: 6,
-          name: '周阿姨',
-          avatar: '👵',
-          distance: '9号楼',
-          time: '昨天',
-          content: '紧急！家里灯泡坏了，晚上不方便，谁有备用灯泡或能帮忙换一下？',
-          tags: ['紧急', '维修'],
-          category: 'urgent',
-          status: '待帮助',
-          urgent: true,
-          statusIcon: '💡'
-        }
-      ];
+  <div class="chip-row" id="catRow" role="group" aria-label="选择需求分类">
+    <div class="label">🏷️ 分类：</div>
+  </div>
 
-      // 当前分类过滤器
-      let currentCategory = 'all';
+  <div class="select-row">
+    <div class="select-group">
+      <label for="viewState">👀 查看州/直辖区：</label>
+      <select id="viewState" aria-label="筛选查看的州或联邦直辖区"></select>
+    </div>
+    <div class="select-group">
+      <label for="viewDistrict">👀 查看县/分区：</label>
+      <select id="viewDistrict" aria-label="筛选查看的县或分区"></select>
+    </div>
+  </div>
 
-      // DOM 元素
-      const feedListEl = document.getElementById('feedList');
-      const filterRowEl = document.getElementById('filterRow');
-      const helpCountEl = document.getElementById('helpCount');
-      const publishInput = document.getElementById('publishInput');
-      const publishBtn = document.getElementById('publishBtn');
+  <div id="list"></div>
+  <div class="count" id="count"></div>
 
-      // 辅助: 分类中文映射
-      const categoryMap = {
-        all: '全部',
-        urgent: '紧急',
-        tool: '借工具',
-        errand: '代跑腿',
-        pet: '宠物',
-        chat: '闲聊'
-      };
+<script>
+(function () {
+  'use strict';
 
-      // ---------- 渲染卡片 ----------
-      function renderFeed() {
-        // 1. 根据当前分类过滤
-        let filteredData = helpData;
-        if (currentCategory !== 'all') {
-          filteredData = helpData.filter(item => item.category === currentCategory);
-        }
+  var STORAGE_KEY = 'neighbor_help_v6';
 
-        // 2. 排序: 紧急的在前 (urgent为true优先), 然后按时间倒序(近似, 因为id越大越新)
-        filteredData = [...filteredData].sort((a, b) => {
-          if (a.urgent && !b.urgent) return -1;
-          if (!a.urgent && b.urgent) return 1;
-          return b.id - a.id; // id越大越新
-        });
+  var MALAYSIA = [
+    { key:'johor', name:'柔佛 Johor', districts:[
+      '新山 Johor Bahru','峇株巴辖 Batu Pahat','居銮 Kluang','哥打丁宜 Kota Tinggi',
+      '丰盛港 Mersing','麻坡 Muar','笨珍 Pontian','昔加末 Segamat',
+      '古来 Kulai','东甲 Tangkak'
+    ]},
+    { key:'kedah', name:'吉打 Kedah', districts:[
+      '华玲 Baling','万拉峇鲁 Bandar Baharu','哥打士打 Kota Setar','瓜拉姆达 Kuala Muda',
+      '古邦巴素 Kubang Pasu','居林 Kulim','浮罗交怡 Langkawi','巴东得腊 Padang Terap',
+      '锡 Sik','铅 Yan','笨筒 Pendang','波各先那 Pokok Sena'
+    ]},
+    { key:'kelantan', name:'吉兰丹 Kelantan', districts:[
+      '万捷 Bachok','哥打巴鲁 Kota Bharu','马樟 Machang','巴西马 Pasir Mas',
+      '巴西富地 Pasir Puteh','丹那美拉 Tanah Merah','道北 Tumpat','话望生 Gua Musang',
+      '瓜拉吉赖 Kuala Krai','日里 Jeli'
+    ]},
+    { key:'melaka', name:'马六甲 Melaka', districts:[
+      '亚罗牙也 Alor Gajah','野新 Jasin','马六甲中央 Melaka Tengah'
+    ]},
+    { key:'negeri-sembilan', name:'森美兰 Negeri Sembilan', districts:[
+      '日叻务 Jelebu','瓜拉庇劳 Kuala Pilah','波德申 Port Dickson','林茂 Rembau',
+      '芙蓉 Seremban','淡边 Tampin','仁保 Jempol'
+    ]},
+    { key:'pahang', name:'彭亨 Pahang', districts:[
+      '文冬 Bentong','金马仑高原 Cameron Highlands','而连突 Jerantut','关丹 Kuantan',
+      '立卑 Lipis','北根 Pekan','劳勿 Raub','淡马鲁 Temerloh',
+      '云冰 Rompin','马兰 Maran','百乐 Bera'
+    ]},
+    { key:'pulau-pinang', name:'槟城 Pulau Pinang', districts:[
+      '威中县 Seberang Perai Tengah','威北县 Seberang Perai Utara',
+      '威南县 Seberang Perai Selatan','东北县 Timur Laut','西南县 Barat Daya'
+    ]},
+    { key:'perak', name:'霹雳 Perak', districts:[
+      '峇登巴冷 Batang Padang','曼绒 Manjung','近打 Kinta','吉辇 Kerian',
+      '江沙 Kuala Kangsar','拉律峇登司南马 Larut dan Matang','下霹雳 Hilir Perak',
+      '上霹雳 Hulu Perak','中霹雳 Perak Tengah','金宝 Kampar',
+      '慕亚林 Muallim','巴眼拿督 Bagan Datuk','士南马 Selama'
+    ]},
+    { key:'perlis', name:'玻璃市 Perlis', districts:['玻璃市 Perlis']},
+    { key:'selangor', name:'雪兰莪 Selangor', districts:[
+      '鹅唛 Gombak','巴生 Klang','瓜拉冷岳 Kuala Langat','瓜拉雪兰莪 Kuala Selangor',
+      '八打灵 Petaling','沙白安南 Sabak Bernam','雪邦 Sepang',
+      '乌鲁冷岳 Ulu Langat','乌鲁雪兰莪 Ulu Selangor'
+    ]},
+    { key:'terengganu', name:'登嘉楼 Terengganu', districts:[
+      '勿述 Besut','龙运 Dungun','甘马挽 Kemaman','瓜拉登嘉楼 Kuala Terengganu',
+      '马江 Marang','乌鲁登嘉楼 Hulu Terengganu','士兆 Setiu','瓜拉尼鲁斯 Kuala Nerus'
+    ]},
+    { key:'sabah', name:'沙巴 Sabah', districts:[
+      '斗湖 Tawau','拿笃 Lahad Datu','山打根 Sandakan','亚庇 Kota Kinabalu',
+      '根地咬 Keningau','古达 Kudat','仙本那 Semporna','保佛 Beaufort',
+      '吧巴 Papar','斗亚兰 Tuaran','兰瑙 Ranau','丹南 Tenom',
+      '担布南 Tambunan','哥打马鲁都 Kota Marudu','比鲁兰 Beluran',
+      '京那巴当岸 Kinabatangan','纳巴湾 Nabawan','必达士 Pitas',
+      '特鲁必 Telupid','东革 Tongod','古打毛律 Kota Belud',
+      '瓜拉班尤 Kuala Penyu','实必丹 Sipitang','王麻骨 Membakut',
+      '冰湘岸 Pensiangan','普南 Putatan'
+    ]},
+    { key:'sarawak', name:'砂拉越 Sarawak', districts:[
+      '古晋 Kuching','诗巫 Sibu','美里 Miri','民都鲁 Bintulu',
+      '木中 Betong','加帛 Kapit','林梦 Limbang','沐胶 Mukah',
+      '三马拉汉 Samarahan','泗里街 Sarikei','西连 Serian','斯里阿曼 Sri Aman',
+      '鲁勃安都 Lubok Antu','老越 Lawas','达佬 Daro','达岛 Tatau',
+      '布拉甲 Belaga','苏必士 Subis','砂拉卓 Saratok','加拿逸 Kanowit',
+      '朱劳 Julau','马拉端 Meradong','巴干 Pakan','桑坡 Song',
+      '加迪拔 Katibas','达叻 Dalat','万年烟 Balingian','马鲁帝 Marudi',
+      '巴南 Baram','德朗乌山 Telang Usan','姆鲁 Mulu'
+    ]},
+    { key:'kl', name:'吉隆坡 WP Kuala Lumpur', districts:['吉隆坡 Kuala Lumpur']},
+    { key:'labuan', name:'纳闽 WP Labuan', districts:['纳闽 Labuan']},
+    { key:'putrajaya', name:'布城 WP Putrajaya', districts:['布城 Putrajaya']}
+  ];
 
-        // 3. 更新计数
-        helpCountEl.textContent = `共 ${filteredData.length} 条互助`;
+  var STATE_MAP = {};
+  MALAYSIA.forEach(function (s) { STATE_MAP[s.key] = s; });
+  function getState(key) { return STATE_MAP[key] || MALAYSIA[0]; }
 
-        // 4. 空状态
-        if (filteredData.length === 0) {
-          feedListEl.innerHTML = `<div class="no-result">✨ 暂时没有此类互助，发布一条吧～</div>`;
-          return;
-        }
+  var CATS = [
+    { key:'urgent',  name:'紧急',  icon:'⚡' },
+    { key:'tools',   name:'借工具', icon:'🔧' },
+    { key:'errand',  name:'代跑腿', icon:'🛒' },
+    { key:'pet',     name:'宠物',   icon:'🐾' },
+    { key:'chat',    name:'闲聊',   icon:'💬' }
+  ];
+  var CAT_MAP = {};
+  CATS.forEach(function (c) { CAT_MAP[c.key] = c; });
+  function getCat(key) { return CAT_MAP[key] || CAT_MAP.chat; }
 
-        // 5. 生成 HTML
-        let html = '';
-        filteredData.forEach(item => {
-          // 标签渲染
-          const tagsHtml = item.tags.map(tag => 
-            `<span class="tag">#${tag}</span>`
-          ).join('');
+  var listEl          = document.getElementById('list');
+  var inputEl         = document.getElementById('demandInput');
+  var btnEl           = document.getElementById('submitBtn');
+  var countEl         = document.getElementById('count');
+  var catRow          = document.getElementById('catRow');
+  var publishStateSel = document.getElementById('publishState');
+  var publishDistSel  = document.getElementById('publishDistrict');
+  var viewStateSel    = document.getElementById('viewState');
+  var viewDistSel     = document.getElementById('viewDistrict');
 
-          // 状态徽章样式
-          const statusClass = item.urgent ? 'status-badge urgent' : 'status-badge';
-          const statusIcon = item.statusIcon || (item.urgent ? '⚠️' : '📌');
+  var currentCat          = 'chat';
+  var currentPublishState = 'sarawak';
+  var currentPublishDist  = '';
+  var currentViewState    = 'all';
+  var currentViewDist     = 'all';
 
-          html += `
-            <div class="help-card" data-id="${item.id}">
-              <div class="card-header">
-                <div class="avatar">${item.avatar}</div>
-                <div class="user-info">
-                  <div class="user-name">
-                    ${item.name}
-                    <span class="distance-tag">📍 ${item.distance}</span>
-                  </div>
-                  <div class="time-meta">🕒 ${item.time}</div>
-                </div>
-              </div>
-              <div class="card-content">${item.content}</div>
-              <div class="card-tags">${tagsHtml}</div>
-              <div class="card-footer">
-                <div class="${statusClass}">
-                  <span>${statusIcon}</span> ${item.status}
-                </div>
-                <div class="action-buttons">
-                  <button class="action-btn" data-action="chat" data-id="${item.id}">
-                    💬 联系
-                  </button>
-                  <button class="action-btn primary" data-action="help" data-id="${item.id}">
-                    🤝 帮帮忙
-                  </button>
-                </div>
-              </div>
-            </div>
-          `;
-        });
+  function makeId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
 
-        feedListEl.innerHTML = html;
-
-        // 绑定卡片内按钮事件 (事件委托方式更优, 但直接绑定也行)
-        document.querySelectorAll('.action-btn').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const action = btn.dataset.action;
-            const id = Number(btn.dataset.id);
-            const item = helpData.find(h => h.id === id);
-            if (!item) return;
-            if (action === 'help') {
-              // 模拟帮忙
-              alert(`🤝 你已响应“${item.name}”的求助：${item.content.substring(0, 30)}... 邻居会收到通知！`);
-              // 可在这里更改状态(演示用, 不改真实数据)
-            } else if (action === 'chat') {
-              alert(`💬 打开与 ${item.name} 的聊天窗口 (演示)`);
-            }
-          });
-        });
-      }
-
-      // ---------- 过滤器切换 ----------
-      function initFilters() {
-        const chips = document.querySelectorAll('.filter-chip');
-        chips.forEach(chip => {
-          chip.addEventListener('click', () => {
-            // 移除所有 active
-            chips.forEach(c => c.classList.remove('active'));
-            chip.classList.add('active');
-            // 更新当前分类
-            currentCategory = chip.dataset.category || 'all';
-            renderFeed();
-          });
-        });
-      }
-
-      // ---------- 发布新求助 (模拟) ----------
-      function publishHelp() {
-        const text = publishInput.value.trim();
-        if (!text) {
-          alert('请填写求助或分享内容～');
-          return;
-        }
-        // 模拟新增一条数据 (最新在最前, 用id自增)
-        const newId = helpData.length ? Math.max(...helpData.map(h => h.id)) + 1 : 1;
-        const newItem = {
-          id: newId,
-          name: '我',
-          avatar: '🧑‍🚀',
-          distance: '本楼',
-          time: '刚刚',
-          content: text,
-          tags: ['新发布'],
-          category: 'chat', // 默认为闲聊分类, 但可以根据内容智能一些? 简化, 用闲聊
-          status: '待帮助',
-          urgent: false,
-          statusIcon: '🆕'
+  function load() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      var data = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(data)) return [];
+      return data.map(function (it) {
+        if (!it || typeof it !== 'object') return null;
+        var text = String(it.text || '').trim();
+        if (!text) return null;
+        return {
+          id:       it.id || makeId(),
+          text:     text,
+          time:     Number(it.time) || Date.now(),
+          cat:      CAT_MAP[it.cat] ? it.cat : 'chat',
+          state:    STATE_MAP[it.state] ? it.state : 'sarawak',
+          district: String(it.district || ''),
+          done:     !!it.done
         };
-        helpData.unshift(newItem); // 加到最前
+      }).filter(Boolean);
+    } catch (e) { return []; }
+  }
 
-        // 如果当前过滤器不是全部也不是闲聊, 可能看不到, 但发布后自动切换到全部? 体验较好: 重置过滤器到"全部"
-        if (currentCategory !== 'all') {
-          // 把过滤器切回全部, 让用户看到发布的卡片
-          currentCategory = 'all';
-          document.querySelectorAll('.filter-chip').forEach(chip => {
-            chip.classList.remove('active');
-            if (chip.dataset.category === 'all') chip.classList.add('active');
-          });
-        }
-        renderFeed();
-        publishInput.value = ''; // 清空
-        // 滚动到列表位置 (可选)
-        feedListEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); } catch (e) {}
+  }
 
-      // ---------- 初始化 ----------
-      function init() {
-        renderFeed();
-        initFilters();
+  var items = load();
 
-        // 发布按钮点击
-        publishBtn.addEventListener('click', publishHelp);
-        // 输入框回车发布
-        publishInput.addEventListener('keypress', (e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            publishHelp();
-          }
+  function formatTime(ts) {
+    var d = new Date(ts);
+    var pad = function (n) { return String(n).padStart(2, '0'); };
+    var hm = pad(d.getHours()) + ':' + pad(d.getMinutes());
+    var now = new Date();
+    if (d.toDateString() === now.toDateString()) return '今天 ' + hm;
+    return (d.getMonth() + 1) + '月' + d.getDate() + '日 ' + hm;
+  }
+
+  function fillStateSelect(sel, selectedKey, includeAll) {
+    sel.innerHTML = '';
+    if (includeAll) {
+      var optAll = document.createElement('option');
+      optAll.value = 'all';
+      optAll.textContent = '🌐 全部';
+      sel.appendChild(optAll);
+    }
+    MALAYSIA.forEach(function (s) {
+      var opt = document.createElement('option');
+      opt.value = s.key;
+      opt.textContent = s.name;
+      if (s.key === selectedKey) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  }
+
+  function fillDistrictSelect(sel, stateKey, selectedDist, includeAll) {
+    sel.innerHTML = '';
+    if (includeAll) {
+      var optAll = document.createElement('option');
+      optAll.value = 'all';
+      optAll.textContent = '🌐 全部';
+      sel.appendChild(optAll);
+    }
+    if (stateKey === 'all') {
+      sel.disabled = true;
+      return;
+    }
+    sel.disabled = false;
+    var state = getState(stateKey);
+    state.districts.forEach(function (d) {
+      var opt = document.createElement('option');
+      opt.value = d;
+      opt.textContent = d;
+      if (d === selectedDist) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  }
+
+  function initSelectors() {
+    fillStateSelect(publishStateSel, currentPublishState, false);
+    var pState = getState(currentPublishState);
+    currentPublishDist = pState.districts[0] || '';
+    fillDistrictSelect(publishDistSel, currentPublishState, currentPublishDist, false);
+
+    fillStateSelect(viewStateSel, currentViewState, true);
+    fillDistrictSelect(viewDistSel, currentViewState, currentViewDist, true);
+
+    publishStateSel.addEventListener('change', function () {
+      currentPublishState = this.value;
+      var st = getState(currentPublishState);
+      currentPublishDist = st.districts[0] || '';
+      fillDistrictSelect(publishDistSel, currentPublishState, currentPublishDist, false);
+    });
+
+    publishDistSel.addEventListener('change', function () {
+      currentPublishDist = this.value;
+    });
+
+    viewStateSel.addEventListener('change', function () {
+      currentViewState = this.value;
+      currentViewDist = 'all';
+      fillDistrictSelect(viewDistSel, currentViewState, currentViewDist, true);
+      render();
+    });
+
+    viewDistSel.addEventListener('change', function () {
+      currentViewDist = this.value;
+      render();
+    });
+  }
+
+  function buildCatChips() {
+    var label = catRow.querySelector('.label');
+    catRow.innerHTML = '';
+    if (label) catRow.appendChild(label);
+
+    CATS.forEach(function (c) {
+      var chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'chip' + (c.key === currentCat ? ' active' : '');
+      chip.dataset.key = c.key;
+      chip.textContent = c.icon + ' ' + c.name;
+      chip.addEventListener('click', function () {
+        currentCat = c.key;
+        Array.prototype.forEach.call(catRow.querySelectorAll('.chip'), function (el) {
+          el.classList.toggle('active', el.dataset.key === c.key);
         });
+        render();
+      });
+      catRow.appendChild(chip);
+    });
+  }
 
-        // 点击卡片本身不做复杂交互 (保留)
-        // 底部导航演示
-        document.querySelectorAll('.nav-item').forEach(item => {
-          item.addEventListener('click', function() {
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            this.classList.add('active');
-            // 可以提示, 但没必要
-          });
-        });
-      }
+  function render() {
+    listEl.textContent = '';
 
-      // 页面加载后执行
-      window.addEventListener('DOMContentLoaded', init);
-    })();
-  </script>
+    var filtered = items.filter(function (it) {
+      if (currentCat !== 'all' && it.cat !== currentCat) return false;
+      if (currentViewState !== 'all' && it.state !== currentViewState) return false;
+      if (currentViewDist !== 'all' && it.district !== currentViewDist) return false;
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      var empty = document.createElement('div');
+      empty.className = 'empty';
+      empty.textContent = '还没有这个分类的需求，来发布第一条吧 ~';
+      listEl.appendChild(empty);
+      countEl.textContent = '';
+      return;
+    }
+
+    var latestId = null;
+    for (var i = filtered.length - 1; i >= 0; i--) {
+      if (!filtered[i].done) { latestId = filtered[i].id; break; }
+    }
+
+    filtered.forEach(function (item) {
+      listEl.appendChild(createItemEl(item, item.id === latestId));
+    });
+
+    var pending = filtered.filter(function (it) { return !it.done; }).length;
+    countEl.textContent = '共 ' + filtered.length + ' 条 · 待完成 ' + pending + ' 条';
+  }
+
+  function createItemEl(item, isLatest) {
+    var cat   = getCat(item.cat);
+    var state = getState(item.state);
+
+    var row = document.createElement('div');
+    row.className = 'item' + (isLatest ? ' latest' : '') + (item.done ? ' done' : '');
+    row.dataset.id = item.id;
+
+    var dot = document.createElement('span');
+    dot.className = 'dot';
+
+    var bubble = document.createElement('div');
+    bubble.className = 'bubble';
+
+    var head = document.createElement('div');
+    head.className = 'bubble-head';
+
+    var zoneTag = document.createElement('span');
+    zoneTag.className = 'tag zone-tag';
+    var shortState = state.name.split(' ')[0];
+    var shortDist  = item.district ? item.district.split(' ')[0] : '';
+    zoneTag.textContent = '📍 ' + shortState + (shortDist ? ' · ' + shortDist : '');
+    head.appendChild(zoneTag);
+
+    var tag = document.createElement('span');
+    tag.className = 'tag ' + cat.key;
+    tag.textContent = cat.icon + ' ' + cat.name;
+    head.appendChild(tag);
+
+    if (item.done) {
+      var badge = document.createElement('span');
+      badge.className = 'done-badge';
+      badge.textContent = '✓ 已完成';
+      head.appendChild(badge);
+    }
+
+    var text = document.createElement('p');
+    text.className = 'text';
+    text.textContent = item.text;
+
+    var meta = document.createElement('div');
+    meta.className = 'meta';
+
+    var time = document.createElement('span');
+    time.className = 'time';
+    time.textContent = formatTime(item.time);
+
+    var doneBtn = document.createElement('button');
+    doneBtn.type = 'button';
+    doneBtn.className = 'done-btn';
+    doneBtn.textContent = item.done ? '↺ 撤销' : '✓ 完成';
+    doneBtn.addEventListener('click', function () { toggleDone(item.id); });
+
+    var del = document.createElement('button');
+    del.type = 'button';
+    del.className = 'del';
+    del.textContent = '×';
+    del.setAttribute('aria-label', '删除这条需求');
+    del.addEventListener('click', function () { removeItem(item.id); });
+
+    meta.appendChild(time);
+    meta.appendChild(doneBtn);
+    meta.appendChild(del);
+
+    bubble.appendChild(head);
+    bubble.appendChild(text);
+    bubble.appendChild(meta);
+
+    row.appendChild(dot);
+    row.appendChild(bubble);
+    return row;
+  }
+
+  function addItem() {
+    var text = inputEl.value.trim();
+    if (!text) { inputEl.focus(); return; }
+
+    if (!currentPublishDist) {
+      var st = getState(currentPublishState);
+      currentPublishDist = st.districts[0] || '';
+    }
+
+    items.push({
+      id:       makeId(),
+      text:     text,
+      time:     Date.now(),
+      cat:      currentCat,
+      state:    currentPublishState,
+      district: currentPublishDist,
+      done:     false
+    });
+    save();
+
+    if (currentViewState !== 'all' && currentViewState !== currentPublishState) {
+      currentViewState = currentPublishState;
+      currentViewDist  = currentPublishDist;
+      fillStateSelect(viewStateSel, currentViewState, true);
+      fillDistrictSelect(viewDistSel, currentViewState, currentViewDist, true);
+    } else if (currentViewState === currentPublishState &&
+               currentViewDist !== 'all' && currentViewDist !== currentPublishDist) {
+      currentViewDist = currentPublishDist;
+      fillDistrictSelect(viewDistSel, currentViewState, currentViewDist, true);
+    }
+
+    render();
+    inputEl.value = '';
+    inputEl.focus();
+
+    var last = listEl.lastElementChild;
+    if (last && last.scrollIntoView) {
+      last.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }
+
+  function toggleDone(id) {
+    var target = null;
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].id === id) { target = items[i]; break; }
+    }
+    if (!target) return;
+    target.done = !target.done;
+    save();
+    render();
+  }
+
+  function removeItem(id) {
+    var el = listEl.querySelector('[data-id="' + id + '"]');
+    function commit() {
+      items = items.filter(function (it) { return it.id !== id; });
+      save();
+      render();
+    }
+    if (!el) { commit(); return; }
+    el.style.transition = 'opacity .2s, transform .2s';
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(24px)';
+    setTimeout(commit, 180);
+  }
+
+  btnEl.addEventListener('click', addItem);
+  inputEl.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); addItem(); }
+  });
+
+  initSelectors();
+  buildCatChips();
+  render();
+})();
+</script>
 </body>
 </html>
