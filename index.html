@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>邻里帮帮帮 · 社区互助</title>
+  <!-- 最新简洁风格，邻里互助主题 -->
+  <style>
+    /* 全局重置与字体 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    }
+
+    body {
+      background: #f7f9fc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding: 20px 16px 40px;
+    }
+
+    /* 主容器 — 类似手机卡片的柔和界面 */
+    .app-container {
+      max-width: 580px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 36px;
+      box-shadow: 0 20px 40px rgba(0, 20, 30, 0.08), 0 8px 20px rgba(0, 0, 0, 0.02);
+      overflow: hidden;
+      padding: 24px 20px 28px;
+      transition: all 0.2s ease;
+    }
+
+    /* 头部区域 */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-icon {
+      font-size: 34px;
+      line-height: 1;
+      filter: drop-shadow(0 2px 4px rgba(0, 120, 80, 0.2));
+    }
+
+    .title-group h1 {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: #1a3b32;
+      line-height: 1.2;
+    }
+
+    .title-group .subhead {
+      font-size: 13px;
+      color: #6c8b7e;
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    .neighbor-badge {
+      background: #e6f3ed;
+      padding: 8px 14px;
+      border-radius: 40px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #1e6b4e;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      border: 1px solid #cbe5da;
+    }
+
+    /* 欢迎横幅 */
+    .welcome-banner {
+      background: linear-gradient(135deg, #d9f0e6 0%, #eef9f4 100%);
+      border-radius: 24px;
+      padding: 16px 18px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid #c3e2d4;
+    }
+
+    .banner-emoji {
+      font-size: 32px;
+      background: white;
+      width: 54px;
+      height: 54px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 8px rgba(0, 60, 30, 0.06);
+    }
+
+    .banner-text {
+      font-size: 15px;
+      line-height: 1.4;
+      color: #175b41;
+      font-weight: 500;
+    }
+
+    .banner-text strong {
+      font-weight: 700;
+      color: #0b3d2b;
+    }
+
+    /* 快捷操作 —— 发布栏 */
+    .publish-bar {
+      background: #f2f6f4;
+      border-radius: 26px;
+      display: flex;
+      align-items: center;
+      padding: 6px 6px 6px 18px;
+      margin-bottom: 26px;
+      border: 1px solid #e0eae5;
+    }
+
+    .publish-bar input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      padding: 12px 0;
+      color: #1a2e26;
+    }
+
+    .publish-bar input::placeholder {
+      color: #93aaa0;
+      font-weight: 400;
+    }
+
+    .publish-bar button {
+      background: #1e6b4e;
+      border: none;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 12px 22px;
+      border-radius: 26px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      box-shadow: 0 4px 8px rgba(0, 80, 40, 0.15);
+      white-space: nowrap;
+    }
+
+    .publish-bar button:hover {
+      background: #135a40;
+    }
+
+    .publish-bar button:active {
+      transform: scale(0.96);
+    }
+
+    /* 分类选择器 */
+    .filter-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 18px;
+      scrollbar-width: thin;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .filter-row::-webkit-scrollbar {
+      height: 4px;
+    }
+
+    .filter-row::-webkit-scrollbar-thumb {
+      background: #cbdcd4;
+      border-radius: 4px;
+    }
+
+    .filter-chip {
+      background: white;
+      border: 1px solid #d2e2da;
+      color: #255e48;
+      font-weight: 500;
+      font-size: 14px;
+      padding: 9px 18px;
+      border-radius: 40px;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.1s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .filter-chip.active {
+      background: #1e6b4e;
+      border-color: #1e6b4e;
+      color: white;
+      box-shadow: 0 4px 10px rgba(30, 107, 78, 0.2);
+    }
+
+    .filter-chip .chip-emoji {
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    /* 帮帮卡片列表 —— 核心区 */
+    .feed-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 24px;
+      max-height: 480px;
+      overflow-y: auto;
+      padding-right: 4px;
+      scrollbar-width: thin;
+    }
+
+    .feed-list::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .feed-list::-webkit-scrollbar-track {
+      background: #eff6f2;
+      border-radius: 8px;
+    }
+
+    .feed-list::-webkit-scrollbar-thumb {
+      background: #bcd9cd;
+      border-radius: 8px;
+    }
+
+    /* 单个互助卡片 */
+    .help-card {
+      background: #ffffff;
+      border: 1px solid #e3efe8;
+      border-radius: 22px;
+      padding: 18px 18px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 6px 14px rgba(0, 30, 20, 0.02);
+      transition: all 0.2s;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .help-card:hover {
+      border-color: #b8d9ca;
+      box-shadow: 0 10px 20px rgba(30, 80, 60, 0.06);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 46px;
+      height: 46px;
+      background: #d9f0e6;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+      border: 1px solid #c3e2d4;
+    }
+
+    .user-info {
+      flex: 1;
+    }
+
+    .user-name {
+      font-weight: 700;
+      font-size: 16px;
+      color: #0b3d2b;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .distance-tag {
+      font-size: 12px;
+      font-weight: 500;
+      color: #5b7b6e;
+      background: #edf6f2;
+      padding: 2px 8px;
+      border-radius: 30px;
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .time-meta {
+      font-size: 12px;
+      color: #7b998b;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 3px;
+    }
+
+    .card-content {
+      font-size: 15px;
+      line-height: 1.5;
+      color: #1c2f28;
+      padding-left: 2px;
+      font-weight: 450;
+      word-break: break-word;
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .tag {
+      background: #eef6f1;
+      font-size: 12px;
+      font-weight: 500;
+      color: #236e51;
+      padding: 5px 12px;
+      border-radius: 40px;
+      border: 1px solid #d6e8df;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 4px;
+      border-top: 1px solid #ecf3ef;
+      padding-top: 12px;
+    }
+
+    .status-badge {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 40px;
+      background: #f0f7f3;
+      color: #1e6b4e;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid #cde3d8;
+    }
+
+    .status-badge.urgent {
+      background: #fff1e6;
+      color: #b1531a;
+      border-color: #ffd9bd;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .action-btn {
+      background: white;
+      border: 1px solid #d2e2da;
+      border-radius: 50px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1e6b4e;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.1s;
+      white-space: nowrap;
+    }
+
+    .action-btn:hover {
+      background: #e9f3ee;
+      border-color: #b4d5c6;
+    }
+
+    .action-btn.primary {
+      background: #1e6b4e;
+      border-color: #1e6b4e;
+      color: white;
+      box-shadow: 0 2px 8px rgba(30, 107, 78, 0.2);
+    }
+
+    .action-btn.primary:hover {
+      background: #135a40;
+    }
+
+    /* 底部导航 / 邻里圈 */
+    .bottom-nav {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-top: 1px solid #e3eee8;
+      padding-top: 18px;
+      margin-top: 10px;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #7e9a8e;
+      cursor: pointer;
+      transition: color 0.1s;
+      padding: 6px 12px;
+      border-radius: 30px;
+    }
+
+    .nav-item.active {
+      color: #1e6b4e;
+      font-weight: 600;
+      background: #eaf4ef;
+    }
+
+    .nav-item span:first-child {
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    /* 无结果提示 */
+    .no-result {
+      text-align: center;
+      padding: 40px 16px;
+      color: #8aa79b;
+      font-size: 15px;
+      background: #f9fdfb;
+      border-radius: 28px;
+      border: 1px dashed #c2dbcf;
+    }
+
+    /* 帮助总数小标签 */
+    .stats-badge {
+      font-size: 13px;
+      color: #2d6e55;
+      background: #e6f3ed;
+      padding: 4px 12px;
+      border-radius: 40px;
+      font-weight: 500;
+    }
+
+    /* 工具类 */
+    .text-muted {
+      color: #8aa79b;
+    }
+
+    .mt-1 { margin-top: 4px; }
+    .mb-2 { margin-bottom: 8px; }
+    .flex { display: flex; align-items: center; }
+    .gap-2 { gap: 8px; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- 头部 -->
+    <div class="header">
+      <div class="logo-area">
+        <div class="logo-icon">🤝</div>
+        <div class="title-group">
+          <h1>邻里帮帮帮</h1>
+          <div class="subhead">有求必应 · 近邻胜远亲</div>
+        </div>
+      </div>
+      <div class="neighbor-badge">
+        <span>🏡</span> 枫林社区
+      </div>
+    </div>
+
+    <!-- 欢迎横幅 -->
+    <div class="welcome-banner">
+      <div class="banner-emoji">🌟</div>
+      <div class="banner-text">
+        <strong>今日已有 23 位邻居</strong> 伸出援手<br>
+        远亲不如近邻，一起让社区更温暖
+      </div>
+    </div>
+
+    <!-- 发布快捷栏 -->
+    <div class="publish-bar">
+      <input type="text" id="publishInput" placeholder="需要什么帮助？或分享闲置…" aria-label="发布求助或闲置">
+      <button id="publishBtn">
+        <span>📣</span> 发布
+      </button>
+    </div>
+
+    <!-- 分类过滤器 -->
+    <div class="filter-row" id="filterRow">
+      <div class="filter-chip active" data-category="all">
+        <span class="chip-emoji">📋</span> 全部
+      </div>
+      <div class="filter-chip" data-category="urgent">
+        <span class="chip-emoji">⚡</span> 紧急
+      </div>
+      <div class="filter-chip" data-category="tool">
+        <span class="chip-emoji">🔧</span> 借工具
+      </div>
+      <div class="filter-chip" data-category="errand">
+        <span class="chip-emoji">🛒</span> 代跑腿
+      </div>
+      <div class="filter-chip" data-category="pet">
+        <span class="chip-emoji">🐕</span> 宠物
+      </div>
+      <div class="filter-chip" data-category="chat">
+        <span class="chip-emoji">💬</span> 闲聊
+      </div>
+    </div>
+
+    <!-- 信息统计/标题行 -->
+    <div class="flex" style="justify-content: space-between; margin-bottom: 14px;">
+      <span style="font-weight: 600; color: #1a3b32; font-size: 16px;">📌 邻里互助墙</span>
+      <span class="stats-badge" id="helpCount">共 6 条互助</span>
+    </div>
+
+    <!-- 互助卡片列表 (动态渲染) -->
+    <div class="feed-list" id="feedList">
+      <!-- 卡片会通过 JavaScript 动态渲染，确保最新内容 -->
+    </div>
+
+    <!-- 底部导航 -->
+    <div class="bottom-nav">
+      <div class="nav-item active">
+        <span>🏘️</span>
+        <span>邻里圈</span>
+      </div>
+      <div class="nav-item">
+        <span>🔔</span>
+        <span>消息</span>
+      </div>
+      <div class="nav-item">
+        <span>👤</span>
+        <span>我的</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // ---------- 数据 ----------
+      // 互助数据 (模拟最新邻里动态)
+      const helpData = [
+        {
+          id: 1,
+          name: '王阿姨',
+          avatar: '👩',
+          distance: '3号楼',
+          time: '8分钟前',
+          content: '家里水管有点漏水，哪位邻居有扳手借用一下？急！',
+          tags: ['紧急', '工具'],
+          category: 'urgent',
+          status: '待帮助',
+          urgent: true,
+          statusIcon: '⏳'
+        },
+        {
+          id: 2,
+          name: '李叔',
+          avatar: '👨',
+          distance: '7号楼',
+          time: '25分钟前',
+          content: '下午去超市，可以帮5号楼的张奶奶带点蔬菜，有需要的邻居吗？',
+          tags: ['跑腿', '爱心'],
+          category: 'errand',
+          status: '进行中',
+          urgent: false,
+          statusIcon: '🛒'
+        },
+        {
+          id: 3,
+          name: '小张同学',
+          avatar: '🧑',
+          distance: '12号楼',
+          time: '1小时前',
+          content: '谁家有电钻？想借来装个书架，用完马上归还～',
+          tags: ['借工具', '工具'],
+          category: 'tool',
+          status: '待帮助',
+          urgent: false,
+          statusIcon: '🔧'
+        },
+        {
+          id: 4,
+          name: '陈姐',
+          avatar: '👩‍🦱',
+          distance: '5号楼',
+          time: '2小时前',
+          content: '临时出差，有没有邻居能帮忙喂一下我家猫咪？猫粮已备好。',
+          tags: ['宠物', '帮忙'],
+          category: 'pet',
+          status: '已完成',
+          urgent: false,
+          statusIcon: '🐱'
+        },
+        {
+          id: 5,
+          name: '老赵',
+          avatar: '👴',
+          distance: '2号楼',
+          time: '3小时前',
+          content: '周末想找人一起下棋、喝茶，有邻居来吗？就在小区亭子。',
+          tags: ['闲聊', '交友'],
+          category: 'chat',
+          status: '待帮助',
+          urgent: false,
+          statusIcon: '☕'
+        },
+        {
+          id: 6,
+          name: '周阿姨',
+          avatar: '👵',
+          distance: '9号楼',
+          time: '昨天',
+          content: '紧急！家里灯泡坏了，晚上不方便，谁有备用灯泡或能帮忙换一下？',
+          tags: ['紧急', '维修'],
+          category: 'urgent',
+          status: '待帮助',
+          urgent: true,
+          statusIcon: '💡'
+        }
+      ];
+
+      // 当前分类过滤器
+      let currentCategory = 'all';
+
+      // DOM 元素
+      const feedListEl = document.getElementById('feedList');
+      const filterRowEl = document.getElementById('filterRow');
+      const helpCountEl = document.getElementById('helpCount');
+      const publishInput = document.getElementById('publishInput');
+      const publishBtn = document.getElementById('publishBtn');
+
+      // 辅助: 分类中文映射
+      const categoryMap = {
+        all: '全部',
+        urgent: '紧急',
+        tool: '借工具',
+        errand: '代跑腿',
+        pet: '宠物',
+        chat: '闲聊'
+      };
+
+      // ---------- 渲染卡片 ----------
+      function renderFeed() {
+        // 1. 根据当前分类过滤
+        let filteredData = helpData;
+        if (currentCategory !== 'all') {
+          filteredData = helpData.filter(item => item.category === currentCategory);
+        }
+
+        // 2. 排序: 紧急的在前 (urgent为true优先), 然后按时间倒序(近似, 因为id越大越新)
+        filteredData = [...filteredData].sort((a, b) => {
+          if (a.urgent && !b.urgent) return -1;
+          if (!a.urgent && b.urgent) return 1;
+          return b.id - a.id; // id越大越新
+        });
+
+        // 3. 更新计数
+        helpCountEl.textContent = `共 ${filteredData.length} 条互助`;
+
+        // 4. 空状态
+        if (filteredData.length === 0) {
+          feedListEl.innerHTML = `<div class="no-result">✨ 暂时没有此类互助，发布一条吧～</div>`;
+          return;
+        }
+
+        // 5. 生成 HTML
+        let html = '';
+        filteredData.forEach(item => {
+          // 标签渲染
+          const tagsHtml = item.tags.map(tag => 
+            `<span class="tag">#${tag}</span>`
+          ).join('');
+
+          // 状态徽章样式
+          const statusClass = item.urgent ? 'status-badge urgent' : 'status-badge';
+          const statusIcon = item.statusIcon || (item.urgent ? '⚠️' : '📌');
+
+          html += `
+            <div class="help-card" data-id="${item.id}">
+              <div class="card-header">
+                <div class="avatar">${item.avatar}</div>
+                <div class="user-info">
+                  <div class="user-name">
+                    ${item.name}
+                    <span class="distance-tag">📍 ${item.distance}</span>
+                  </div>
+                  <div class="time-meta">🕒 ${item.time}</div>
+                </div>
+              </div>
+              <div class="card-content">${item.content}</div>
+              <div class="card-tags">${tagsHtml}</div>
+              <div class="card-footer">
+                <div class="${statusClass}">
+                  <span>${statusIcon}</span> ${item.status}
+                </div>
+                <div class="action-buttons">
+                  <button class="action-btn" data-action="chat" data-id="${item.id}">
+                    💬 联系
+                  </button>
+                  <button class="action-btn primary" data-action="help" data-id="${item.id}">
+                    🤝 帮帮忙
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+        feedListEl.innerHTML = html;
+
+        // 绑定卡片内按钮事件 (事件委托方式更优, 但直接绑定也行)
+        document.querySelectorAll('.action-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const action = btn.dataset.action;
+            const id = Number(btn.dataset.id);
+            const item = helpData.find(h => h.id === id);
+            if (!item) return;
+            if (action === 'help') {
+              // 模拟帮忙
+              alert(`🤝 你已响应“${item.name}”的求助：${item.content.substring(0, 30)}... 邻居会收到通知！`);
+              // 可在这里更改状态(演示用, 不改真实数据)
+            } else if (action === 'chat') {
+              alert(`💬 打开与 ${item.name} 的聊天窗口 (演示)`);
+            }
+          });
+        });
+      }
+
+      // ---------- 过滤器切换 ----------
+      function initFilters() {
+        const chips = document.querySelectorAll('.filter-chip');
+        chips.forEach(chip => {
+          chip.addEventListener('click', () => {
+            // 移除所有 active
+            chips.forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            // 更新当前分类
+            currentCategory = chip.dataset.category || 'all';
+            renderFeed();
+          });
+        });
+      }
+
+      // ---------- 发布新求助 (模拟) ----------
+      function publishHelp() {
+        const text = publishInput.value.trim();
+        if (!text) {
+          alert('请填写求助或分享内容～');
+          return;
+        }
+        // 模拟新增一条数据 (最新在最前, 用id自增)
+        const newId = helpData.length ? Math.max(...helpData.map(h => h.id)) + 1 : 1;
+        const newItem = {
+          id: newId,
+          name: '我',
+          avatar: '🧑‍🚀',
+          distance: '本楼',
+          time: '刚刚',
+          content: text,
+          tags: ['新发布'],
+          category: 'chat', // 默认为闲聊分类, 但可以根据内容智能一些? 简化, 用闲聊
+          status: '待帮助',
+          urgent: false,
+          statusIcon: '🆕'
+        };
+        helpData.unshift(newItem); // 加到最前
+
+        // 如果当前过滤器不是全部也不是闲聊, 可能看不到, 但发布后自动切换到全部? 体验较好: 重置过滤器到"全部"
+        if (currentCategory !== 'all') {
+          // 把过滤器切回全部, 让用户看到发布的卡片
+          currentCategory = 'all';
+          document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.classList.remove('active');
+            if (chip.dataset.category === 'all') chip.classList.add('active');
+          });
+        }
+        renderFeed();
+        publishInput.value = ''; // 清空
+        // 滚动到列表位置 (可选)
+        feedListEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      // ---------- 初始化 ----------
+      function init() {
+        renderFeed();
+        initFilters();
+
+        // 发布按钮点击
+        publishBtn.addEventListener('click', publishHelp);
+        // 输入框回车发布
+        publishInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            publishHelp();
+          }
+        });
+
+        // 点击卡片本身不做复杂交互 (保留)
+        // 底部导航演示
+        document.querySelectorAll('.nav-item').forEach(item => {
+          item.addEventListener('click', function() {
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            this.classList.add('active');
+            // 可以提示, 但没必要
+          });
+        });
+      }
+
+      // 页面加载后执行
+      window.addEventListener('DOMContentLoaded', init);
+    })();
+  </script>
+</body>
+</html>
