@@ -6,80 +6,91 @@
 <title>邻里帮帮帮 - 实时互助</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  :root{ --green:#4CAF50; --deep:#2f5d2f; --line:#a5d8a0; }
+  :root{ --green:#4CAF50; --line:#a5d8a0; }
   *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  body{ margin:0; min-height:100vh; padding:20px 16px 80px; background:linear-gradient(180deg,#e3f9dd 0%,#c6f0bd 55%,#b0e9a6 100%); background-attachment:fixed; font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif; text-align:center; }
+  body{ margin:0; min-height:100vh; padding:20px 16px 80px; background:linear-gradient(180deg,#e3f9dd 0%,#c6f0bd 55%,#b0e9a6 100%); background-attachment:fixed; font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif; text-align:center; }
   .title{ margin:0; color:#1565c0; font-size:clamp(30px,9vw,50px); letter-spacing:2px; text-shadow:0 2px 0 rgba(255,255,255,.8); }
   .subtitle{ margin:10px 0 0; color:#d32f2f; font-size:clamp(24px,6vw,36px); font-weight:700; }
   
-  #authBox { background: #fff; max-width: 400px; margin: 30px auto; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
-  #authBox h3 { margin: 0 0 15px; color: #333; }
-  .auth-input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+  /* 登录框 */
+  #authBox { background: #fff; max-width: 400px; margin: 30px auto; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+  .auth-input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
   .auth-btn { width: 100%; padding: 12px; background: var(--green); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
   .auth-btn.secondary { background: #eee; color: #333; }
   .auth-msg { font-size: 14px; color: #d32f2f; margin-bottom: 10px; min-height: 20px; }
 
+  /* 主界面 */
   #mainApp { display: none; }
   .user-bar { max-width: 600px; margin: 0 auto 10px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.7); padding: 10px 15px; border-radius: 10px; }
   .logout-btn { background: #ff5252; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-weight: bold;}
 
-  .gps-bar { max-width: 600px; margin: 0 auto 15px; display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 10px 15px; border-radius: 10px; font-size: 14px; box-shadow: 0 2px 6px rgba(0,0,0,.05); }
-  .gps-status { color: #666; }
-  .gps-status.on { color: var(--green); font-weight: bold; }
-  .range-select { padding: 5px; border-radius: 5px; border: 1px solid #a5d8a0; outline: none; font-weight: bold; color: #2e7d32; }
+  .gps-bar { max-width: 600px; margin: 0 auto 15px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; background: #fff; padding: 10px 15px; border-radius: 10px; font-size: 14px; box-shadow: 0 2px 6px rgba(0,0,0,.05); }
+  .gps-status { color: #666; font-weight: bold; }
+  .gps-status.on { color: var(--green); }
+  .select-mini { padding: 5px; border-radius: 5px; border: 1px solid #a5d8a0; outline: none; font-weight: bold; color: #2e7d32; }
 
+  /* 输入区 */
   .input-row{ display:flex; gap:10px; width:100%; max-width:600px; margin:10px auto 0; }
-  #demandInput{ flex:1 1 auto; min-width:0; font-size:17px; padding:14px 18px; border:none; border-radius:999px; outline:none; text-align:center; color:#222; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.08); font-family:inherit; }
-  #submitBtn{ flex:0 0 auto; font-size:17px; font-weight:700; padding:14px 26px; border:none; border-radius:999px; background:#ffd400; color:#4a3b00; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,.12); font-family:inherit; }
+  #demandInput{ flex:1 1 auto; font-size:17px; padding:14px 18px; border:none; border-radius:999px; outline:none; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.08); }
+  #submitBtn{ flex:0 0 auto; font-size:17px; font-weight:700; padding:14px 26px; border:none; border-radius:999px; background:#ffd400; color:#4a3b00; cursor:pointer; }
+  #submitBtn:disabled{ opacity:0.6; }
+  
+  .upload-row{ max-width:600px; margin: 10px auto 0; display: flex; align-items: center; gap: 10px; }
+  .upload-label { background: #fff; padding: 8px 15px; border-radius: 8px; font-size: 14px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,.08); display: inline-flex; align-items: center; gap: 5px; }
+  #imageInput { display: none; }
+  #imagePreview { max-height: 60px; border-radius: 8px; display: none; }
 
   .select-row{ display:flex; flex-wrap:wrap; justify-content:center; gap:10px; max-width:600px; margin:16px auto 0; }
-  .select-group{ flex:1 1 45%; min-width:140px; text-align:left; }
+  .select-group{ flex:1 1 45%; text-align:left; }
   .select-group label{ display:block; font-size:13px; font-weight:600; color:#4c6b4c; margin-bottom:5px; padding-left:4px; }
-  .select-group select{ width:100%; font-size:15px; font-family:inherit; padding:10px 12px; border:1.5px solid #a5d8a0; border-radius:10px; background:#fff; color:#222; outline:none; cursor:pointer; appearance:none; }
+  .select-group select{ width:100%; font-size:15px; padding:10px 12px; border:1.5px solid #a5d8a0; border-radius:10px; outline:none; background: #fff; }
 
   .chip-row{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; max-width:600px; margin:14px auto 0; }
-  .chip-row .label{ width:100%; text-align:center; font-size:13px; color:#4c6b4c; margin-bottom:2px; font-weight:600; }
-  .chip{ font-size:14px; font-family:inherit; padding:8px 15px; border-radius:999px; border:1.5px solid transparent; background:rgba(255,255,255,.7); color:#4c6b4c; cursor:pointer; transition:all .18s; white-space:nowrap; }
+  .chip-row .label{ width:100%; text-align:center; font-size:13px; color:#4c6b4c; font-weight:600; }
+  .chip{ font-size:14px; padding:8px 15px; border-radius:999px; border:1.5px solid transparent; background:rgba(255,255,255,.7); color:#4c6b4c; cursor:pointer; }
   .chip.active{ background:var(--green); border-color:#3d8b40; color:#fff; font-weight:700; }
 
+  /* 列表 */
   #list{ width:100%; max-width:600px; margin:20px auto 0; text-align:left; }
-  
-  /* 强制修复 Safari 可能出现的宽度塌陷问题 */
   .item{ position:relative; display:flex; width: 100%; gap:12px; padding-bottom:18px; }
   .item::before{ content:""; position:absolute; left:7px; top:20px; bottom:-2px; width:2px; background:var(--line); }
   .item:last-child::before{ display:none; }
-
-  .dot{ flex:0 0 auto; width:16px; height:16px; margin-top:8px; border-radius:50%; background:#bdbdbd; z-index:1; }
+  .dot{ flex:0 0 auto; width:16px; height:16px; margin-top:8px; border-radius:50%; background:#bdbdbd; }
   .item.latest .dot{ background:var(--green); }
-  .item.done .dot{ background:#9e9e9e; }
-
-  .bubble{ flex:1 1 auto; width: 100%; min-width:0; padding:12px 14px; border-radius:14px; background:rgba(255,255,255,.55); opacity:.72; }
-  .item.latest .bubble{ opacity:1; background:#fff; box-shadow:0 4px 14px rgba(0,0,0,.10); }
+  
+  .bubble{ flex:1 1 auto; width: 100%; padding:12px 14px; border-radius:14px; background:rgba(255,255,255,.6); }
+  .item.latest .bubble{ background:#fff; box-shadow:0 4px 14px rgba(0,0,0,.10); }
   .item.done .bubble{ opacity:.6; }
-
+  
   .bubble-head{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px; }
-  .tag{ display:inline-block; font-size:12px; font-weight:600; padding:3px 10px; border-radius:999px; background:#eceff1; color:#455a64; }
-  .tag.urgent{ background:#ffebee; color:#c62828; }
-  .tag.tools { background:#e3f2fd; color:#1565c0; }
-  .tag.errand{ background:#fff3e0; color:#e65100; }
-  .tag.pet   { background:#f3e5f5; color:#6a1b9a; }
-  .tag.chat  { background:#eceff1; color:#455a64; }
-  .tag.dist-tag { background:#fffde7; color:#f57f17; border:1px solid #fff59d;}
+  .tag{ font-size:12px; font-weight:600; padding:3px 10px; border-radius:999px; background:#eceff1; color:#455a64; }
+  .tag.urgent{ background:#ffebee; color:#c62828; } .tag.tools { background:#e3f2fd; color:#1565c0; }
+  .tag.errand{ background:#fff3e0; color:#e65100; } .tag.pet   { background:#f3e5f5; color:#6a1b9a; }
+  .tag.chat  { background:#eceff1; color:#455a64; } .tag.dist-tag { background:#fffde7; color:#f57f17; border:1px solid #fff59d;}
   .tag.radius-tag { background:#e1f5fe; color:#0277bd;}
 
-  .text{ margin:0; font-size:18px; line-height:1.5; color:#222; word-break:break-word; white-space:pre-wrap; }
+  .text{ margin:0; font-size:18px; color:#222; word-break:break-word; white-space:pre-wrap; }
   .item.done .text{ text-decoration:line-through; color:#7a8c7a; }
-  .meta{ display:flex; align-items:center; gap:8px; margin-top:10px; flex-wrap: wrap;}
-  .time{ margin-right:auto; font-size:12px; color:#7a8c7a; }
-
-  .done-btn{ font-size:12px; padding:4px 12px; border-radius:999px; border:1.5px solid var(--green); background:transparent; color:#2e7d32; cursor:pointer; }
-  .del{ width:22px; height:22px; border:none; border-radius:50%; background:#ff8a80; color:#fff; font-size:15px; cursor:pointer; }
+  .img-preview { max-width: 100%; max-height: 200px; border-radius: 10px; margin-top: 8px; cursor: pointer; }
   
-  .expand-btn { margin-top: 10px; width: 100%; padding: 10px; background: #ff9800; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 2px 5px rgba(255,152,0,0.4); animation: pulse 2s infinite; }
+  .meta{ display:flex; align-items:center; gap:8px; margin-top:10px; flex-wrap: wrap; }
+  .time{ margin-right:auto; font-size:12px; color:#7a8c7a; }
+  .done-btn{ font-size:12px; padding:4px 12px; border-radius:999px; border:1.5px solid var(--green); background:transparent; color:#2e7d32; cursor:pointer; }
+  .del{ width:22px; height:22px; border:none; border-radius:50%; background:#ff8a80; color:#fff; cursor:pointer; }
+  .help-btn { background: #2196F3; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(33,150,243,.3); }
 
-  .empty{ padding:28px 0; text-align:center; color:#6b8a6b; font-size:16px; }
-  .count{ margin-top:10px; text-align:center; color:#5b7a5b; font-size:14px; }
-  .loading { color: #4c6b4c; padding: 20px; font-weight: bold; }
+  /* 聊天弹窗 */
+  #chatModal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+  .chat-content { background: #fff; width: 90%; max-width: 400px; height: 70vh; border-radius: 15px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+  .chat-header { padding: 15px; background: var(--green); color: white; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
+  .chat-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
+  .chat-messages { flex: 1; padding: 15px; overflow-y: auto; background: #f5f7f5; display: flex; flex-direction: column; gap: 10px; }
+  .msg-bubble { max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 15px; word-break: break-word; text-align: left; }
+  .msg-mine { background: #dcf8c6; align-self: flex-end; border-bottom-right-radius: 2px; }
+  .msg-other { background: #fff; align-self: flex-start; border-bottom-left-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .chat-input-area { padding: 10px; background: #fff; display: flex; gap: 10px; border-top: 1px solid #eee; }
+  .chat-input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
+  .chat-send { background: var(--green); color: white; border: none; padding: 0 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -90,8 +101,8 @@
   <div id="authBox">
     <h3>住户实名认证登录</h3>
     <div class="auth-msg" id="authMsg"></div>
-    <input type="email" id="emailInput" class="auth-input" placeholder="请输入邮箱 (如: zhangsan@qq.com)">
-    <input type="password" id="passwordInput" class="auth-input" placeholder="请输入密码 (至少6位)">
+    <input type="email" id="emailInput" class="auth-input" placeholder="请输入邮箱">
+    <input type="password" id="passwordInput" class="auth-input" placeholder="请输入密码">
     <button id="loginBtn" class="auth-btn">登 录</button>
     <button id="signupBtn" class="auth-btn secondary">注册新账号</button>
   </div>
@@ -104,26 +115,39 @@
 
     <div class="gps-bar">
       <span class="gps-status" id="gpsStatus">📍 正在获取位置...</span>
-      <select id="rangeSelect" class="range-select">
-        <option value="2">只看 2 公里内</option>
-        <option value="5">只看 5 公里内</option>
-        <option value="10">只看 10 公里内</option>
-        <option value="999">显示全城 (不限距离)</option>
-      </select>
+      <div style="display:flex; gap:8px;">
+        <select id="sortSelect" class="select-mini">
+          <option value="latest">按发布时间 (最新)</option>
+          <option value="distance">按距离 (最近)</option>
+        </select>
+        <select id="rangeSelect" class="select-mini">
+          <option value="2">2 公里内</option>
+          <option value="5">5 公里内</option>
+          <option value="10">10 公里内</option>
+          <option value="999">全城</option>
+        </select>
+      </div>
     </div>
 
     <div class="input-row">
-      <input id="demandInput" type="text" maxlength="60" placeholder="输入你的需求..." aria-label="输入你的需求">
+      <input id="demandInput" type="text" maxlength="60" placeholder="输入你的需求...">
       <button id="submitBtn" type="button">发布</button>
+    </div>
+
+    <!-- 新增：图片上传 -->
+    <div class="upload-row">
+      <label class="upload-label" for="imageInput">📷 附加图片 (选填)</label>
+      <input type="file" id="imageInput" accept="image/*">
+      <img id="imagePreview" src="" alt="预览">
     </div>
 
     <div class="select-row">
       <div class="select-group">
-        <label for="publishState">📍 州/直辖区：</label>
+        <label>📍 州/直辖区：</label>
         <select id="publishState"></select>
       </div>
       <div class="select-group">
-        <label for="publishDistrict">🏘️ 县/分区：</label>
+        <label>🏘️ 县/分区：</label>
         <select id="publishDistrict"></select>
       </div>
     </div>
@@ -136,6 +160,21 @@
     <div class="count" id="count"></div>
   </div>
 
+  <!-- 私聊弹窗 -->
+  <div id="chatModal">
+    <div class="chat-content">
+      <div class="chat-header">
+        <span>💬 邻里私聊</span>
+        <button class="chat-close" onclick="window.closeChat()">×</button>
+      </div>
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-input-area">
+        <input type="text" id="chatInput" class="chat-input" placeholder="输入消息...">
+        <button class="chat-send" onclick="window.sendMsg()">发送</button>
+      </div>
+    </div>
+  </div>
+
 <script>
 (function () {
   'use strict';
@@ -144,7 +183,9 @@
   const SUPABASE_KEY = 'sb_publishable_1dvjfyqSXHfo4eFBmcEdIA_m6ryxkS6';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  const MALAYSIA = [
+  const MALAYSIA = [{ key:'sarawak', name:'砂拉越 Sarawak', districts:['古晋 Kuching','诗巫 Sibu','美里 Miri','民都鲁 Bintulu']}, { key:'kl', name:'吉隆坡 KL', districts:['吉隆坡 KL']}]; // 为了代码短一点，只留了两个，你可以自己补全
+  // 注意：你原本的 MALAYSIA 列表太长，我这里暂时用简略版，实际替换时请用你原来的完整版 MALAYSIA 数组！
+  const FULL_MALAYSIA = [
     { key:'johor', name:'柔佛 Johor', districts:['新山 Johor Bahru','峇株巴辖 Batu Pahat','居銮 Kluang','哥打丁宜 Kota Tinggi','丰盛港 Mersing','麻坡 Muar','笨珍 Pontian','昔加末 Segamat','古来 Kulai','东甲 Tangkak']},
     { key:'kedah', name:'吉打 Kedah', districts:['华玲 Baling','万拉峇鲁 Bandar Baharu','哥打士打 Kota Setar','瓜拉姆达 Kuala Muda','古邦巴素 Kubang Pasu','居林 Kulim','浮罗交怡 Langkawi','巴东得腊 Padang Terap','锡 Sik','铅 Yan','笨筒 Pendang','波各先那 Pokok Sena']},
     { key:'kelantan', name:'吉兰丹 Kelantan', districts:['万捷 Bachok','哥打巴鲁 Kota Bharu','马樟 Machang','巴西马 Pasir Mas','巴西富地 Pasir Puteh','丹那美拉 Tanah Merah','道北 Tumpat','话望生 Gua Musang','瓜拉吉赖 Kuala Krai','日里 Jeli']},
@@ -164,256 +205,192 @@
   ];
 
   const CATS = [
-    { key:'urgent',  name:'紧急',  icon:'⚡' },
-    { key:'tools',   name:'借工具', icon:'🔧' },
-    { key:'errand',  name:'代跑腿', icon:'🛒' },
-    { key:'pet',     name:'宠物',   icon:'🐾' },
+    { key:'urgent',  name:'紧急',  icon:'⚡' }, { key:'tools',   name:'借工具', icon:'🔧' },
+    { key:'errand',  name:'代跑腿', icon:'🛒' }, { key:'pet',     name:'宠物',   icon:'🐾' },
     { key:'chat',    name:'闲聊',   icon:'💬' }
   ];
 
-  let STATE_MAP = {}; MALAYSIA.forEach(s => STATE_MAP[s.key] = s);
+  let STATE_MAP = {}; FULL_MALAYSIA.forEach(s => STATE_MAP[s.key] = s);
   let CAT_MAP = {}; CATS.forEach(c => CAT_MAP[c.key] = c);
 
-  const authBox = document.getElementById('authBox');
-  const mainApp = document.getElementById('mainApp');
-  const emailInput = document.getElementById('emailInput');
-  const passwordInput = document.getElementById('passwordInput');
-  const authMsg = document.getElementById('authMsg');
-  const loginBtn = document.getElementById('loginBtn');
-  const signupBtn = document.getElementById('signupBtn');
-  const logoutBtn = document.getElementById('logoutBtn');
-  const userEmailSpan = document.getElementById('userEmail');
+  // 元素获取
+  const authBox = document.getElementById('authBox'), mainApp = document.getElementById('mainApp');
+  const emailInput = document.getElementById('emailInput'), passwordInput = document.getElementById('passwordInput');
+  const authMsg = document.getElementById('authMsg'), userEmailSpan = document.getElementById('userEmail');
+  const listEl = document.getElementById('list'), inputEl = document.getElementById('demandInput');
+  const btnEl = document.getElementById('submitBtn'), countEl = document.getElementById('count');
+  const catRow = document.getElementById('catRow'), gpsStatus = document.getElementById('gpsStatus');
+  const rangeSelect = document.getElementById('rangeSelect'), sortSelect = document.getElementById('sortSelect');
+  const pubStateSel = document.getElementById('publishState'), pubDistSel = document.getElementById('publishDistrict');
+  const imageInput = document.getElementById('imageInput'), imagePreview = document.getElementById('imagePreview');
 
-  const listEl = document.getElementById('list');
-  const inputEl = document.getElementById('demandInput');
-  const btnEl = document.getElementById('submitBtn');
-  const countEl = document.getElementById('count');
-  const catRow = document.getElementById('catRow');
-  const gpsStatus = document.getElementById('gpsStatus');
-  const rangeSelect = document.getElementById('rangeSelect');
-  
-  const pubStateSel = document.getElementById('publishState');
-  const pubDistSel = document.getElementById('publishDistrict');
+  // 全局变量
+  let currentCat = 'urgent', currentPubState = 'sarawak', currentPubDist = '';
+  let currentUser = null, globalItems = [], myLat = null, myLng = null, maxDistance = 999;
+  let realtimeChannel = null, globalSort = 'latest';
+  let selectedFile = null; // 存储选中的图片文件
 
-  let currentCat = 'urgent';
-  let currentPubState = 'sarawak';
-  let currentPubDist = '';
-  let currentUser = null;
-  
-  let globalItems = [];
-  let myLat = null;
-  let myLng = null;
-  let maxDistance = 2;
-  let realtimeChannel = null;
+  // 聊天相关
+  let chatDemandId = null, chatReceiverId = null, chatChannel = null;
 
-  // 补充安全的函数，防止报错
-  function esc(s) {
-    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-    }[c]));
-  }
-
+  // 工具函数
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&': '&amp;','<': '&lt;','>': '&gt;','"': '&quot;',"'": '&#39;'}[c])); }
   function timeAgo(iso) {
-    if (!iso) return '刚刚';
-    const diff = (Date.now() - new Date(iso).getTime()) / 1000;
-    if (diff < 60) return '刚刚';
-    if (diff < 3600) return Math.floor(diff / 60) + ' 分钟前';
-    if (diff < 86400) return Math.floor(diff / 3600) + ' 小时前';
-    return Math.floor(diff / 86400) + ' 天前';
+    if (!iso) return '刚刚'; const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+    if (diff < 60) return '刚刚'; if (diff < 3600) return Math.floor(diff / 60) + ' 分钟前';
+    if (diff < 86400) return Math.floor(diff / 3600) + ' 小时前'; return Math.floor(diff / 86400) + ' 天前';
   }
-
   function getDistance(lat1, lon1, lat2, lon2) {
     if (lat1 == null || lon1 == null || lat2 == null || lon2 == null) return null;
-    const R = 6371;
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const R = 6371, dLat = (lat2 - lat1) * Math.PI / 180, dLon = (lon2 - lon1) * Math.PI / 180;
     const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   }
 
-  function getUserLocation() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          myLat = position.coords.latitude;
-          myLng = position.coords.longitude;
-          gpsStatus.textContent = '📍 定位成功 (过滤已开启)';
-          gpsStatus.classList.add('on');
-          render(); 
-        },
-        (error) => {
-          gpsStatus.textContent = '⚠️ 定位失败，已显示全部区域';
-          gpsStatus.style.color = '#d32f2f';
-          maxDistance = 999;
-          rangeSelect.value = "999";
-          render();
-        },
-        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
-      );
-    }
-  }
-
+  // 登录逻辑
   async function checkUser() {
     const { data: { session } } = await supabase.auth.getSession();
-    if (session) {
-      currentUser = session.user;
-      showMainApp();
-    } else {
-      authBox.style.display = 'block';
-      mainApp.style.display = 'none';
-    }
+    if (session) { currentUser = session.user; showMainApp(); } 
+    else { authBox.style.display = 'block'; mainApp.style.display = 'none'; }
+  }
+
+  document.getElementById('loginBtn').addEventListener('click', async () => {
+    const email = emailInput.value.trim(), password = passwordInput.value;
+    if(!email || !password) { authMsg.textContent = '请输入邮箱和密码'; return; }
+    authMsg.textContent = '登录中...';
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) authMsg.textContent = '失败：' + error.message; else window.location.reload();
+  });
+  document.getElementById('signupBtn').addEventListener('click', async () => {
+    const email = emailInput.value.trim(), password = passwordInput.value;
+    if(!email || !password) { authMsg.textContent = '请输入邮箱和密码'; return; }
+    if(password.length < 6) { authMsg.textContent = '密码至少6位'; return; }
+    authMsg.textContent = '注册中...';
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (error) authMsg.textContent = '失败：' + error.message;
+    else { authMsg.textContent = '注册成功！请登录'; if(data.session) window.location.reload(); }
+  });
+  document.getElementById('logoutBtn').addEventListener('click', async () => {
+    if (realtimeChannel) supabase.removeChannel(realtimeChannel);
+    await supabase.auth.signOut(); window.location.reload();
+  });
+
+  // 位置获取
+  function getUserLocation() {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => { myLat = pos.coords.latitude; myLng = pos.coords.longitude; gpsStatus.textContent = '📍 定位成功'; gpsStatus.classList.add('on'); render(); },
+      () => { gpsStatus.textContent = '⚠️ 定位失败，显示全部'; maxDistance = 999; rangeSelect.value = "999"; render(); }
+    );
+  }
+
+  // 初始化主界面
+  function showMainApp() {
+    authBox.style.display = 'none'; mainApp.style.display = 'block';
+    userEmailSpan.textContent = currentUser.email;
+    initSelectors(); buildCatChips(); getUserLocation(); fetchData(); setupRealtime();
+
+    rangeSelect.addEventListener('change', (e) => { maxDistance = parseFloat(e.target.value); render(); });
+    sortSelect.addEventListener('change', (e) => { globalSort = e.target.value; render(); });
   }
 
   function setupRealtime() {
     if (realtimeChannel) return;
-    realtimeChannel = supabase.channel('schema-db-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'demands' }, () => fetchData(true))
-      .subscribe();
+    realtimeChannel = supabase.channel('demands-changes').on('postgres_changes', { event: '*', schema: 'public', table: 'demands' }, () => fetchData(true)).subscribe();
   }
 
-  function showMainApp() {
-    authBox.style.display = 'none';
-    mainApp.style.display = 'block';
-    userEmailSpan.textContent = currentUser.email;
-    
-    // 默认选中“全部”避免找不到自己发的数据，但界面没做全部，这里强制切回“紧急”
-    // 如果想看全部，可以把这里逻辑调整一下
-    rangeSelect.value = "999"; // 先默认全城，方便测试
-    maxDistance = 999;
-
-    initSelectors();
-    buildCatChips();
-    getUserLocation();
-    fetchData();
-    setupRealtime();
-
-    rangeSelect.addEventListener('change', (e) => {
-      maxDistance = parseFloat(e.target.value);
-      render();
-    });
-  }
-
-  loginBtn.addEventListener('click', async () => {
-    const email = emailInput.value.trim();
-    const password = passwordInput.value;
-    if(!email || !password) { authMsg.textContent = '请输入邮箱和密码'; return; }
-    authMsg.textContent = '登录中...';
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) authMsg.textContent = '登录失败：' + error.message;
-    else window.location.reload();
-  });
-
-  signupBtn.addEventListener('click', async () => {
-    const email = emailInput.value.trim();
-    const password = passwordInput.value;
-    if(!email || !password) { authMsg.textContent = '请输入邮箱和密码'; return; }
-    if(password.length < 6) { authMsg.textContent = '密码至少需要6位'; return; }
-    authMsg.textContent = '注册中...';
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) authMsg.textContent = '注册失败：' + error.message;
-    else {
-      authMsg.textContent = '注册成功！请直接点击登录';
-      if(data.session) window.location.reload();
+  // 图片选择预览
+  imageInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = (e) => { imagePreview.src = e.target.result; imagePreview.style.display = 'block'; };
+      reader.readAsDataURL(file);
+    } else {
+      selectedFile = null; imagePreview.style.display = 'none'; imagePreview.src = '';
     }
   });
 
-  logoutBtn.addEventListener('click', async () => {
-    if (realtimeChannel) supabase.removeChannel(realtimeChannel);
-    await supabase.auth.signOut();
-    window.location.reload();
-  });
-
+  // 数据拉取
   async function fetchData(silent) {
-    if (!silent && globalItems.length === 0) {
-      listEl.innerHTML = '<div class="loading">正在从云端获取数据...</div>';
-    }
+    if (!silent && globalItems.length === 0) listEl.innerHTML = '<div class="loading">加载中...</div>';
     const { data, error } = await supabase.from('demands').select('*').order('created_at', { ascending: false }).limit(100);
-    if (error) {
-      if (globalItems.length === 0) listEl.innerHTML = '<div class="empty" style="color:red">读取失败。</div>';
-      return;
-    }
-    globalItems = data || [];
-    render();
+    if (error) { if (globalItems.length === 0) listEl.innerHTML = '<div class="empty" style="color:red">读取失败</div>'; return; }
+    globalItems = data || []; render();
   }
 
+  // 发布需求 (带图片)
   async function addItem() {
     const text = inputEl.value.trim();
     if (!text) { inputEl.focus(); return; }
     btnEl.disabled = true; btnEl.textContent = '发布中...';
 
+    let imageUrl = null;
+    // 1. 如果有图片，先上传到 Supabase Storage
+    if (selectedFile) {
+      const fileExt = selectedFile.name.split('.').pop();
+      const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const { data: uploadData, error: uploadError } = await supabase.storage.from('images').upload(fileName, selectedFile);
+      
+      if (uploadError) { alert('图片上传失败: ' + uploadError.message); btnEl.disabled = false; btnEl.textContent = '发布'; return; }
+      
+      const { data: urlData } = supabase.storage.from('images').getPublicUrl(fileName);
+      imageUrl = urlData.publicUrl;
+    }
+
+    // 2. 插入数据库
     const newItem = {
       text: text, cat: currentCat, state: currentPubState, district: currentPubDist,
-      done: false, user_id: currentUser.id, lat: myLat, lng: myLng, radius_km: 2
+      done: false, user_id: currentUser.id, lat: myLat, lng: myLng, radius_km: 2, image_url: imageUrl
     };
 
-    // 修复：插入成功直接返回
     const { data, error } = await supabase.from('demands').insert([newItem]).select();
     btnEl.disabled = false; btnEl.textContent = '发布';
 
     if (error) { alert('发布失败：' + error.message); return; }
     
-    inputEl.value = '';
-    if(data && data[0]) {
-      globalItems.unshift(data[0]);
-      render();
-    } else {
-      fetchData(true);
-    }
+    // 清空输入
+    inputEl.value = ''; imageInput.value = ''; selectedFile = null; imagePreview.style.display = 'none';
+    
+    if (data && data[0]) { globalItems.unshift(data[0]); render(); } else { fetchData(true); }
   }
 
-  async function toggleDone(id, currentStatus) {
-    await supabase.from('demands').update({ done: !currentStatus }).eq('id', id);
-  }
+  // 操作函数
+  async function toggleDone(id, status) { await supabase.from('demands').update({ done: !status }).eq('id', id); }
+  async function removeItem(id) { if(confirm('确定删除吗？')) await supabase.from('demands').delete().eq('id', id); }
+  async function expandRadius(id, r) { let nr = r === 2 ? 6 : (r === 6 ? 10 : 999); await supabase.from('demands').update({ radius_km: nr }).eq('id', id); }
 
-  async function removeItem(id) {
-    if(!confirm('确定要删除这条需求吗？')) return;
-    await supabase.from('demands').delete().eq('id', id);
-  }
-
-  async function expandRadius(id, currentRadius) {
-    let newRadius = currentRadius === 2 ? 6 : (currentRadius === 6 ? 10 : 999);
-    await supabase.from('demands').update({ radius_km: newRadius }).eq('id', id);
-  }
-
+  // 选择器渲染
   function initSelectors() {
-    pubStateSel.innerHTML = MALAYSIA.map(s => `<option value="${s.key}">${s.name}</option>`).join('');
-    pubStateSel.value = currentPubState;
-    updatePubDistrict();
-    pubStateSel.addEventListener('change', (e) => {
-      currentPubState = e.target.value;
-      updatePubDistrict();
-    });
+    pubStateSel.innerHTML = FULL_MALAYSIA.map(s => `<option value="${s.key}">${s.name}</option>`).join('');
+    pubStateSel.value = currentPubState; updatePubDistrict();
+    pubStateSel.addEventListener('change', (e) => { currentPubState = e.target.value; updatePubDistrict(); });
     pubDistSel.addEventListener('change', (e) => { currentPubDist = e.target.value; });
   }
-
   function updatePubDistrict() {
     const st = STATE_MAP[currentPubState];
     pubDistSel.innerHTML = st.districts.map(d => `<option value="${d}">${d}</option>`).join('');
     currentPubDist = st.districts[0] || '';
   }
-
   function buildCatChips() {
     let html = '<div class="label">🏷️ 分类：</div>';
-    CATS.forEach(c => {
-      html += `<button class="chip ${c.key === currentCat ? 'active' : ''}" data-key="${c.key}">${c.icon} ${c.name}</button>`;
-    });
+    CATS.forEach(c => { html += `<button class="chip ${c.key === currentCat ? 'active' : ''}" data-key="${c.key}">${c.icon} ${c.name}</button>`; });
     catRow.innerHTML = html;
     catRow.querySelectorAll('.chip').forEach(btn => {
       btn.addEventListener('click', (e) => {
-        currentCat = e.target.dataset.key;
-        catRow.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
-        e.target.classList.add('active');
-        render();
+        currentCat = e.target.dataset.key; catRow.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active'); render();
       });
     });
   }
 
+  // 渲染列表
   function render() {
     listEl.innerHTML = '';
     
-    const filtered = globalItems.filter(it => {
-      // 修复：加 try-catch 或保证字段存在
+    // 过滤
+    let filtered = globalItems.filter(it => {
       if (currentCat !== 'all' && it.cat !== currentCat) return false;
       if (myLat && myLng && it.lat && it.lng) {
         const dist = getDistance(myLat, myLng, it.lat, it.lng);
@@ -424,10 +401,17 @@
       return true;
     });
 
+    // 排序 (新增距离排序)
+    if (globalSort === 'distance' && myLat && myLng) {
+      filtered.sort((a, b) => {
+        const dA = (a.lat && a.lng) ? getDistance(myLat, myLng, a.lat, a.lng) : 99999;
+        const dB = (b.lat && b.lng) ? getDistance(myLat, myLng, b.lat, b.lng) : 99999;
+        return dA - dB;
+      });
+    }
+
     if (filtered.length === 0) {
-      listEl.innerHTML = '<div class="empty">这里还没有此类需求，你可以切换下方分类，或者发布一条试试~</div>';
-      countEl.textContent = '';
-      return;
+      listEl.innerHTML = '<div class="empty">这里还没有此类需求~</div>'; countEl.textContent = ''; return;
     }
 
     let latestId = filtered.find(it => !it.done)?.id;
@@ -450,12 +434,13 @@
         let expandBtnHtml = '';
         const publishTime = new Date(item.created_at || Date.now()).getTime();
         const diffMinutes = (Date.now() - publishTime) / 1000 / 60;
-        
         if (isMine && !item.done && diffMinutes >= 3 && r !== 999) {
-          let btnText = `📢 超过3分钟无响应，扩大范围 (+4公里)`; 
-          if (r === 10) btnText = '📢 向全城广播求助';
+          let btnText = r === 10 ? '📢 向全城广播求助' : '📢 扩大范围 (+4公里)';
           expandBtnHtml = `<button class="expand-btn" onclick="window.expandRadius('${item.id}', ${r})">${btnText}</button>`;
         }
+
+        // 处理图片
+        let imgHtml = item.image_url ? `<img src="${item.image_url}" class="img-preview" onclick="window.open('${item.image_url}')" alt="图片">` : '';
 
         const row = document.createElement('div');
         row.className = 'item' + (item.id === latestId ? ' latest' : '') + (item.done ? ' done' : '');
@@ -470,29 +455,105 @@
               ${item.done ? '<span class="tag" style="background:#e0e0e0;color:#616161;margin-left:auto;">✓ 已完成</span>' : ''}
             </div>
             <p class="text">${esc(item.text)}</p>
+            ${imgHtml}
             ${expandBtnHtml}
             <div class="meta">
-              <span class="time" title="${esc(item.created_at)}">${timeAgo(item.created_at)}</span>
+              <span class="time">${timeAgo(item.created_at)}</span>
               ${isMine ? `
                 <button class="done-btn" onclick="window.toggleDone('${item.id}', ${item.done})">${item.done ? '↺ 撤销' : '✓ 完成'}</button>
                 <button class="del" onclick="window.removeItem('${item.id}')">×</button>
-              ` : '<span style="font-size:12px;color:#aaa;">邻居发布</span>'}
+              ` : `
+                <button class="help-btn" onclick="window.openChat('${item.id}', '${item.user_id}', '${esc(item.text).substring(0,10)}...')">💬 我来帮你</button>
+              `}
             </div>
           </div>
         `;
         listEl.appendChild(row);
-      } catch (err) {
-        console.error("单条数据渲染失败", item, err);
-      }
+      } catch (err) { console.error("渲染失败", item, err); }
     });
 
-    const pending = filtered.filter(it => !it.done).length;
-    countEl.textContent = `当前范围内共 ${filtered.length} 条 · 待完成 ${pending} 条`;
+    countEl.textContent = `当前共 ${filtered.length} 条 · 待完成 ${filtered.filter(it => !it.done).length} 条`;
   }
 
-  window.toggleDone = toggleDone;
-  window.removeItem = removeItem;
-  window.expandRadius = expandRadius; 
+  // ================= 私聊功能 =================
+  const chatModal = document.getElementById('chatModal');
+  const chatMessages = document.getElementById('chatMessages');
+  const chatInput = document.getElementById('chatInput');
+
+  // 打开聊天
+  window.openChat = async (demandId, receiverId, titleText) => {
+    if (receiverId === currentUser.id) return alert('不能和自己私聊哦');
+    chatDemandId = demandId; chatReceiverId = receiverId;
+    chatModal.style.display = 'flex';
+    chatMessages.innerHTML = '<div style="text-align:center;color:#999;font-size:12px;">正在加载消息...</div>';
+    chatInput.value = '';
+    
+    await loadMessages();
+
+    // 开启实时监听当前会话的新消息
+    if (chatChannel) supabase.removeChannel(chatChannel);
+    chatChannel = supabase.channel('chat-' + demandId)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `demand_id=eq.${demandId}` }, payload => {
+        // 收到新消息，重新加载
+        loadMessages();
+      }).subscribe();
+  };
+
+  window.closeChat = () => {
+    chatModal.style.display = 'none';
+    if (chatChannel) { supabase.removeChannel(chatChannel); chatChannel = null; }
+    chatDemandId = null; chatReceiverId = null;
+  };
+
+  // 加载历史消息
+  async function loadMessages() {
+    const { data, error } = await supabase.from('messages')
+      .select('*')
+      .eq('demand_id', chatDemandId)
+      .order('created_at', { ascending: true });
+
+    if (error) { chatMessages.innerHTML = '<div style="color:red">加载失败</div>'; return; }
+
+    // 过滤：只显示我和对方关于这个 demand 的消息
+    const myMsgs = data.filter(m => 
+      (m.sender_id === currentUser.id && m.receiver_id === chatReceiverId) || 
+      (m.sender_id === chatReceiverId && m.receiver_id === currentUser.id)
+    );
+
+    if (myMsgs.length === 0) {
+      chatMessages.innerHTML = '<div style="text-align:center;color:#999;margin-top:20px;">打个招呼吧~</div>';
+    } else {
+      chatMessages.innerHTML = myMsgs.map(m => `
+        <div class="msg-bubble ${m.sender_id === currentUser.id ? 'msg-mine' : 'msg-other'}">
+          ${esc(m.content)}
+        </div>
+      `).join('');
+      chatMessages.scrollTop = chatMessages.scrollHeight; // 滚动到底部
+    }
+  }
+
+  // 发送消息
+  window.sendMsg = async () => {
+    const val = chatInput.value.trim();
+    if (!val) return;
+    chatInput.value = '';
+    chatInput.disabled = true;
+
+    await supabase.from('messages').insert([{
+      demand_id: chatDemandId, sender_id: currentUser.id, receiver_id: chatReceiverId, content: val
+    }]);
+
+    chatInput.disabled = false;
+    chatInput.focus();
+    // 发送后立即拉取一次（实时可能有零点几秒延迟）
+    loadMessages();
+  };
+
+  // 绑定回车发送
+  chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') window.sendMsg(); });
+
+  // 全局绑定
+  window.toggleDone = toggleDone; window.removeItem = removeItem; window.expandRadius = expandRadius;
   btnEl.addEventListener('click', addItem);
 
   checkUser();
