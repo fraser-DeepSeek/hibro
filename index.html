@@ -11,9 +11,7 @@
   body{ margin:0; min-height:100vh; padding:20px 16px 80px; background:linear-gradient(180deg,#e3f9dd 0%,#c6f0bd 55%,#b0e9a6 100%); background-attachment:fixed; font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif; text-align:center; }
   .title{ margin:0; color:#1565c0; font-size:clamp(30px,9vw,50px); letter-spacing:2px; text-shadow:0 2px 0 rgba(255,255,255,.8); }
   .subtitle{ margin:10px 0 0; color:#d32f2f; font-size:clamp(24px,6vw,36px); font-weight:700; }
-  .hint{ margin:6px 0 0; color:#557a55; font-size:clamp(14px,3.6vw,18px); }
-
-  /* 认证框 */
+  
   #authBox { background: #fff; max-width: 400px; margin: 30px auto; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
   #authBox h3 { margin: 0 0 15px; color: #333; }
   .auth-input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
@@ -21,12 +19,10 @@
   .auth-btn.secondary { background: #eee; color: #333; }
   .auth-msg { font-size: 14px; color: #d32f2f; margin-bottom: 10px; min-height: 20px; }
 
-  /* 主界面 */
   #mainApp { display: none; }
   .user-bar { max-width: 600px; margin: 0 auto 10px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.7); padding: 10px 15px; border-radius: 10px; }
   .logout-btn { background: #ff5252; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-weight: bold;}
 
-  /* GPS 状态条 */
   .gps-bar { max-width: 600px; margin: 0 auto 15px; display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 10px 15px; border-radius: 10px; font-size: 14px; box-shadow: 0 2px 6px rgba(0,0,0,.05); }
   .gps-status { color: #666; }
   .gps-status.on { color: var(--green); font-weight: bold; }
@@ -47,7 +43,9 @@
   .chip.active{ background:var(--green); border-color:#3d8b40; color:#fff; font-weight:700; }
 
   #list{ width:100%; max-width:600px; margin:20px auto 0; text-align:left; }
-  .item{ position:relative; display:flex; gap:12px; padding-bottom:18px; }
+  
+  /* 强制修复 Safari 可能出现的宽度塌陷问题 */
+  .item{ position:relative; display:flex; width: 100%; gap:12px; padding-bottom:18px; }
   .item::before{ content:""; position:absolute; left:7px; top:20px; bottom:-2px; width:2px; background:var(--line); }
   .item:last-child::before{ display:none; }
 
@@ -55,7 +53,7 @@
   .item.latest .dot{ background:var(--green); }
   .item.done .dot{ background:#9e9e9e; }
 
-  .bubble{ flex:1 1 auto; min-width:0; padding:12px 14px; border-radius:14px; background:rgba(255,255,255,.55); opacity:.72; }
+  .bubble{ flex:1 1 auto; width: 100%; min-width:0; padding:12px 14px; border-radius:14px; background:rgba(255,255,255,.55); opacity:.72; }
   .item.latest .bubble{ opacity:1; background:#fff; box-shadow:0 4px 14px rgba(0,0,0,.10); }
   .item.done .bubble{ opacity:.6; }
 
@@ -66,7 +64,6 @@
   .tag.errand{ background:#fff3e0; color:#e65100; }
   .tag.pet   { background:#f3e5f5; color:#6a1b9a; }
   .tag.chat  { background:#eceff1; color:#455a64; }
-  .tag.zone-tag{ background:#e8f5e9; color:#2e7d32; }
   .tag.dist-tag { background:#fffde7; color:#f57f17; border:1px solid #fff59d;}
   .tag.radius-tag { background:#e1f5fe; color:#0277bd;}
 
@@ -78,10 +75,7 @@
   .done-btn{ font-size:12px; padding:4px 12px; border-radius:999px; border:1.5px solid var(--green); background:transparent; color:#2e7d32; cursor:pointer; }
   .del{ width:22px; height:22px; border:none; border-radius:50%; background:#ff8a80; color:#fff; font-size:15px; cursor:pointer; }
   
-  /* 扩圈按钮样式 */
   .expand-btn { margin-top: 10px; width: 100%; padding: 10px; background: #ff9800; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 2px 5px rgba(255,152,0,0.4); animation: pulse 2s infinite; }
-  .expand-btn:hover { background: #f57c00; }
-  @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
 
   .empty{ padding:28px 0; text-align:center; color:#6b8a6b; font-size:16px; }
   .count{ margin-top:10px; text-align:center; color:#5b7a5b; font-size:14px; }
@@ -209,11 +203,27 @@
   let globalItems = [];
   let myLat = null;
   let myLng = null;
-  let maxDistance = 2; // 升级：默认 2 公里
+  let maxDistance = 2;
   let realtimeChannel = null;
 
+  // 补充安全的函数，防止报错
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  function timeAgo(iso) {
+    if (!iso) return '刚刚';
+    const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+    if (diff < 60) return '刚刚';
+    if (diff < 3600) return Math.floor(diff / 60) + ' 分钟前';
+    if (diff < 86400) return Math.floor(diff / 3600) + ' 小时前';
+    return Math.floor(diff / 86400) + ' 天前';
+  }
+
   function getDistance(lat1, lon1, lat2, lon2) {
-    if (!lat1 || !lon1 || !lat2 || !lon2) return null;
+    if (lat1 == null || lon1 == null || lat2 == null || lon2 == null) return null;
     const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
@@ -255,18 +265,10 @@
     }
   }
 
-  // --- 升级：实时监听云端变化 ---
   function setupRealtime() {
-    if (realtimeChannel) return; // 避免重复订阅
+    if (realtimeChannel) return;
     realtimeChannel = supabase.channel('schema-db-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'demands' },
-        (payload) => {
-          console.log('收到实时更新', payload);
-          fetchData(); // 只要数据库有变动，立刻重新拉取数据刷新列表
-        }
-      )
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'demands' }, () => fetchData(true))
       .subscribe();
   }
 
@@ -275,15 +277,16 @@
     mainApp.style.display = 'block';
     userEmailSpan.textContent = currentUser.email;
     
-    // 确保刷新页面后，下拉框默认是 2 公里
-    rangeSelect.value = "2";
-    maxDistance = 2;
+    // 默认选中“全部”避免找不到自己发的数据，但界面没做全部，这里强制切回“紧急”
+    // 如果想看全部，可以把这里逻辑调整一下
+    rangeSelect.value = "999"; // 先默认全城，方便测试
+    maxDistance = 999;
 
     initSelectors();
     buildCatChips();
     getUserLocation();
     fetchData();
-    setupRealtime(); // 开启实时监听
+    setupRealtime();
 
     rangeSelect.addEventListener('change', (e) => {
       maxDistance = parseFloat(e.target.value);
@@ -321,18 +324,16 @@
     window.location.reload();
   });
 
-  async function fetchData() {
-    // 如果是静默实时刷新，就不显示 loading
-    if (globalItems.length === 0) {
+  async function fetchData(silent) {
+    if (!silent && globalItems.length === 0) {
       listEl.innerHTML = '<div class="loading">正在从云端获取数据...</div>';
     }
-    
-    const { data, error } = await supabase.from('demands').select('*').order('created_at', { ascending: false });
+    const { data, error } = await supabase.from('demands').select('*').order('created_at', { ascending: false }).limit(100);
     if (error) {
-      listEl.innerHTML = '<div class="empty" style="color:red">读取失败。</div>';
+      if (globalItems.length === 0) listEl.innerHTML = '<div class="empty" style="color:red">读取失败。</div>';
       return;
     }
-    globalItems = data;
+    globalItems = data || [];
     render();
   }
 
@@ -343,41 +344,36 @@
 
     const newItem = {
       text: text, cat: currentCat, state: currentPubState, district: currentPubDist,
-      done: false, user_id: currentUser.id, lat: myLat, lng: myLng, radius_km: 2 // 默认 2 公里
+      done: false, user_id: currentUser.id, lat: myLat, lng: myLng, radius_km: 2
     };
 
-    const { error } = await supabase.from('demands').insert([newItem]);
+    // 修复：插入成功直接返回
+    const { data, error } = await supabase.from('demands').insert([newItem]).select();
     btnEl.disabled = false; btnEl.textContent = '发布';
 
-    if (error) alert('发布失败：' + error.message);
-    else { inputEl.value = ''; /* 此处不需要手动 fetchData，Realtime 会帮你刷新 */ }
+    if (error) { alert('发布失败：' + error.message); return; }
+    
+    inputEl.value = '';
+    if(data && data[0]) {
+      globalItems.unshift(data[0]);
+      render();
+    } else {
+      fetchData(true);
+    }
   }
 
   async function toggleDone(id, currentStatus) {
     await supabase.from('demands').update({ done: !currentStatus }).eq('id', id);
-    // 这里也不需要 fetchData，Realtime 会触发刷新
   }
 
   async function removeItem(id) {
     if(!confirm('确定要删除这条需求吗？')) return;
     await supabase.from('demands').delete().eq('id', id);
-    // 同样依靠 Realtime 刷新
   }
 
-  // --- 升级：新扩圈逻辑 (2 -> 6 -> 10 -> 999) ---
   async function expandRadius(id, currentRadius) {
-    let newRadius = currentRadius;
-    
-    if (currentRadius === 2) {
-      newRadius = 6;
-    } else if (currentRadius === 6) {
-      newRadius = 10;
-    } else {
-      newRadius = 999; // 超过10直接全城
-    }
-    
+    let newRadius = currentRadius === 2 ? 6 : (currentRadius === 6 ? 10 : 999);
     await supabase.from('demands').update({ radius_km: newRadius }).eq('id', id);
-    // 依然依靠 Realtime 刷新
   }
 
   function initSelectors() {
@@ -416,25 +412,20 @@
   function render() {
     listEl.innerHTML = '';
     
-    // 过滤逻辑
     const filtered = globalItems.filter(it => {
+      // 修复：加 try-catch 或保证字段存在
       if (currentCat !== 'all' && it.cat !== currentCat) return false;
-      
       if (myLat && myLng && it.lat && it.lng) {
         const dist = getDistance(myLat, myLng, it.lat, it.lng);
-        
-        // 1. 我的查看范围 (默认 2 公里)
         if (maxDistance !== 999 && dist > maxDistance) return false;
-        
-        // 2. 对方的广播范围
-        const itemRadius = it.radius_km || 2; // 兼容旧数据，默认2
+        const itemRadius = it.radius_km || 2; 
         if (itemRadius !== 999 && dist > itemRadius) return false;
       }
       return true;
     });
 
     if (filtered.length === 0) {
-      listEl.innerHTML = '<div class="empty">您设定的距离内还没有此类需求，去帮帮更远的人吧~</div>';
+      listEl.innerHTML = '<div class="empty">这里还没有此类需求，你可以切换下方分类，或者发布一条试试~</div>';
       countEl.textContent = '';
       return;
     }
@@ -442,55 +433,57 @@
     let latestId = filtered.find(it => !it.done)?.id;
 
     filtered.forEach(item => {
-      const cat = CAT_MAP[item.cat] || CAT_MAP.chat;
-      const isMine = item.user_id === currentUser.id;
-      
-      let distHtml = '';
-      if (myLat && myLng && item.lat && item.lng) {
-        const dist = getDistance(myLat, myLng, item.lat, it.lng);
-        let distText = dist < 1 ? Math.round(dist * 1000) + ' 米' : dist.toFixed(1) + ' 公里';
-        distHtml = `<span class="tag dist-tag">🚶 距离你 ${distText}</span>`;
-      }
+      try {
+        const cat = CAT_MAP[item.cat] || CAT_MAP.chat;
+        const isMine = item.user_id === currentUser.id;
+        
+        let distHtml = '';
+        if (myLat && myLng && item.lat && item.lng) {
+          const dist = getDistance(myLat, myLng, item.lat, item.lng);
+          let distText = dist < 1 ? Math.round(dist * 1000) + ' 米' : dist.toFixed(1) + ' 公里';
+          distHtml = `<span class="tag dist-tag">🚶 距离你 ${distText}</span>`;
+        }
 
-      const r = item.radius_km || 2;
-      let radiusHtml = `<span class="tag radius-tag">📢 广播 ${r === 999 ? '全城' : r + '公里'}</span>`;
+        const r = item.radius_km || 2;
+        let radiusHtml = `<span class="tag radius-tag">📢 广播 ${r === 999 ? '全城' : r + '公里'}</span>`;
 
-      // 扩圈按钮逻辑 (3分钟后显示)
-      let expandBtnHtml = '';
-      const publishTime = new Date(item.created_at).getTime();
-      const diffMinutes = (Date.now() - publishTime) / 1000 / 60;
-      
-      if (isMine && !item.done && diffMinutes >= 3 && r !== 999) {
-        let btnText = `📢 超过3分钟无响应，扩大范围 (+4公里)`; // 升级：每次加4公里
-        if (r === 10) btnText = '📢 向全城广播求助';
-        expandBtnHtml = `<button class="expand-btn" onclick="window.expandRadius('${item.id}', ${r})">${btnText}</button>`;
-      }
+        let expandBtnHtml = '';
+        const publishTime = new Date(item.created_at || Date.now()).getTime();
+        const diffMinutes = (Date.now() - publishTime) / 1000 / 60;
+        
+        if (isMine && !item.done && diffMinutes >= 3 && r !== 999) {
+          let btnText = `📢 超过3分钟无响应，扩大范围 (+4公里)`; 
+          if (r === 10) btnText = '📢 向全城广播求助';
+          expandBtnHtml = `<button class="expand-btn" onclick="window.expandRadius('${item.id}', ${r})">${btnText}</button>`;
+        }
 
-      const row = document.createElement('div');
-      row.className = 'item' + (item.id === latestId ? ' latest' : '') + (item.done ? ' done' : '');
-      const timeStr = new Date(item.created_at).toLocaleString('zh-CN', {hour12:false}).replace(/\//g, '-');
-
-      row.innerHTML = `
-        <span class="dot"></span>
-        <div class="bubble">
-          <div class="bubble-head">
-            ${distHtml}
-            <span class="tag ${cat.key}">${cat.icon} ${cat.name}</span>
-            ${isMine ? radiusHtml : ''}
-            ${item.done ? '<span class="tag" style="background:#e0e0e0;color:#616161;margin-left:auto;">✓ 已完成</span>' : ''}
+        const row = document.createElement('div');
+        row.className = 'item' + (item.id === latestId ? ' latest' : '') + (item.done ? ' done' : '');
+        
+        row.innerHTML = `
+          <span class="dot"></span>
+          <div class="bubble">
+            <div class="bubble-head">
+              ${distHtml}
+              <span class="tag ${cat.key}">${cat.icon} ${cat.name}</span>
+              ${isMine ? radiusHtml : ''}
+              ${item.done ? '<span class="tag" style="background:#e0e0e0;color:#616161;margin-left:auto;">✓ 已完成</span>' : ''}
+            </div>
+            <p class="text">${esc(item.text)}</p>
+            ${expandBtnHtml}
+            <div class="meta">
+              <span class="time" title="${esc(item.created_at)}">${timeAgo(item.created_at)}</span>
+              ${isMine ? `
+                <button class="done-btn" onclick="window.toggleDone('${item.id}', ${item.done})">${item.done ? '↺ 撤销' : '✓ 完成'}</button>
+                <button class="del" onclick="window.removeItem('${item.id}')">×</button>
+              ` : '<span style="font-size:12px;color:#aaa;">邻居发布</span>'}
+            </div>
           </div>
-          <p class="text">${item.text}</p>
-          ${expandBtnHtml}
-          <div class="meta">
-            <span class="time">${timeStr}</span>
-            ${isMine ? `
-              <button class="done-btn" onclick="window.toggleDone('${item.id}', ${item.done})">${item.done ? '↺ 撤销' : '✓ 完成'}</button>
-              <button class="del" onclick="window.removeItem('${item.id}')">×</button>
-            ` : '<span style="font-size:12px;color:#aaa;">邻居发布</span>'}
-          </div>
-        </div>
-      `;
-      listEl.appendChild(row);
+        `;
+        listEl.appendChild(row);
+      } catch (err) {
+        console.error("单条数据渲染失败", item, err);
+      }
     });
 
     const pending = filtered.filter(it => !it.done).length;
