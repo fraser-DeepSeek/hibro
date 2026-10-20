@@ -342,6 +342,7 @@
   const newItem = { text, cat: currentCat, state: currentPubState, district: currentPubDist, done: false, user_id: currentUser.id, lat: myLat, lng: myLng, radius_km: 2 };
   const { error } = await supabase.from('demands').insert([newItem]);
   btnEl.disabled = false; btnEl.textContent = '发布';
+  
   if (!error) { 
     inputEl.value = ''; 
     fetchData(); 
