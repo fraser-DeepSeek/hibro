@@ -75,7 +75,6 @@
   .help-btn { background: #2196F3; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(33,150,243,.3); }
   .reply-btn { background: #ff9800; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; animation: pulse 2s infinite; }
 
-  /* 聊天弹窗 */
   #chatModal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
   .chat-content { background: #fff; width: 90%; max-width: 400px; height: 70vh; border-radius: 15px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
   .chat-header { padding: 15px; background: var(--green); color: white; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
@@ -88,14 +87,12 @@
   .chat-input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
   .chat-send { background: var(--green); color: white; border: none; padding: 0 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
 
-  /* 全局消息通知弹窗 */
   #toast { display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ff5252; color: white; padding: 12px 24px; border-radius: 30px; font-weight: bold; z-index: 2000; box-shadow: 0 4px 12px rgba(255,82,82,0.4); cursor: pointer; animation: dropDown 0.3s ease-out; }
   @keyframes dropDown { from { top: -50px; opacity: 0; } to { top: 20px; opacity: 1; } }
 </style>
 </head>
 <body>
 
-  <!-- 全局通知条 -->
   <div id="toast" onclick="window.scrollTo(0,0)">🔔 收到一条新私聊消息，请查看！</div>
 
   <h1 class="title">邻里帮帮帮</h1>
@@ -184,8 +181,9 @@
   const SUPABASE_KEY = 'sb_publishable_1dvjfyqSXHfo4eFBmcEdIA_m6ryxkS6';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  const FULL_MALAYSIA = [{ key:'sarawak', name:'砂拉越 Sarawak', districts:['古晋 Kuching','诗巫 Sibu','美里 Miri','民都鲁 Bintulu']}, { key:'kl', name:'吉隆坡 KL', districts:['吉隆坡 KL']}]; // 这里为了精简，你用你原本完整的列表替换即可
-
+  // 由于完整列表太长，这里只简写示例，你可以换成你完整的。
+  const FULL_MALAYSIA = [{ key:'sarawak', name:'砂拉越 Sarawak', districts:['古晋 Kuching','诗巫 Sibu','美里 Miri','民都鲁 Bintulu']}, { key:'kl', name:'吉隆坡 KL', districts:['吉隆坡 KL']}]; 
+  
   const CATS = [
     { key:'urgent',  name:'紧急',  icon:'⚡' }, { key:'tools',   name:'借工具', icon:'🔧' },
     { key:'errand',  name:'代跑腿', icon:'🛒' }, { key:'pet',     name:'宠物',   icon:'🐾' },
@@ -212,6 +210,8 @@
   
   let incomingMessages = []; 
   let chatDemandId = null, chatReceiverId = null, chatChannel = null;
+  let chatPollTimer = null; // 用于聊天轮询
+  let homePollTimer = null; // 用于主页轮询
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&': '&amp;','<': '&lt;','>': '&gt;','"': '&quot;',"'": '&#39;'}[c])); }
   function timeAgo(iso) {
@@ -226,7 +226,6 @@
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   }
 
-  // 显示全局提示
   function showToast() {
     toastEl.style.display = 'block';
     setTimeout(() => { toastEl.style.display = 'none'; }, 5000);
@@ -256,6 +255,8 @@
   });
   document.getElementById('logoutBtn').addEventListener('click', async () => {
     if (realtimeChannel) supabase.removeChannel(realtimeChannel);
+    if (chatPollTimer) clearInterval(chatPollTimer);
+    if (homePollTimer) clearInterval(homePollTimer);
     await supabase.auth.signOut(); window.location.reload();
   });
 
@@ -272,6 +273,14 @@
     userEmailSpan.textContent = currentUser.email;
     initSelectors(); buildCatChips(); getUserLocation(); fetchData(); setupRealtime();
 
+    // 【核心双保险】：如果在主页且没开聊天框，每 5 秒静默拉取一次数据
+    if (homePollTimer) clearInterval(homePollTimer);
+    homePollTimer = setInterval(() => {
+      if (mainApp.style.display !== 'none' && currentUser && !chatDemandId) {
+        fetchData(true); 
+      }
+    }, 5000);
+
     rangeSelect.addEventListener('change', (e) => { maxDistance = parseFloat(e.target.value); render(); });
     sortSelect.addEventListener('change', (e) => { globalSort = e.target.value; render(); });
   }
@@ -281,15 +290,11 @@
     realtimeChannel = supabase.channel('global-changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'demands' }, () => fetchData(true))
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
-        // 收到消息时，如果是发给我的
         if (payload.new.receiver_id === currentUser.id) {
-          // 1. 如果没在这个人的聊天框里，就弹通知
           if (!chatDemandId || chatDemandId !== payload.new.demand_id) {
             showToast();
           }
-          // 2. 刷新主列表，更新那个“查看私聊”按钮
           fetchData(true);
-          // 3. 如果聊天框正开着，立刻拉取新消息
           if (chatDemandId && payload.new.demand_id === chatDemandId) {
             loadMessages();
           }
@@ -483,16 +488,21 @@
     if (receiverId === currentUser.id) return alert('不能和自己私聊哦');
     chatDemandId = demandId; chatReceiverId = receiverId;
     chatModal.style.display = 'flex';
-    toastEl.style.display = 'none'; // 进聊天框就隐藏通知
+    toastEl.style.display = 'none';
     chatMessages.innerHTML = '<div style="text-align:center;color:#999;font-size:12px;">正在加载消息...</div>';
     chatInput.value = '';
     
     await loadMessages();
 
+    // 【核心双保险】：只要聊天框开着，每 2 秒去后台拉取一次新消息
+    if (chatPollTimer) clearInterval(chatPollTimer);
+    chatPollTimer = setInterval(() => {
+      if (chatDemandId) loadMessages();
+    }, 2000);
+
     if (chatChannel) supabase.removeChannel(chatChannel);
     chatChannel = supabase.channel('chat-' + demandId)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `demand_id=eq.${demandId}` }, payload => {
-        // 如果收到当前聊天框的消息，立刻刷新
         loadMessages();
       }).subscribe();
   };
@@ -500,8 +510,11 @@
   window.closeChat = () => {
     chatModal.style.display = 'none';
     if (chatChannel) { supabase.removeChannel(chatChannel); chatChannel = null; }
+    if (chatPollTimer) { clearInterval(chatPollTimer); chatPollTimer = null; } // 关聊天框时停止轮询
     chatDemandId = null; chatReceiverId = null;
   };
+
+  let lastMsgCount = 0; // 用于判断是否需要往下滚屏
 
   async function loadMessages() {
     const { data, error } = await supabase.from('messages')
@@ -524,7 +537,12 @@
           ${esc(m.content)}
         </div>
       `).join('');
-      chatMessages.scrollTop = chatMessages.scrollHeight;
+      
+      // 如果有新消息，才自动滚到底部
+      if (myMsgs.length > lastMsgCount) {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        lastMsgCount = myMsgs.length;
+      }
     }
   }
 
