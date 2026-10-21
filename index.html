@@ -74,7 +74,6 @@
   .del{ width:22px; height:22px; border:none; border-radius:50%; background:#ff8a80; color:#fff; cursor:pointer; }
   .help-btn { background: #2196F3; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(33,150,243,.3); }
   .reply-btn { background: #ff9800; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; animation: pulse 2s infinite; }
-  /* 新增：点赞和地图按钮 */
   .like-btn { background: #f0f0f0; color: #555; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; }
   .like-btn.liked { background: #ffebee; color: #e53935; }
   .map-btn { background: #e3f2fd; color: #1565c0; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
@@ -275,12 +274,13 @@
     userEmailSpan.textContent = currentUser.email;
     initSelectors(); buildCatChips(); getUserLocation(); fetchData(); setupRealtime();
 
+    // 【极速轮询】：主页每 3 秒查一次
     if (homePollTimer) clearInterval(homePollTimer);
     homePollTimer = setInterval(() => {
       if (mainApp.style.display !== 'none' && currentUser && !chatDemandId) {
         fetchData(true); 
       }
-    }, 5000);
+    }, 3000);
 
     rangeSelect.addEventListener('change', (e) => { maxDistance = parseFloat(e.target.value); render(); });
     sortSelect.addEventListener('change', (e) => { globalSort = e.target.value; render(); });
@@ -317,6 +317,7 @@
     if (error) { if (globalItems.length === 0) listEl.innerHTML = '<div class="empty" style="color:red">读取失败</div>'; return; }
     globalItems = data || []; 
 
+    // 抓取所有“发送给当前用户”的消息
     const { data: msgs } = await supabase.from('messages')
         .select('*')
         .eq('receiver_id', currentUser.id)
@@ -358,25 +359,15 @@
   async function removeItem(id) { if(confirm('确定删除吗？')) await supabase.from('demands').delete().eq('id', id); }
   async function expandRadius(id, r) { let nr = r === 2 ? 6 : (r === 6 ? 10 : 999); await supabase.from('demands').update({ radius_km: nr }).eq('id', id); }
   
-  // 【新增】点赞功能
   async function toggleLike(id) {
     const item = globalItems.find(x => x.id === id);
     if (!item) return;
-    
     let currentLikes = item.likes || [];
     const isLiked = currentLikes.includes(currentUser.id);
+    if (isLiked) currentLikes = currentLikes.filter(uid => uid !== currentUser.id);
+    else currentLikes.push(currentUser.id);
     
-    if (isLiked) {
-      currentLikes = currentLikes.filter(uid => uid !== currentUser.id);
-    } else {
-      currentLikes.push(currentUser.id);
-    }
-    
-    // 乐观更新界面
-    item.likes = currentLikes;
-    render();
-    
-    // 写入数据库
+    item.likes = currentLikes; render();
     await supabase.from('demands').update({ likes: currentLikes }).eq('id', id);
   }
 
@@ -456,19 +447,18 @@
 
         let imgHtml = item.image_url ? `<img src="${item.image_url}" class="img-preview" onclick="window.open('${item.image_url}')" alt="图片">` : '';
 
-        // 【新增】地图功能
         let mapBtnHtml = '';
         if (item.lat && item.lng) {
             mapBtnHtml = `<a href="https://maps.google.com/?q=${item.lat},${item.lng}" target="_blank" class="map-btn">📍 查看地图位置</a>`;
         }
 
-        // 【新增】点赞功能
         const likesArr = item.likes || [];
         const isLiked = likesArr.includes(currentUser.id);
         const likeBtnHtml = `<button class="like-btn ${isLiked ? 'liked' : ''}" onclick="window.toggleLike('${item.id}')">${isLiked ? '❤️' : '🤍'} ${likesArr.length}</button>`;
 
         let replyBtnHtml = '';
         if (isMine) {
+          // 检查数据库里是否有别人发给我的消息
           const relatedMsg = incomingMessages.find(m => m.demand_id === item.id);
           if (relatedMsg) {
             replyBtnHtml = `<button class="reply-btn" onclick="window.openChat('${item.id}', '${relatedMsg.sender_id}', '邻居的私聊')">💬 查看邻居私聊</button>`;
@@ -527,8 +517,9 @@
     
     await loadMessages();
 
+    // 聊天框 1.5 秒刷新一次
     if (chatPollTimer) clearInterval(chatPollTimer);
-    chatPollTimer = setInterval(() => { if (chatDemandId) loadMessages(); }, 2000);
+    chatPollTimer = setInterval(() => { if (chatDemandId) loadMessages(); }, 1500);
 
     if (chatChannel) supabase.removeChannel(chatChannel);
     chatChannel = supabase.channel('chat-' + demandId)
@@ -546,14 +537,16 @@
 
   async function loadMessages() {
     const { data, error } = await supabase.from('messages').select('*').eq('demand_id', chatDemandId).order('created_at', { ascending: true });
-    if (error) { chatMessages.innerHTML = '<div style="color:red">加载失败</div>'; return; }
+    if (error) return;
 
     const myMsgs = data.filter(m => (m.sender_id === currentUser.id && m.receiver_id === chatReceiverId) || (m.sender_id === chatReceiverId && m.receiver_id === currentUser.id));
 
     if (myMsgs.length === 0) {
       chatMessages.innerHTML = '<div style="text-align:center;color:#999;margin-top:20px;">打个招呼吧~</div>';
     } else {
+      // 如果是自己发的消息，立刻显示出来
       chatMessages.innerHTML = myMsgs.map(m => `<div class="msg-bubble ${m.sender_id === currentUser.id ? 'msg-mine' : 'msg-other'}">${esc(m.content)}</div>`).join('');
+      
       if (myMsgs.length > lastMsgCount) {
         chatMessages.scrollTop = chatMessages.scrollHeight;
         lastMsgCount = myMsgs.length;
@@ -565,9 +558,18 @@
     const val = chatInput.value.trim();
     if (!val) return;
     chatInput.value = '';
-    chatInput.disabled = true;
+    
+    // 乐观更新：立刻把自己的消息画在屏幕上，不用等网络
+    const tempDiv = document.createElement('div');
+    tempDiv.className = 'msg-bubble msg-mine';
+    tempDiv.textContent = val;
+    if (chatMessages.querySelector('div[style]')) chatMessages.innerHTML = ''; // 清空“打个招呼吧”
+    chatMessages.appendChild(tempDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // 发送给数据库
     await supabase.from('messages').insert([{ demand_id: chatDemandId, sender_id: currentUser.id, receiver_id: chatReceiverId, content: val }]);
-    chatInput.disabled = false;
+    
     chatInput.focus();
     loadMessages(); 
   };
@@ -577,7 +579,7 @@
   window.toggleDone = toggleDone; 
   window.removeItem = removeItem; 
   window.expandRadius = expandRadius;
-  window.toggleLike = toggleLike; // 绑定点赞
+  window.toggleLike = toggleLike; 
   btnEl.addEventListener('click', addItem);
 
   checkUser();
