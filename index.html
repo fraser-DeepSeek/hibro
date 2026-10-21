@@ -41,6 +41,9 @@
   .select-group label{ display:block; font-size:13px; font-weight:600; color:#4c6b4c; margin-bottom:5px; padding-left:4px; }
   .select-group select{ width:100%; font-size:15px; padding:10px 12px; border:1.5px solid #a5d8a0; border-radius:10px; outline:none; background: #fff; }
 
+  /* 新增：提示文字 */
+  .zone-hint { max-width: 600px; margin: 10px auto 0; font-size: 13px; font-weight: bold; color: #d32f2f; text-align: center; background: #ffebee; padding: 6px; border-radius: 8px; display: none; }
+
   .chip-row{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; max-width:600px; margin:14px auto 0; }
   .chip-row .label{ width:100%; text-align:center; font-size:13px; color:#4c6b4c; font-weight:600; }
   .chip{ font-size:14px; padding:8px 15px; border-radius:999px; border:1.5px solid transparent; background:rgba(255,255,255,.7); color:#4c6b4c; cursor:pointer; }
@@ -62,7 +65,7 @@
   .tag.urgent{ background:#ffebee; color:#c62828; } .tag.tools { background:#e3f2fd; color:#1565c0; }
   .tag.errand{ background:#fff3e0; color:#e65100; } .tag.pet   { background:#f3e5f5; color:#6a1b9a; }
   .tag.chat  { background:#eceff1; color:#455a64; } .tag.dist-tag { background:#fffde7; color:#f57f17; border:1px solid #fff59d;}
-  .tag.radius-tag { background:#e1f5fe; color:#0277bd;}
+  .tag.radius-tag { background:#e1f5fe; color:#0277bd; }
 
   .text{ margin:0; font-size:18px; color:#222; word-break:break-word; white-space:pre-wrap; }
   .item.done .text{ text-decoration:line-through; color:#7a8c7a; }
@@ -154,12 +157,15 @@
       </div>
     </div>
 
+    <!-- 【新增】区域限制提示 -->
+    <div class="zone-hint" id="zoneHint"></div>
+
     <div class="chip-row" id="catRow">
       <div class="label">🏷️ 分类：</div>
     </div>
 
     <div id="list" class="loading">正在加载云端数据...</div>
-    <div class="count" id="count"></div>
+    <div id="count"></div>
   </div>
 
   <div id="chatModal">
@@ -204,7 +210,7 @@
   const rangeSelect = document.getElementById('rangeSelect'), sortSelect = document.getElementById('sortSelect');
   const pubStateSel = document.getElementById('publishState'), pubDistSel = document.getElementById('publishDistrict');
   const imageInput = document.getElementById('imageInput'), imagePreview = document.getElementById('imagePreview');
-  const toastEl = document.getElementById('toast');
+  const toastEl = document.getElementById('toast'), zoneHint = document.getElementById('zoneHint');
 
   let currentCat = 'urgent', currentPubState = 'sarawak', currentPubDist = '';
   let currentUser = null, globalItems = [], myLat = null, myLng = null, maxDistance = 999;
@@ -274,7 +280,6 @@
     userEmailSpan.textContent = currentUser.email;
     initSelectors(); buildCatChips(); getUserLocation(); fetchData(); setupRealtime();
 
-    // 【极速轮询】：主页每 3 秒查一次
     if (homePollTimer) clearInterval(homePollTimer);
     homePollTimer = setInterval(() => {
       if (mainApp.style.display !== 'none' && currentUser && !chatDemandId) {
@@ -317,7 +322,6 @@
     if (error) { if (globalItems.length === 0) listEl.innerHTML = '<div class="empty" style="color:red">读取失败</div>'; return; }
     globalItems = data || []; 
 
-    // 抓取所有“发送给当前用户”的消息
     const { data: msgs } = await supabase.from('messages')
         .select('*')
         .eq('receiver_id', currentUser.id)
@@ -373,23 +377,40 @@
 
   function initSelectors() {
     pubStateSel.innerHTML = FULL_MALAYSIA.map(s => `<option value="${s.key}">${s.name}</option>`).join('');
-    pubStateSel.value = currentPubState; updatePubDistrict();
-    pubStateSel.addEventListener('change', (e) => { currentPubState = e.target.value; updatePubDistrict(); });
-    pubDistSel.addEventListener('change', (e) => { currentPubDist = e.target.value; });
+    pubStateSel.value = currentPubState; 
+    updatePubDistrict();
+    
+    // 切换州时，重新加载县列表，并且刷新显示内容
+    pubStateSel.addEventListener('change', (e) => { 
+        currentPubState = e.target.value; 
+        updatePubDistrict(); 
+        render(); 
+    });
+    pubDistSel.addEventListener('change', (e) => { 
+        currentPubDist = e.target.value; 
+        render(); 
+    });
   }
+
   function updatePubDistrict() {
     const st = STATE_MAP[currentPubState];
     pubDistSel.innerHTML = st.districts.map(d => `<option value="${d}">${d}</option>`).join('');
     currentPubDist = st.districts[0] || '';
+    
+    // 更新提示文字
+    zoneHint.style.display = 'block';
+    zoneHint.textContent = `⚠️ 当前仅显示【${currentPubDist}】区域的求助，切换可查看其他地区。`;
   }
+
   function buildCatChips() {
     let html = '<div class="label">🏷️ 分类：</div>';
     CATS.forEach(c => { html += `<button class="chip ${c.key === currentCat ? 'active' : ''}" data-key="${c.key}">${c.icon} ${c.name}</button>`; });
     catRow.innerHTML = html;
     catRow.querySelectorAll('.chip').forEach(btn => {
       btn.addEventListener('click', (e) => {
-        currentCat = e.target.dataset.key; catRow.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
-        e.target.classList.add('active'); render();
+        currentCat = e.currentTarget.dataset.key; 
+        catRow.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
+        e.currentTarget.classList.add('active'); render();
       });
     });
   }
@@ -398,7 +419,19 @@
     listEl.innerHTML = '';
     
     let filtered = globalItems.filter(it => {
+      // 1. 分类过滤
       if (currentCat !== 'all' && it.cat !== currentCat) return false;
+      
+      const isMine = it.user_id === currentUser.id;
+
+      // 2. 【核心新增】县/分区过滤（只要不是自己发的，都必须严丝合缝匹配）
+      if (!isMine) {
+        // 兼容旧数据：如果没有 state/district 字段，为了安全也隐藏掉
+        if (!it.state || !it.district) return false; 
+        if (it.state !== currentPubState || it.district !== currentPubDist) return false;
+      }
+
+      // 3. 距离过滤
       if (myLat && myLng && it.lat && it.lng) {
         const dist = getDistance(myLat, myLng, it.lat, it.lng);
         if (maxDistance !== 999 && dist > maxDistance) return false;
@@ -417,7 +450,7 @@
     }
 
     if (filtered.length === 0) {
-      listEl.innerHTML = '<div class="empty">这里还没有此类需求~</div>'; countEl.textContent = ''; return;
+      listEl.innerHTML = '<div class="empty">这里还没有同区域的求助~</div>'; countEl.textContent = ''; return;
     }
 
     let latestId = filtered.find(it => !it.done)?.id;
@@ -458,7 +491,6 @@
 
         let replyBtnHtml = '';
         if (isMine) {
-          // 检查数据库里是否有别人发给我的消息
           const relatedMsg = incomingMessages.find(m => m.demand_id === item.id);
           if (relatedMsg) {
             replyBtnHtml = `<button class="reply-btn" onclick="window.openChat('${item.id}', '${relatedMsg.sender_id}', '邻居的私聊')">💬 查看邻居私聊</button>`;
@@ -517,7 +549,6 @@
     
     await loadMessages();
 
-    // 聊天框 1.5 秒刷新一次
     if (chatPollTimer) clearInterval(chatPollTimer);
     chatPollTimer = setInterval(() => { if (chatDemandId) loadMessages(); }, 1500);
 
@@ -544,7 +575,6 @@
     if (myMsgs.length === 0) {
       chatMessages.innerHTML = '<div style="text-align:center;color:#999;margin-top:20px;">打个招呼吧~</div>';
     } else {
-      // 如果是自己发的消息，立刻显示出来
       chatMessages.innerHTML = myMsgs.map(m => `<div class="msg-bubble ${m.sender_id === currentUser.id ? 'msg-mine' : 'msg-other'}">${esc(m.content)}</div>`).join('');
       
       if (myMsgs.length > lastMsgCount) {
@@ -559,15 +589,13 @@
     if (!val) return;
     chatInput.value = '';
     
-    // 乐观更新：立刻把自己的消息画在屏幕上，不用等网络
     const tempDiv = document.createElement('div');
     tempDiv.className = 'msg-bubble msg-mine';
     tempDiv.textContent = val;
-    if (chatMessages.querySelector('div[style]')) chatMessages.innerHTML = ''; // 清空“打个招呼吧”
+    if (chatMessages.querySelector('div[style]')) chatMessages.innerHTML = ''; 
     chatMessages.appendChild(tempDiv);
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
-    // 发送给数据库
     await supabase.from('messages').insert([{ demand_id: chatDemandId, sender_id: currentUser.id, receiver_id: chatReceiverId, content: val }]);
     
     chatInput.focus();
