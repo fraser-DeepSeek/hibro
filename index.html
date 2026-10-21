@@ -74,6 +74,10 @@
   .del{ width:22px; height:22px; border:none; border-radius:50%; background:#ff8a80; color:#fff; cursor:pointer; }
   .help-btn { background: #2196F3; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(33,150,243,.3); }
   .reply-btn { background: #ff9800; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; animation: pulse 2s infinite; }
+  /* 新增：点赞和地图按钮 */
+  .like-btn { background: #f0f0f0; color: #555; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+  .like-btn.liked { background: #ffebee; color: #e53935; }
+  .map-btn { background: #e3f2fd; color: #1565c0; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
 
   #chatModal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
   .chat-content { background: #fff; width: 90%; max-width: 400px; height: 70vh; border-radius: 15px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
@@ -181,7 +185,6 @@
   const SUPABASE_KEY = 'sb_publishable_1dvjfyqSXHfo4eFBmcEdIA_m6ryxkS6';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // 由于完整列表太长，这里只简写示例，你可以换成你完整的。
   const FULL_MALAYSIA = [{ key:'sarawak', name:'砂拉越 Sarawak', districts:['古晋 Kuching','诗巫 Sibu','美里 Miri','民都鲁 Bintulu']}, { key:'kl', name:'吉隆坡 KL', districts:['吉隆坡 KL']}]; 
   
   const CATS = [
@@ -210,8 +213,7 @@
   
   let incomingMessages = []; 
   let chatDemandId = null, chatReceiverId = null, chatChannel = null;
-  let chatPollTimer = null; // 用于聊天轮询
-  let homePollTimer = null; // 用于主页轮询
+  let chatPollTimer = null; let homePollTimer = null;
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&': '&amp;','<': '&lt;','>': '&gt;','"': '&quot;',"'": '&#39;'}[c])); }
   function timeAgo(iso) {
@@ -273,7 +275,6 @@
     userEmailSpan.textContent = currentUser.email;
     initSelectors(); buildCatChips(); getUserLocation(); fetchData(); setupRealtime();
 
-    // 【核心双保险】：如果在主页且没开聊天框，每 5 秒静默拉取一次数据
     if (homePollTimer) clearInterval(homePollTimer);
     homePollTimer = setInterval(() => {
       if (mainApp.style.display !== 'none' && currentUser && !chatDemandId) {
@@ -291,13 +292,9 @@
       .on('postgres_changes', { event: '*', schema: 'public', table: 'demands' }, () => fetchData(true))
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
         if (payload.new.receiver_id === currentUser.id) {
-          if (!chatDemandId || chatDemandId !== payload.new.demand_id) {
-            showToast();
-          }
+          if (!chatDemandId || chatDemandId !== payload.new.demand_id) showToast();
           fetchData(true);
-          if (chatDemandId && payload.new.demand_id === chatDemandId) {
-            loadMessages();
-          }
+          if (chatDemandId && payload.new.demand_id === chatDemandId) loadMessages();
         }
       })
       .subscribe();
@@ -346,7 +343,7 @@
 
     const newItem = {
       text: text, cat: currentCat, state: currentPubState, district: currentPubDist,
-      done: false, user_id: currentUser.id, lat: myLat, lng: myLng, radius_km: 2, image_url: imageUrl
+      done: false, user_id: currentUser.id, lat: myLat, lng: myLng, radius_km: 2, image_url: imageUrl, likes: []
     };
 
     const { data, error } = await supabase.from('demands').insert([newItem]).select();
@@ -360,6 +357,28 @@
   async function toggleDone(id, status) { await supabase.from('demands').update({ done: !status }).eq('id', id); }
   async function removeItem(id) { if(confirm('确定删除吗？')) await supabase.from('demands').delete().eq('id', id); }
   async function expandRadius(id, r) { let nr = r === 2 ? 6 : (r === 6 ? 10 : 999); await supabase.from('demands').update({ radius_km: nr }).eq('id', id); }
+  
+  // 【新增】点赞功能
+  async function toggleLike(id) {
+    const item = globalItems.find(x => x.id === id);
+    if (!item) return;
+    
+    let currentLikes = item.likes || [];
+    const isLiked = currentLikes.includes(currentUser.id);
+    
+    if (isLiked) {
+      currentLikes = currentLikes.filter(uid => uid !== currentUser.id);
+    } else {
+      currentLikes.push(currentUser.id);
+    }
+    
+    // 乐观更新界面
+    item.likes = currentLikes;
+    render();
+    
+    // 写入数据库
+    await supabase.from('demands').update({ likes: currentLikes }).eq('id', id);
+  }
 
   function initSelectors() {
     pubStateSel.innerHTML = FULL_MALAYSIA.map(s => `<option value="${s.key}">${s.name}</option>`).join('');
@@ -437,6 +456,17 @@
 
         let imgHtml = item.image_url ? `<img src="${item.image_url}" class="img-preview" onclick="window.open('${item.image_url}')" alt="图片">` : '';
 
+        // 【新增】地图功能
+        let mapBtnHtml = '';
+        if (item.lat && item.lng) {
+            mapBtnHtml = `<a href="https://maps.google.com/?q=${item.lat},${item.lng}" target="_blank" class="map-btn">📍 查看地图位置</a>`;
+        }
+
+        // 【新增】点赞功能
+        const likesArr = item.likes || [];
+        const isLiked = likesArr.includes(currentUser.id);
+        const likeBtnHtml = `<button class="like-btn ${isLiked ? 'liked' : ''}" onclick="window.toggleLike('${item.id}')">${isLiked ? '❤️' : '🤍'} ${likesArr.length}</button>`;
+
         let replyBtnHtml = '';
         if (isMine) {
           const relatedMsg = incomingMessages.find(m => m.demand_id === item.id);
@@ -460,8 +490,12 @@
             <p class="text">${esc(item.text)}</p>
             ${imgHtml}
             ${expandBtnHtml}
+            <div class="meta" style="margin-bottom: 5px;">
+                ${mapBtnHtml}
+            </div>
             <div class="meta">
               <span class="time">${timeAgo(item.created_at)}</span>
+              ${likeBtnHtml}
               ${isMine ? `
                 ${replyBtnHtml}
                 <button class="done-btn" onclick="window.toggleDone('${item.id}', ${item.done})">${item.done ? '↺ 撤销' : '✓ 完成'}</button>
@@ -479,7 +513,6 @@
     countEl.textContent = `当前共 ${filtered.length} 条 · 待完成 ${filtered.filter(it => !it.done).length} 条`;
   }
 
-  // ================= 聊天逻辑 =================
   const chatModal = document.getElementById('chatModal');
   const chatMessages = document.getElementById('chatMessages');
   const chatInput = document.getElementById('chatInput');
@@ -494,51 +527,33 @@
     
     await loadMessages();
 
-    // 【核心双保险】：只要聊天框开着，每 2 秒去后台拉取一次新消息
     if (chatPollTimer) clearInterval(chatPollTimer);
-    chatPollTimer = setInterval(() => {
-      if (chatDemandId) loadMessages();
-    }, 2000);
+    chatPollTimer = setInterval(() => { if (chatDemandId) loadMessages(); }, 2000);
 
     if (chatChannel) supabase.removeChannel(chatChannel);
     chatChannel = supabase.channel('chat-' + demandId)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `demand_id=eq.${demandId}` }, payload => {
-        loadMessages();
-      }).subscribe();
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `demand_id=eq.${demandId}` }, payload => { loadMessages(); }).subscribe();
   };
 
   window.closeChat = () => {
     chatModal.style.display = 'none';
     if (chatChannel) { supabase.removeChannel(chatChannel); chatChannel = null; }
-    if (chatPollTimer) { clearInterval(chatPollTimer); chatPollTimer = null; } // 关聊天框时停止轮询
+    if (chatPollTimer) { clearInterval(chatPollTimer); chatPollTimer = null; }
     chatDemandId = null; chatReceiverId = null;
   };
 
-  let lastMsgCount = 0; // 用于判断是否需要往下滚屏
+  let lastMsgCount = 0; 
 
   async function loadMessages() {
-    const { data, error } = await supabase.from('messages')
-      .select('*')
-      .eq('demand_id', chatDemandId)
-      .order('created_at', { ascending: true });
-
+    const { data, error } = await supabase.from('messages').select('*').eq('demand_id', chatDemandId).order('created_at', { ascending: true });
     if (error) { chatMessages.innerHTML = '<div style="color:red">加载失败</div>'; return; }
 
-    const myMsgs = data.filter(m => 
-      (m.sender_id === currentUser.id && m.receiver_id === chatReceiverId) || 
-      (m.sender_id === chatReceiverId && m.receiver_id === currentUser.id)
-    );
+    const myMsgs = data.filter(m => (m.sender_id === currentUser.id && m.receiver_id === chatReceiverId) || (m.sender_id === chatReceiverId && m.receiver_id === currentUser.id));
 
     if (myMsgs.length === 0) {
       chatMessages.innerHTML = '<div style="text-align:center;color:#999;margin-top:20px;">打个招呼吧~</div>';
     } else {
-      chatMessages.innerHTML = myMsgs.map(m => `
-        <div class="msg-bubble ${m.sender_id === currentUser.id ? 'msg-mine' : 'msg-other'}">
-          ${esc(m.content)}
-        </div>
-      `).join('');
-      
-      // 如果有新消息，才自动滚到底部
+      chatMessages.innerHTML = myMsgs.map(m => `<div class="msg-bubble ${m.sender_id === currentUser.id ? 'msg-mine' : 'msg-other'}">${esc(m.content)}</div>`).join('');
       if (myMsgs.length > lastMsgCount) {
         chatMessages.scrollTop = chatMessages.scrollHeight;
         lastMsgCount = myMsgs.length;
@@ -551,11 +566,7 @@
     if (!val) return;
     chatInput.value = '';
     chatInput.disabled = true;
-
-    await supabase.from('messages').insert([{
-      demand_id: chatDemandId, sender_id: currentUser.id, receiver_id: chatReceiverId, content: val
-    }]);
-
+    await supabase.from('messages').insert([{ demand_id: chatDemandId, sender_id: currentUser.id, receiver_id: chatReceiverId, content: val }]);
     chatInput.disabled = false;
     chatInput.focus();
     loadMessages(); 
@@ -563,7 +574,10 @@
 
   chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') window.sendMsg(); });
 
-  window.toggleDone = toggleDone; window.removeItem = removeItem; window.expandRadius = expandRadius;
+  window.toggleDone = toggleDone; 
+  window.removeItem = removeItem; 
+  window.expandRadius = expandRadius;
+  window.toggleLike = toggleLike; // 绑定点赞
   btnEl.addEventListener('click', addItem);
 
   checkUser();
