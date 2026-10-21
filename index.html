@@ -41,7 +41,6 @@
   .select-group label{ display:block; font-size:13px; font-weight:600; color:#4c6b4c; margin-bottom:5px; padding-left:4px; }
   .select-group select{ width:100%; font-size:15px; padding:10px 12px; border:1.5px solid #a5d8a0; border-radius:10px; outline:none; background: #fff; }
 
-  /* 新增：提示文字 */
   .zone-hint { max-width: 600px; margin: 10px auto 0; font-size: 13px; font-weight: bold; color: #d32f2f; text-align: center; background: #ffebee; padding: 6px; border-radius: 8px; display: none; }
 
   .chip-row{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; max-width:600px; margin:14px auto 0; }
@@ -157,7 +156,6 @@
       </div>
     </div>
 
-    <!-- 【新增】区域限制提示 -->
     <div class="zone-hint" id="zoneHint"></div>
 
     <div class="chip-row" id="catRow">
@@ -375,19 +373,26 @@
     await supabase.from('demands').update({ likes: currentLikes }).eq('id', id);
   }
 
+  // 【修复】把更新红字提示的逻辑抽离成一个独立函数
+  function updateZoneHint() {
+    zoneHint.style.display = 'block';
+    zoneHint.textContent = `⚠️ 当前仅显示【${currentPubDist}】区域的求助，切换可查看其他地区。`;
+  }
+
   function initSelectors() {
     pubStateSel.innerHTML = FULL_MALAYSIA.map(s => `<option value="${s.key}">${s.name}</option>`).join('');
     pubStateSel.value = currentPubState; 
     updatePubDistrict();
     
-    // 切换州时，重新加载县列表，并且刷新显示内容
     pubStateSel.addEventListener('change', (e) => { 
         currentPubState = e.target.value; 
         updatePubDistrict(); 
         render(); 
     });
+    
     pubDistSel.addEventListener('change', (e) => { 
         currentPubDist = e.target.value; 
+        updateZoneHint(); // 【修复】在这里同步更新红字提示
         render(); 
     });
   }
@@ -397,9 +402,7 @@
     pubDistSel.innerHTML = st.districts.map(d => `<option value="${d}">${d}</option>`).join('');
     currentPubDist = st.districts[0] || '';
     
-    // 更新提示文字
-    zoneHint.style.display = 'block';
-    zoneHint.textContent = `⚠️ 当前仅显示【${currentPubDist}】区域的求助，切换可查看其他地区。`;
+    updateZoneHint(); // 切换州的时候也更新
   }
 
   function buildCatChips() {
@@ -419,19 +422,15 @@
     listEl.innerHTML = '';
     
     let filtered = globalItems.filter(it => {
-      // 1. 分类过滤
       if (currentCat !== 'all' && it.cat !== currentCat) return false;
       
       const isMine = it.user_id === currentUser.id;
 
-      // 2. 【核心新增】县/分区过滤（只要不是自己发的，都必须严丝合缝匹配）
       if (!isMine) {
-        // 兼容旧数据：如果没有 state/district 字段，为了安全也隐藏掉
         if (!it.state || !it.district) return false; 
         if (it.state !== currentPubState || it.district !== currentPubDist) return false;
       }
 
-      // 3. 距离过滤
       if (myLat && myLng && it.lat && it.lng) {
         const dist = getDistance(myLat, myLng, it.lat, it.lng);
         if (maxDistance !== 999 && dist > maxDistance) return false;
