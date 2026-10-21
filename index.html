@@ -10,7 +10,6 @@
   *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body{ margin:0; min-height:100vh; padding:20px 16px 80px; background:linear-gradient(180deg,#e3f9dd 0%,#c6f0bd 55%,#b0e9a6 100%); background-attachment:fixed; font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif; text-align:center; }
   
-  /* 标题与客服按钮排版 */
   .header-area { position: relative; max-width: 600px; margin: 0 auto; }
   .title{ margin:0; color:#1565c0; font-size:clamp(30px,9vw,50px); letter-spacing:2px; text-shadow:0 2px 0 rgba(255,255,255,.8); }
   .subtitle{ margin:10px 0 0; color:#d32f2f; font-size:clamp(24px,6vw,36px); font-weight:700; }
@@ -53,6 +52,9 @@
   .chip{ font-size:14px; padding:8px 15px; border-radius:999px; border:1.5px solid transparent; background:rgba(255,255,255,.7); color:#4c6b4c; cursor:pointer; }
   .chip.active{ background:var(--green); border-color:#3d8b40; color:#fff; font-weight:700; }
 
+  /* 【新增】价格提示 */
+  .price-hint { max-width: 600px; margin: 10px auto 0; font-size: 15px; font-weight: bold; color: #e65100; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; }
+
   #list{ width:100%; max-width:600px; margin:20px auto 0; text-align:left; }
   .item{ position:relative; display:flex; width: 100%; gap:12px; padding-bottom:18px; }
   .item::before{ content:""; position:absolute; left:7px; top:20px; bottom:-2px; width:2px; background:var(--line); }
@@ -70,6 +72,9 @@
   .tag.errand{ background:#fff3e0; color:#e65100; } .tag.pet   { background:#f3e5f5; color:#6a1b9a; }
   .tag.chat  { background:#eceff1; color:#455a64; } .tag.dist-tag { background:#fffde7; color:#f57f17; border:1px solid #fff59d;}
   .tag.radius-tag { background:#e1f5fe; color:#0277bd; }
+  
+  /* 【新增】醒目的价格标签 */
+  .tag.price-tag { background: #ffea00; color: #b26500; font-size: 13px; font-weight: 800; border: 1px solid #ffd54f; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
   .text{ margin:0; font-size:18px; color:#222; word-break:break-word; white-space:pre-wrap; }
   .item.done .text{ text-decoration:line-through; color:#7a8c7a; }
@@ -85,7 +90,6 @@
   .like-btn.liked { background: #ffebee; color: #e53935; }
   .map-btn { background: #e3f2fd; color: #1565c0; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
 
-  /* 私聊弹窗 & 客服弹窗 通用样式 */
   .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
   .modal-content { background: #fff; width: 90%; max-width: 400px; border-radius: 15px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
   
@@ -100,7 +104,6 @@
   .chat-input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
   .chat-send { background: var(--green); color: white; border: none; padding: 0 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
 
-  /* 客服专属样式 */
   .cs-content { padding: 20px; text-align: left; }
   .cs-content h3 { margin: 0 0 10px 0; color: #333; text-align: center; }
   .cs-content p { font-size: 14px; color: #666; margin-bottom: 15px; text-align: center; }
@@ -181,11 +184,13 @@
       <div class="label">🏷️ 分类：</div>
     </div>
 
+    <!-- 【新增】分类定价提示 -->
+    <div class="price-hint" id="priceHint"></div>
+
     <div id="list" class="loading">正在加载云端数据...</div>
     <div id="count"></div>
   </div>
 
-  <!-- 私聊弹窗 -->
   <div id="chatModal" class="modal">
     <div class="modal-content chat-content">
       <div class="chat-header">
@@ -200,7 +205,6 @@
     </div>
   </div>
 
-  <!-- 客服中心弹窗 -->
   <div id="csModal" class="modal">
     <div class="modal-content">
       <div class="chat-header" style="background:#2196F3;">
@@ -225,15 +229,17 @@
   const SUPABASE_KEY = 'sb_publishable_1dvjfyqSXHfo4eFBmcEdIA_m6ryxkS6';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // ⚠️ 【请在这里填入你的 WhatsApp 号码】，格式：国家码+号码，不要加加号，比如 60123456789
-  const WHATSAPP_NUMBER = '60128825913'; 
+  const WHATSAPP_NUMBER = '60123456789'; 
 
   const FULL_MALAYSIA = [{ key:'sarawak', name:'砂拉越 Sarawak', districts:['古晋 Kuching','诗巫 Sibu','美里 Miri','民都鲁 Bintulu']}, { key:'kl', name:'吉隆坡 KL', districts:['吉隆坡 KL']}]; 
   
+  // 【核心修改】在这里定义每个分类的“互助零用钱”
   const CATS = [
-    { key:'urgent',  name:'紧急',  icon:'⚡' }, { key:'tools',   name:'借工具', icon:'🔧' },
-    { key:'errand',  name:'代跑腿', icon:'🛒' }, { key:'pet',     name:'宠物',   icon:'🐾' },
-    { key:'chat',    name:'闲聊',   icon:'💬' }
+    { key:'urgent',  name:'紧急',  icon:'⚡', price: 0 },
+    { key:'tools',   name:'借工具', icon:'🔧', price: 5 },
+    { key:'errand',  name:'代跑腿', icon:'🛒', price: 5 },
+    { key:'pet',     name:'宠物',   icon:'🐾', price: 8 },
+    { key:'chat',    name:'闲聊',   icon:'💬', price: 0 }
   ];
 
   let STATE_MAP = {}; FULL_MALAYSIA.forEach(s => STATE_MAP[s.key] = s);
@@ -250,6 +256,7 @@
   const imageInput = document.getElementById('imageInput'), imagePreview = document.getElementById('imagePreview');
   const toastEl = document.getElementById('toast'), zoneHint = document.getElementById('zoneHint');
   const csWaBtn = document.getElementById('csWaBtn');
+  const priceHint = document.getElementById('priceHint'); // 获取价格提示 DOM
 
   let currentCat = 'urgent', currentPubState = 'sarawak', currentPubDist = '';
   let currentUser = null, globalItems = [], myLat = null, myLng = null, maxDistance = 999;
@@ -444,17 +451,38 @@
     updateZoneHint(); 
   }
 
+  // 【修改】渲染分类按钮，同时更新价格提示
   function buildCatChips() {
     let html = '<div class="label">🏷️ 分类：</div>';
     CATS.forEach(c => { html += `<button class="chip ${c.key === currentCat ? 'active' : ''}" data-key="${c.key}">${c.icon} ${c.name}</button>`; });
     catRow.innerHTML = html;
+    
+    // 初始化价格提示
+    updatePriceHint();
+
     catRow.querySelectorAll('.chip').forEach(btn => {
       btn.addEventListener('click', (e) => {
         currentCat = e.currentTarget.dataset.key; 
         catRow.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
-        e.currentTarget.classList.add('active'); render();
+        e.currentTarget.classList.add('active'); 
+        
+        // 点击分类时更新价格提示
+        updatePriceHint();
+        render();
       });
     });
+  }
+
+  // 【新增】更新价格提示的函数
+  function updatePriceHint() {
+    const cat = CAT_MAP[currentCat];
+    if (cat) {
+      if (cat.price > 0) {
+        priceHint.innerHTML = `💰 互助零用钱：<span style="color:#d32f2f;font-size:18px;">RM ${cat.price}</span> / 次`;
+      } else {
+        priceHint.innerHTML = `💰 互助零钱：<span style="color:#2e7d32;font-size:18px;">免费帮忙</span>`;
+      }
+    }
   }
 
   function render() {
@@ -535,6 +563,11 @@
           }
         }
 
+        // 【新增】根据分类显示价格标签
+        const priceLabel = cat.price > 0 
+            ? `<span class="tag price-tag">💰 RM ${cat.price}</span>` 
+            : `<span class="tag price-tag" style="background:#e8f5e9;color:#2e7d32;border-color:#a5d6a7;">🆓 免费</span>`;
+
         const row = document.createElement('div');
         row.className = 'item' + (item.id === latestId ? ' latest' : '') + (item.done ? ' done' : '');
         
@@ -542,6 +575,7 @@
           <span class="dot"></span>
           <div class="bubble">
             <div class="bubble-head">
+              ${priceLabel} <!-- 插入价格标签 -->
               ${distHtml}
               <span class="tag ${cat.key}">${cat.icon} ${cat.name}</span>
               ${isMine ? radiusHtml : ''}
@@ -561,7 +595,7 @@
                 <button class="done-btn" onclick="window.toggleDone('${item.id}', ${item.done})">${item.done ? '↺ 撤销' : '✓ 完成'}</button>
                 <button class="del" onclick="window.removeItem('${item.id}')">×</button>
               ` : `
-                <button class="help-btn" onclick="window.openChat('${item.id}', '${item.user_id}', '邻居的求助')">💬 我来帮你</button>
+                <button class="help-btn" onclick="window.openChat('${item.id}', '${item.user_id}', '邻居的求助')">💬 我来帮你 (赚 RM ${cat.price})</button>
               `}
             </div>
           </div>
@@ -649,7 +683,6 @@
   const csSubmitBtn = document.getElementById('csSubmitBtn');
 
   window.openCustomerService = () => {
-    // 自动替换 WhatsApp 链接内容
     const waText = encodeURIComponent("你好，我在邻里帮帮帮遇到了一些问题，需要协助。");
     csWaBtn.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${waText}`;
     
