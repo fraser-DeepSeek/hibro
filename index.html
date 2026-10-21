@@ -52,7 +52,6 @@
   .chip{ position: relative; font-size:14px; padding:8px 15px; border-radius:999px; border:1.5px solid transparent; background:rgba(255,255,255,.7); color:#4c6b4c; cursor:pointer; }
   .chip.active{ background:var(--green); border-color:#3d8b40; color:#fff; font-weight:700; }
   
-  /* 【新增】红点提示样式 */
   .red-dot { position: absolute; top: -2px; right: -2px; width: 12px; height: 12px; background: #ff3b30; border-radius: 50%; border: 2px solid #fff; display: none; box-shadow: 0 2px 4px rgba(255,59,48,0.4); }
 
   .price-hint { max-width: 600px; margin: 10px auto 0; font-size: 15px; font-weight: bold; color: #e65100; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; }
@@ -98,6 +97,14 @@
   .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
   .modal-content { background: #fff; width: 90%; max-width: 400px; border-radius: 15px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
   
+  /* 聊天列表专属样式 */
+  .chat-list-content { max-height: 75vh; }
+  .chat-list-body { overflow-y: auto; flex: 1; background: #f5f7f5; }
+  .chat-list-item { padding: 15px; border-bottom: 1px solid #eee; display: flex; flex-direction: column; gap: 5px; cursor: pointer; text-align: left; transition: background 0.2s; }
+  .chat-list-item:hover { background: #e8f5e9; }
+  .chat-list-user { font-weight: bold; color: #1565c0; font-size: 14px; }
+  .chat-list-msg { font-size: 13px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
   .chat-content { height: 70vh; }
   .chat-header { padding: 15px; background: var(--green); color: white; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
   .chat-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
@@ -141,7 +148,6 @@
 
   <div id="mainApp">
     <div class="user-bar">
-      <!-- 【新增】显示会员编号 -->
       <span style="font-size:14px; color:#2e7d32; font-weight:bold;">
         👤 <span id="userCode" style="color:#1565c0;">HIBRO-0000</span> 
         <span style="font-size:12px; color:#666; margin-left:5px;">(<span id="userEmail"></span>)</span>
@@ -199,10 +205,22 @@
     <div id="count"></div>
   </div>
 
+  <!-- 【新增】私聊会话列表弹窗 -->
+  <div id="chatListModal" class="modal">
+    <div class="modal-content chat-list-content">
+      <div class="chat-header" style="background:#ff9800;">
+        <span>📬 谁来找你了</span>
+        <button class="chat-close" onclick="window.closeChatList()">×</button>
+      </div>
+      <div class="chat-list-body" id="chatListBody"></div>
+    </div>
+  </div>
+
+  <!-- 真正的私聊聊天框 -->
   <div id="chatModal" class="modal">
     <div class="modal-content chat-content">
       <div class="chat-header">
-        <span>💬 邻里私聊</span>
+        <span id="chatTitle">💬 邻里私聊</span>
         <button class="chat-close" onclick="window.closeChat()">×</button>
       </div>
       <div class="chat-messages" id="chatMessages"></div>
@@ -257,7 +275,7 @@
   const authBox = document.getElementById('authBox'), mainApp = document.getElementById('mainApp');
   const emailInput = document.getElementById('emailInput'), passwordInput = document.getElementById('passwordInput');
   const authMsg = document.getElementById('authMsg'), userEmailSpan = document.getElementById('userEmail');
-  const userCodeSpan = document.getElementById('userCode'); // 会员编号DOM
+  const userCodeSpan = document.getElementById('userCode');
   const listEl = document.getElementById('list'), inputEl = document.getElementById('demandInput');
   const btnEl = document.getElementById('submitBtn'), countEl = document.getElementById('count');
   const catRow = document.getElementById('catRow'), gpsStatus = document.getElementById('gpsStatus');
@@ -267,6 +285,7 @@
   const toastEl = document.getElementById('toast'), zoneHint = document.getElementById('zoneHint');
   const csWaBtn = document.getElementById('csWaBtn');
   const priceHint = document.getElementById('priceHint');
+  const chatTitle = document.getElementById('chatTitle');
 
   let currentCat = 'urgent', currentPubState = 'sarawak', currentPubDist = '';
   let currentUser = null, myUserCode = '', globalItems = [], myLat = null, myLng = null, maxDistance = 999;
@@ -277,8 +296,6 @@
   let chatPollTimer = null; let homePollTimer = null;
 
   let hiddenIds = JSON.parse(localStorage.getItem('hibro_hidden_ids') || '[]');
-  
-  // 【新增】记录各个分类的已读时间戳
   let lastReadTimes = JSON.parse(localStorage.getItem('hibro_last_read') || '{}');
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&': '&amp;','<': '&lt;','>': '&gt;','"': '&quot;',"'": '&#39;'}[c])); }
@@ -303,7 +320,6 @@
     const { data: { session } } = await supabase.auth.getSession();
     if (session) { 
       currentUser = session.user; 
-      // 生成简短的会员编号 (取 UUID 前 6 位)
       myUserCode = 'HIBRO-' + currentUser.id.split('-')[0].toUpperCase();
       showMainApp(); 
     } 
@@ -343,7 +359,7 @@
 
   function showMainApp() {
     authBox.style.display = 'none'; mainApp.style.display = 'block';
-    userCodeSpan.textContent = myUserCode; // 展示编号
+    userCodeSpan.textContent = myUserCode;
     userEmailSpan.textContent = currentUser.email;
     
     initSelectors(); buildCatChips(); getUserLocation(); fetchData(); setupRealtime();
@@ -483,7 +499,6 @@
   function buildCatChips() {
     let html = '<div class="label">🏷️ 分类：</div>';
     CATS.forEach(c => { 
-      // 【新增】每个按钮里加一个隐藏的红点 span
       html += `<button class="chip ${c.key === currentCat ? 'active' : ''}" data-key="${c.key}">
                  ${c.icon} ${c.name}
                  <span class="red-dot" id="dot-${c.key}"></span>
@@ -497,7 +512,6 @@
         const key = e.currentTarget.dataset.key;
         currentCat = key; 
         
-        // 【新增】点击时，记录已读时间，并消除红点
         lastReadTimes[key] = new Date().toISOString();
         localStorage.setItem('hibro_last_read', JSON.stringify(lastReadTimes));
         document.getElementById(`dot-${key}`).style.display = 'none';
@@ -510,9 +524,7 @@
     });
   }
 
-  // 【新增】检查并更新各个分类的红点状态
   function checkUnreadStatus() {
-    // 如果定位和位置信息没准备好，先不查
     if (!currentUser) return;
 
     CATS.forEach(cat => {
@@ -521,20 +533,14 @@
 
       const lastRead = lastReadTimes[cat.key] ? new Date(lastReadTimes[cat.key]).getTime() : 0;
 
-      // 找有没有符合条件的新信息
       const hasNew = globalItems.some(it => {
-        // 分类要对得上，不能是自己发的，不能被隐藏
         if (it.cat !== cat.key || it.user_id === currentUser.id || hiddenIds.includes(it.id)) return false;
-        
-        // 必须是同一个县的
         if (!it.state || !it.district) return false;
         if (it.state !== currentPubState || it.district !== currentPubDist) return false;
 
-        // 必须是没看过的（发布时间晚于上次点击分类的时间）
         const createTime = new Date(it.created_at).getTime();
         if (createTime <= lastRead) return false;
 
-        // 距离过滤（如果在用户设定的范围内）
         if (myLat && myLng && it.lat && it.lng) {
           const dist = getDistance(myLat, myLng, it.lat, it.lng);
           if (maxDistance !== 999 && dist > maxDistance) return false;
@@ -544,12 +550,8 @@
         return true;
       });
 
-      // 如果不在当前分类，且有新消息，就亮红点；如果在当前分类看，就不亮
-      if (hasNew && currentCat !== cat.key) {
-        dotEl.style.display = 'block';
-      } else if (currentCat === cat.key) {
-        dotEl.style.display = 'none';
-      }
+      if (hasNew && currentCat !== cat.key) dotEl.style.display = 'block';
+      else if (currentCat === cat.key) dotEl.style.display = 'none';
     });
   }
 
@@ -598,7 +600,7 @@
 
     if (filtered.length === 0) {
       listEl.innerHTML = '<div class="empty">这里还没有同区域的求助~</div>'; countEl.textContent = ''; 
-      checkUnreadStatus(); // 即使没列表也检查一下红点
+      checkUnreadStatus(); 
       return;
     }
 
@@ -638,11 +640,17 @@
         const isLiked = likesArr.includes(currentUser.id);
         const likeBtnHtml = `<button class="like-btn ${isLiked ? 'liked' : ''}" onclick="window.toggleLike('${item.id}')">${isLiked ? '❤️' : '🤍'} ${likesArr.length}</button>`;
 
+        // 【核心升级】：获取当前帖子下，有多少个不同的人发过消息
         let replyBtnHtml = '';
         if (isMine) {
-          const relatedMsg = incomingMessages.find(m => m.demand_id === item.id);
-          if (relatedMsg) {
-            replyBtnHtml = `<button class="reply-btn" onclick="window.openChat('${item.id}', '${relatedMsg.sender_id}', '邻居的私聊')">💬 查看邻居私聊</button>`;
+          // 筛选出属于这个帖子的所有收到的消息
+          const relatedMsgs = incomingMessages.filter(m => m.demand_id === item.id);
+          // 提取不重复的发件人 ID
+          const uniqueSenders = [...new Set(relatedMsgs.map(m => m.sender_id))];
+          
+          if (uniqueSenders.length > 0) {
+            // 显示带数字的按钮，点击调用新的 openChatList 函数
+            replyBtnHtml = `<button class="reply-btn" onclick="window.openChatList('${item.id}')">💬 查看私聊 (${uniqueSenders.length})</button>`;
           }
         }
 
@@ -688,11 +696,52 @@
     });
 
     countEl.textContent = `当前共 ${filtered.length} 条 · 待完成 ${filtered.filter(it => !it.done).length} 条`;
-    
-    // 【新增】每次渲染完列表，顺便检查红点状态
     checkUnreadStatus();
   }
 
+  // ================= 新增：私聊列表弹窗逻辑 =================
+  const chatListModal = document.getElementById('chatListModal');
+  const chatListBody = document.getElementById('chatListBody');
+
+  window.openChatList = (demandId) => {
+    const relatedMsgs = incomingMessages.filter(m => m.demand_id === demandId);
+    const uniqueSenders = [...new Set(relatedMsgs.map(m => m.sender_id))];
+    
+    if (uniqueSenders.length === 0) return;
+
+    chatListBody.innerHTML = '';
+    
+    uniqueSenders.forEach(senderId => {
+      // 找出该发件人发的最后一条消息
+      const userMsgs = relatedMsgs.filter(m => m.sender_id === senderId);
+      const lastMsg = userMsgs[0]; // 因为 incomingMessages 是按时间倒序的，第0个就是最新的
+      
+      const senderCode = 'HIBRO-' + senderId.split('-')[0].toUpperCase();
+      
+      const div = document.createElement('div');
+      div.className = 'chat-list-item';
+      // 点击列表项，关闭列表，打开与该用户的聊天
+      div.onclick = () => {
+        chatListModal.style.display = 'none';
+        window.openChat(demandId, senderId, senderCode);
+      };
+      
+      div.innerHTML = `
+        <div class="chat-list-user">👤 ${senderCode} 想要帮你</div>
+        <div class="chat-list-msg">最后一句话: ${esc(lastMsg.content)}</div>
+        <div style="font-size:11px; color:#aaa; text-align:right;">${timeAgo(lastMsg.created_at)}</div>
+      `;
+      chatListBody.appendChild(div);
+    });
+
+    chatListModal.style.display = 'flex';
+  };
+
+  window.closeChatList = () => {
+    chatListModal.style.display = 'none';
+  };
+
+  // ================= 真正的聊天框逻辑 =================
   const chatModal = document.getElementById('chatModal');
   const chatMessages = document.getElementById('chatMessages');
   const chatInput = document.getElementById('chatInput');
@@ -700,6 +749,10 @@
   window.openChat = async (demandId, receiverId, titleText) => {
     if (receiverId === currentUser.id) return alert('不能和自己私聊哦');
     chatDemandId = demandId; chatReceiverId = receiverId;
+    
+    // 动态修改聊天框标题，显示正在和谁聊
+    chatTitle.textContent = `💬 与 ${titleText} 聊天中`;
+    
     chatModal.style.display = 'flex';
     toastEl.style.display = 'none';
     chatMessages.innerHTML = '<div style="text-align:center;color:#999;font-size:12px;">正在加载消息...</div>';
@@ -789,7 +842,6 @@
     csSubmitBtn.textContent = '正在提交...';
     csSubmitBtn.disabled = true;
 
-    // 【新增】把会员编号拼接到邮箱前面，方便后台一眼认出
     const user_info = `${myUserCode} | ${currentUser.email}`;
 
     const { error } = await supabase.from('tickets').insert([{
