@@ -10,12 +10,10 @@
   *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body{ margin:0; min-height:100vh; padding:20px 16px 80px; background:linear-gradient(180deg,#e3f9dd 0%,#c6f0bd 55%,#b0e9a6 100%); background-attachment:fixed; font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif; text-align:center; }
   
-  /* 优化顶部排版，防止文字被盖住 */
   .header-area { position: relative; max-width: 600px; margin: 0 auto; padding-top: 60px; }
   .title{ margin:0; color:#1565c0; font-size:clamp(28px,8vw,45px); letter-spacing:1px; text-shadow:0 2px 0 rgba(255,255,255,.8); line-height: 1.2; }
   .subtitle{ margin:10px 0 0; color:#d32f2f; font-size:clamp(20px,5vw,30px); font-weight:700; }
   
-  /* 顶部按钮改为右上角绝对定位，但给标题留出空间 */
   .top-actions { position: absolute; right: 0; top: 5px; display: flex; flex-direction: row; gap: 8px; align-items: center; }
   .lang-select { padding: 5px 10px; border-radius: 20px; border: 2px solid #ff9800; background: #fff; color: #ff9800; font-weight: bold; font-size: 13px; outline: none; cursor: pointer; }
   .cs-btn { background: #fff; border: 2px solid #2196F3; color: #2196F3; padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; }
@@ -247,7 +245,6 @@
   const SUPABASE_KEY = 'sb_publishable_1dvjfyqSXHfo4eFBmcEdIA_m6ryxkS6';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // 💡 全盘多语言字典（把所有中文能看到的字都放进来了）
   const UI_TEXT = {
     zh: {
       mainTitle: '邻里帮帮帮', subtitle: '住户互助平台', csBtn: '🎧 客服中心', authTitle: '住户实名认证登录', 
@@ -255,8 +252,7 @@
       lblCat: '🏷️ 分类：', btnSubmit: '发布', inputPlac: '输入你的需求...', upload: '📷 附加图片', logout: '退出', 
       gpsOn: '📍 定位成功', gpsLoading: '📍 正在获取位置...', sortLatest: '最新发布', sortDist: '距离最近', 
       range2: '2 公里内', range5: '5 公里内', range10: '10 公里内', rangeAll: '全城',
-      chatTitle: '💬 与 {0} 聊天中', chatSend: '发送', 
-      balance: '余额', kycBtn: '实名认证', kycVerified: '✅ 已认证', kycPending: '⏳ 审核中',
+      chatTitle: '💬 与 {0} 聊天中', chatSend: '发送', balance: '余额', kycBtn: '实名认证', kycVerified: '✅ 已认证', kycPending: '⏳ 审核中',
       priceHint: '💰 需托管: RM {0}', freeHint: '🆓 免费帮忙', zoneHint: '⚠️ 当前仅显示【{0}】区域'
     },
     ms: {
@@ -265,8 +261,7 @@
       lblCat: '🏷️ Kategori:', btnSubmit: 'Hantar', inputPlac: 'Masukkan keperluan anda...', upload: '📷 Lampir Gambar', logout: 'Keluar', 
       gpsOn: '📍 Lokasi Berjaya', gpsLoading: '📍 Mendapatkan lokasi...', sortLatest: 'Terkini', sortDist: 'Terdekat', 
       range2: 'Dalam 2 KM', range5: 'Dalam 5 KM', range10: 'Dalam 10 KM', rangeAll: 'Seluruh Bandar',
-      chatTitle: '💬 Berbual dengan {0}', chatSend: 'Hantar',
-      balance: 'Baki', kycBtn: 'Pengesahan Identiti', kycVerified: '✅ Disahkan', kycPending: '⏳ Menunggu',
+      chatTitle: '💬 Berbual dengan {0}', chatSend: 'Hantar', balance: 'Baki', kycBtn: 'Pengesahan Identiti', kycVerified: '✅ Disahkan', kycPending: '⏳ Menunggu',
       priceHint: '💰 Perlu bayar: RM {0}', freeHint: '🆓 Bantuan Percuma', zoneHint: '⚠️ Hanya kawasan【{0}】'
     },
     en: {
@@ -275,8 +270,7 @@
       lblCat: '🏷️ Category:', btnSubmit: 'Post', inputPlac: 'Enter your request...', upload: '📷 Attach Image', logout: 'Logout', 
       gpsOn: '📍 Location Found', gpsLoading: '📍 Getting location...', sortLatest: 'Latest', sortDist: 'Nearest', 
       range2: 'Within 2 KM', range5: 'Within 5 KM', range10: 'Within 10 KM', rangeAll: 'Whole City',
-      chatTitle: '💬 Chatting with {0}', chatSend: 'Send',
-      balance: 'Balance', kycBtn: 'Verify ID', kycVerified: '✅ Verified', kycPending: '⏳ Pending',
+      chatTitle: '💬 Chatting with {0}', chatSend: 'Send', balance: 'Balance', kycBtn: 'Verify ID', kycVerified: '✅ Verified', kycPending: '⏳ Pending',
       priceHint: '💰 Escrow: RM {0}', freeHint: '🆓 Free Help', zoneHint: '⚠️ Showing【{0}】only'
     }
   };
@@ -315,7 +309,7 @@
     
     buildCatChips();
     updateZoneHint();
-    if (myWallet) loadWallet(); // 更新认证按钮文字
+    if (myWallet) loadWallet();
   }
 
   window.changeLanguage = (lang) => {
@@ -344,7 +338,6 @@
     { key:'putrajaya', name:'布城 WP Putrajaya', districts:['布城 Putrajaya']}
   ];
   
-  // 分类名称（在这里统一修改价格）
   const CATS = [
     { key:'urgent',  nameZh:'紧急', nameEn:'Urgent', nameMs:'Kecemasan', icon:'⚡', price: 0 },
     { key:'tools',   nameZh:'借工具', nameEn:'Borrow Tools', nameMs:'Pinjam Alatan', icon:'🔧', price: 2 },
