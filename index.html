@@ -24,13 +24,16 @@
   .gps-bar { max-width: 600px; margin: 0 auto 15px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; background: #fff; padding: 10px 15px; border-radius: 10px; font-size: 14px; box-shadow: 0 2px 6px rgba(0,0,0,.05); }
   .select-mini { padding: 5px; border-radius: 5px; border: 1px solid #a5d8a0; outline: none; font-weight: bold; color: #2e7d32; }
 
+  /* 发帖区优化 */
   .input-row{ display:flex; flex-direction:column; gap:10px; width:100%; max-width:600px; margin:10px auto 0; }
-  .input-top{ display:flex; gap:10px; }
-  #demandInput{ flex:1 1 auto; font-size:17px; padding:14px 18px; border:none; border-radius:999px; outline:none; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.08); }
-  .price-input-row { display:flex; gap:10px; align-items:center; justify-content:center; }
-  .price-input-row label { font-size:14px; font-weight:bold; color:#e65100; }
-  #priceInput { width: 100px; font-size:16px; padding:10px; border:2px solid #ff9800; border-radius:10px; outline:none; text-align:center; font-weight:bold; }
-  #submitBtn{ flex:0 0 auto; font-size:17px; font-weight:700; padding:14px 26px; border:none; border-radius:999px; background:#ffd400; color:#4a3b00; cursor:pointer; }
+  #demandInput{ width:100%; font-size:17px; padding:14px 18px; border:none; border-radius:999px; outline:none; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.08); }
+  
+  .price-submit-row { display:flex; gap:10px; align-items:center; justify-content:center; width: 100%; }
+  .price-input-row { display:flex; align-items:center; gap: 5px; background: #fff; padding: 5px 15px; border-radius: 999px; box-shadow: 0 2px 6px rgba(0,0,0,.08); flex: 1; }
+  .price-input-row label { font-size:14px; font-weight:bold; color:#e65100; white-space: nowrap; }
+  #priceInput { width: 100%; font-size:16px; padding:10px 0; border:none; outline:none; text-align:center; font-weight:bold; color: #4a3b00; }
+  
+  #submitBtn{ flex:0 0 auto; font-size:17px; font-weight:700; padding:14px 30px; border:none; border-radius:999px; background:#ffd400; color:#4a3b00; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,.12); }
   
   .upload-row{ max-width:600px; margin: 10px auto 0; display: flex; align-items: center; gap: 10px; }
   .upload-label { background: #fff; padding: 8px 15px; border-radius: 8px; font-size: 14px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,.08); display: inline-flex; align-items: center; gap: 5px; }
@@ -101,8 +104,8 @@
 
   .form-group { margin-bottom: 15px; text-align: left; }
   .form-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #333; }
-  .form-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
-  .form-file { border: 1px dashed #2196F3; padding: 15px; border-radius: 8px; text-align: center; background: #e3f2fd; cursor: pointer; font-size: 13px; font-weight: bold; color: #1565c0; }
+  .form-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+  .form-file { border: 1px dashed #2196F3; padding: 15px; border-radius: 8px; text-align: center; background: #e3f2fd; cursor: pointer; font-size: 13px; font-weight: bold; color: #1565c0; display: block; }
   .form-submit { width: 100%; padding: 12px; background: #2196F3; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
 </style>
 </head>
@@ -124,14 +127,13 @@
   <div id="authBox">
     <h3 id="txtAuthTitle">住户实名认证登录</h3>
     <div class="auth-msg" id="authMsg" style="color:red; min-height:20px;"></div>
-    <input type="email" id="emailInput" class="auth-input" placeholder="请输入邮箱" style="width:100%; padding:10px; margin-bottom:10px;">
-    <input type="password" id="passwordInput" class="auth-input" placeholder="请输入密码" style="width:100%; padding:10px; margin-bottom:10px;">
+    <input type="email" id="emailInput" class="auth-input" placeholder="请输入邮箱" style="width:100%; padding:10px; margin-bottom:10px; box-sizing:border-box;">
+    <input type="password" id="passwordInput" class="auth-input" placeholder="请输入密码" style="width:100%; padding:10px; margin-bottom:10px; box-sizing:border-box;">
     <button id="loginBtn" class="auth-btn" style="width:100%; padding:12px; background:var(--green); color:white; border:none; border-radius:8px; font-weight:bold; margin-bottom:10px;">登 录</button>
     <button id="signupBtn" class="auth-btn secondary" style="width:100%; padding:12px; background:#eee; border:none; border-radius:8px; font-weight:bold;">注册新账号</button>
   </div>
 
   <div id="mainApp">
-    <!-- 顶部只有简单的用户信息 -->
     <div class="user-bar">
       <span>👤 <span id="userCode" style="color:#1565c0; font-weight:bold;">HIBRO-0000</span> (<span id="userEmail"></span>)</span>
       <button id="logoutBtn" class="logout-btn">退出</button>
@@ -153,14 +155,14 @@
       </div>
     </div>
 
-    <!-- 发帖区：修改为 C2C 自己填价格 -->
+    <!-- 发帖区 C2C -->
     <div class="input-row">
-      <div class="input-top">
-        <input id="demandInput" type="text" maxlength="60" placeholder="输入你的需求...">
-      </div>
-      <div class="price-input-row">
-        <label>💰 愿意出价: RM</label>
-        <input id="priceInput" type="number" min="0" placeholder="0" value="">
+      <input id="demandInput" type="text" maxlength="60" placeholder="输入你的需求...">
+      <div class="price-submit-row">
+        <div class="price-input-row">
+          <label>💰 愿意出价: RM</label>
+          <input id="priceInput" type="number" min="0" placeholder="0" value="">
+        </div>
         <button id="submitBtn" type="button">发布</button>
       </div>
     </div>
@@ -189,9 +191,9 @@
     <div id="count" style="text-align:center; color:#666; margin-top:10px; font-size:14px;"></div>
   </div>
 
-  <!-- 实名认证弹窗（接单员必填） -->
+  <!-- 实名认证弹窗 -->
   <div id="kycModal" class="modal">
-    <div class="modal-content" style="padding: 20px;">
+    <div class="modal-content" style="padding: 20px; max-height: 90vh; overflow-y: auto;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
         <h3 style="margin:0; color:#1565c0;" id="txtKycTitle">🛡️ 成为认证接单员</h3>
         <button style="background:none; border:none; font-size:24px; cursor:pointer;" onclick="document.getElementById('kycModal').style.display='none'">×</button>
@@ -199,8 +201,8 @@
       <p style="font-size:13px; color:#d32f2f; text-align:left; margin-bottom:15px;" id="txtKycDesc">⚠️ 为了保障邻居安全，接单赚钱必须先实名认证。您的真实姓名和 IC 只有管理员能看，邻居只能看到你的“外号”。</p>
       <div id="kycFormArea">
         <div class="form-group"><label id="lblKycName">外号/昵称 (对外显示)</label><input type="text" id="kycName" placeholder="如: 水管阿强"></div>
-        <div class="form-group"><label id="lblKycIc">真实姓名 (仅后台可见)</label><input type="text" id="kycRealName" placeholder="身份证上的名字"></div>
-        <div class="form-group"><label id="lblKycBank">身份证号码 (IC)</label><input type="text" id="kycIc" placeholder="如: 990101-14-5555"></div>
+        <div class="form-group"><label id="lblKycReal">真实姓名 (仅后台可见)</label><input type="text" id="kycRealName" placeholder="身份证上的名字"></div>
+        <div class="form-group"><label id="lblKycIc">身份证号码 (IC)</label><input type="text" id="kycIc" placeholder="如: 990101-14-5555"></div>
         
         <div class="form-group"><label id="lblKycIcF">上传 IC 正面</label><label for="kycIcFront" class="form-file" id="lblIcFront">📸 点击上传</label><input type="file" id="kycIcFront" accept="image/*" style="display:none;"></div>
         <div class="form-group"><label id="lblKycIcB">上传 IC 背面</label><label for="kycIcBack" class="form-file" id="lblIcBack">📸 点击上传</label><input type="file" id="kycIcBack" accept="image/*" style="display:none;"></div>
@@ -369,7 +371,6 @@
     { key:'putrajaya', name:'布城 WP Putrajaya', districts:['布城 Putrajaya']}
   ];
   
-  // 分类现在没有固定价格了，只是分类标签
   const CATS = [
     { key:'urgent',  nameZh:'紧急', nameEn:'Urgent', nameMs:'Kecemasan', icon:'⚡' },
     { key:'tools',   nameZh:'借工具', nameEn:'Borrow Tools', nameMs:'Pinjam Alatan', icon:'🔧' },
@@ -424,7 +425,12 @@
 
       authBox.style.display = 'none'; mainApp.style.display = 'block';
       
-      applyLanguageUI(); initSelectors(); getUserLocation(); fetchData(); setupRealtime();
+      // 必须先初始化下拉框和分类，再加载位置
+      initSelectors(); 
+      buildCatChips(); 
+      applyLanguageUI(); 
+      
+      getUserLocation(); fetchData(); setupRealtime();
 
       if (homePollTimer) clearInterval(homePollTimer);
       homePollTimer = setInterval(() => {
@@ -535,7 +541,6 @@
     fetchData(true);
   }
 
-  // C2C 修改价格（自由议价）
   async function modifyPrice(itemId, currentPrice) {
     const newPrice = prompt(`当前帖子标价为 RM ${currentPrice}。\n如果双方私下谈好了新价格，请输入新的金额：`, currentPrice);
     if (newPrice === null || isNaN(newPrice) || parseFloat(newPrice) < 0) return alert('价格无效');
@@ -592,8 +597,8 @@
       
       await supabase.from('wallets').update({ 
         kyc_status: 'pending', 
-        real_name: nick, // 外号存到 real_name 字段（前端当外号展示）
-        ic_number: `${realName} | ${ic}`, // 真名和IC合一存后台
+        real_name: nick,
+        ic_number: `${realName} | ${ic}`, 
         ic_front_url: fUrl, 
         ic_back_url: bUrl, 
         selfie_url: sUrl 
@@ -642,7 +647,6 @@
         if (isMine) {
            if (!item.done) actionBtnHtml = `<button class="repricing-btn" onclick="window.modifyPrice('${item.id}', ${itemPrice})">💰 修改价格</button><button class="done-btn" onclick="window.toggleDone('${item.id}', ${item.done})">✓ 已完成</button>`;
         } else {
-           // 【核心】未实名不能接单
            if (myProfile.kyc_status !== 'verified') {
               actionBtnHtml = `<button class="help-btn" style="background:#999;" onclick="window.openKycModal()">🛡️ 需实名认证才能接单</button>`;
            } else {
