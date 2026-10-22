@@ -49,7 +49,7 @@
   .chip-row .label{ width:100%; text-align:center; font-size:13px; color:#4c6b4c; font-weight:600; }
   .chip{ position: relative; font-size:14px; padding:8px 15px; border-radius:999px; border:1.5px solid transparent; background:rgba(255,255,255,.7); color:#4c6b4c; cursor:pointer; }
   .chip.active{ background:var(--green); border-color:#3d8b40; color:#fff; font-weight:700; }
-  .red-dot { position: absolute; top: -2px; right: -2px; width: 12px; height: 12px; background: #ff3b30; border-radius: 50%; border: 2px solid #fff; display: none; }
+  
   .price-hint { max-width: 600px; margin: 10px auto 0; font-size: 15px; font-weight: bold; color: #e65100; text-align: center; }
 
   #list{ width:100%; max-width:600px; margin:20px auto 0; text-align:left; }
@@ -107,13 +107,9 @@
   .form-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
   .form-file { border: 1px dashed #2196F3; padding: 15px; border-radius: 8px; text-align: center; background: #e3f2fd; cursor: pointer; font-size: 13px; font-weight: bold; color: #1565c0; }
   .form-submit { width: 100%; padding: 12px; background: #2196F3; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-
-  #toast { display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ff5252; color: white; padding: 12px 24px; border-radius: 30px; font-weight: bold; z-index: 2000; }
 </style>
 </head>
 <body>
-
-  <div id="toast">🔔 New Message</div>
 
   <div class="header-area">
     <h1 class="title" id="txtMainTitle">邻里帮帮帮</h1>
@@ -194,16 +190,7 @@
     <div id="count" style="text-align:center; color:#666; margin-top:10px; font-size:14px;"></div>
   </div>
 
-  <div id="chatListModal" class="modal">
-    <div class="modal-content">
-      <div class="chat-header" style="background:#ff9800;">
-        <span>📬 谁来找你了</span>
-        <button class="chat-close" onclick="document.getElementById('chatListModal').style.display='none'">×</button>
-      </div>
-      <div class="chat-messages" id="chatListBody" style="background:#fff; padding:0;"></div>
-    </div>
-  </div>
-
+  <!-- 聊天框、认证框等保留原有功能 -->
   <div id="chatModal" class="modal">
     <div class="modal-content chat-content">
       <div class="chat-header">
@@ -218,65 +205,33 @@
     </div>
   </div>
 
+  <!-- 实名认证弹窗 -->
   <div id="kycModal" class="modal">
     <div class="modal-content" style="padding: 20px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
         <h3 style="margin:0; color:#1565c0;">🛡️ 接单员实名认证</h3>
         <button style="background:none; border:none; font-size:24px; cursor:pointer;" onclick="document.getElementById('kycModal').style.display='none'">×</button>
       </div>
-      <p style="font-size:12px; color:#d32f2f; text-align:left; margin-bottom:15px;">⚠️ 身份信息仅用于平台安全审核，不会公开显示。只有通过认证，才能接收费单赚钱。</p>
-      
+      <p style="font-size:12px; color:#d32f2f; text-align:left; margin-bottom:15px;">⚠️ 身份信息仅用于平台安全审核。只有通过认证，才能接收费单赚钱。</p>
       <div id="kycFormArea">
-        <div class="form-group">
-          <label>真实姓名 (如: Tan Ah Kow)</label>
-          <input type="text" id="kycName" placeholder="请输入身份证上的名字">
-        </div>
-        <div class="form-group">
-          <label>身份证号码 (IC)</label>
-          <input type="text" id="kycIc" placeholder="如: 990101-14-5555">
-        </div>
-        <div class="form-group">
-          <label>收款银行/电子钱包</label>
-          <input type="text" id="kycBank" placeholder="如: Maybank 1122334455">
-        </div>
-        <div class="form-group">
-          <label>上传 IC 正面照片</label>
-          <label for="kycIcFront" class="form-file" id="lblIcFront">📸 点击上传 IC 正面</label>
-          <input type="file" id="kycIcFront" accept="image/*" style="display:none;">
-        </div>
-        <div class="form-group">
-          <label>上传 IC 背面照片</label>
-          <label for="kycIcBack" class="form-file" id="lblIcBack">📸 点击上传 IC 背面</label>
-          <input type="file" id="kycIcBack" accept="image/*" style="display:none;">
-        </div>
-        <div class="form-group">
-          <label>本人自拍照</label>
-          <label for="kycSelfie" class="form-file" id="lblSelfie">🤳 点击上传自拍照</label>
-          <input type="file" id="kycSelfie" accept="image/*" style="display:none;">
-        </div>
+        <div class="form-group"><label>真实姓名</label><input type="text" id="kycName"></div>
+        <div class="form-group"><label>身份证号码 (IC)</label><input type="text" id="kycIc"></div>
+        <div class="form-group"><label>收款银行/电子钱包</label><input type="text" id="kycBank"></div>
+        <div class="form-group"><label>上传 IC 正面</label><label for="kycIcFront" class="form-file" id="lblIcFront">📸 上传</label><input type="file" id="kycIcFront" accept="image/*" style="display:none;"></div>
+        <div class="form-group"><label>上传 IC 背面</label><label for="kycIcBack" class="form-file" id="lblIcBack">📸 上传</label><input type="file" id="kycIcBack" accept="image/*" style="display:none;"></div>
+        <div class="form-group"><label>本人自拍照</label><label for="kycSelfie" class="form-file" id="lblSelfie">🤳 上传</label><input type="file" id="kycSelfie" accept="image/*" style="display:none;"></div>
         <button class="form-submit" id="btnSubmitKyc" onclick="window.submitKyc()">提交审核</button>
       </div>
-
-      <div id="kycPendingArea" style="display:none; text-align:center; padding: 20px;">
-        <h2 style="font-size:40px; margin:0;">⏳</h2>
-        <h3 style="color:#ff9800;">审核中</h3>
-        <p style="font-size:14px; color:#666;">资料已提交，请等待管理员审核。</p>
-      </div>
-      
-      <div id="kycVerifiedArea" style="display:none; text-align:center; padding: 20px;">
-        <h2 style="font-size:40px; margin:0;">✅</h2>
-        <h3 style="color:#4CAF50;">已认证</h3>
-        <p style="font-size:14px; color:#666;">您已通过实名认证，可以放心接收费单啦！</p>
-      </div>
+      <div id="kycPendingArea" style="display:none; text-align:center; padding: 20px;"><h3 style="color:#ff9800;">⏳ 审核中</h3></div>
+      <div id="kycVerifiedArea" style="display:none; text-align:center; padding: 20px;"><h3 style="color:#4CAF50;">✅ 已认证</h3></div>
     </div>
   </div>
 
   <div id="csModal" class="modal">
     <div class="modal-content" style="padding: 20px;">
-      <h3>🎧 客服与投诉中心</h3>
-      <textarea id="csTextarea" style="width:100%; height:100px; margin-bottom:10px; padding:10px;"></textarea>
-      <button onclick="window.submitTicket()" style="width:100%; padding:10px; background:#2196F3; color:white; border:none; border-radius:5px;">提交给管理员</button>
-      <button onclick="document.getElementById('csModal').style.display='none'" style="width:100%; padding:10px; background:#eee; border:none; margin-top:5px; border-radius:5px;">关闭</button>
+      <h3>🎧 客服与投诉</h3>
+      <textarea id="csTextarea" style="width:100%; height:100px; margin-bottom:10px;"></textarea>
+      <button onclick="window.submitTicket()" style="width:100%; padding:10px; background:#2196F3; color:white; border:none; border-radius:5px;">提交</button>
     </div>
   </div>
 
@@ -288,8 +243,7 @@
   const SUPABASE_KEY = 'sb_publishable_1dvjfyqSXHfo4eFBmcEdIA_m6ryxkS6';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  const WHATSAPP_NUMBER = '60123456789'; 
-
+  // 多语言字典库
   const UI_TEXT = {
     zh: {
       mainTitle: '邻里帮帮帮', subtitle: '住户互助平台', csBtn: '🎧 客服中心', authTitle: '住户实名认证登录', 
@@ -445,7 +399,6 @@
   async function loadWallet() {
     let { data, error } = await supabase.from('wallets').select('*').eq('user_id', myUserCode).single();
     if (!data) {
-      // 新注册给 0.00
       await supabase.from('wallets').insert([{ user_id: myUserCode, balance: 0.00, kyc_status: 'unverified' }]);
       myWallet = { balance: 0.00, kyc_status: 'unverified' };
     } else {
@@ -454,14 +407,11 @@
     
     walletAmount.textContent = parseFloat(myWallet.balance).toFixed(2);
     if (myWallet.kyc_status === 'verified') {
-      btnKyc.textContent = '✅ 已认证';
-      btnKyc.classList.add('verified');
+      btnKyc.textContent = '✅ 已认证'; btnKyc.classList.add('verified');
     } else if (myWallet.kyc_status === 'pending') {
-      btnKyc.textContent = '⏳ 审核中';
-      btnKyc.classList.add('verified');
+      btnKyc.textContent = '⏳ 审核中'; btnKyc.classList.add('verified');
     } else {
-      btnKyc.textContent = '实名认证';
-      btnKyc.classList.remove('verified');
+      btnKyc.textContent = '实名认证'; btnKyc.classList.remove('verified');
     }
   }
 
@@ -537,15 +487,13 @@
       return;
     }
 
-    btnEl.disabled = true; btnEl.textContent = '处理中...';
+    btnEl.disabled = true; btnEl.textContent = '...';
 
     let imageUrl = null;
     if (selectedFile) {
       const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${selectedFile.name.split('.').pop()}`;
       const { error } = await supabase.storage.from('images').upload(fileName, selectedFile);
-      if (!error) {
-        imageUrl = supabase.storage.from('images').getPublicUrl(fileName).data.publicUrl;
-      }
+      if (!error) imageUrl = supabase.storage.from('images').getPublicUrl(fileName).data.publicUrl;
     }
 
     const newItem = {
@@ -572,9 +520,7 @@
 
   async function confirmDone(itemId, itemPrice) {
     if(!confirm(`确定任务已顺利完成吗？\n点击确认后，平台将把 RM ${itemPrice} 转入接单员钱包。`)) return;
-    
     await supabase.from('demands').update({ done: true }).eq('id', itemId);
-    
     const { data: msgs } = await supabase.from('messages').select('sender_id').eq('demand_id', itemId).order('created_at', { ascending: false }).limit(1);
     if (msgs && msgs.length > 0) {
       const helperCode = 'HIBRO-' + msgs[0].sender_id.split('-')[0].toUpperCase();
@@ -582,7 +528,7 @@
       if (helperWallet) {
         const newBal = parseFloat(helperWallet.balance) + parseFloat(itemPrice);
         await supabase.from('wallets').update({ balance: newBal }).eq('user_id', helperCode);
-        alert(`✅ 任务完成！已成功将 RM ${itemPrice} 转入接单员 (${helperCode}) 的钱包。`);
+        alert(`✅ 任务完成！已将 RM ${itemPrice} 转入接单员 (${helperCode}) 的钱包。`);
       }
     }
     fetchData(true);
@@ -590,18 +536,13 @@
 
   async function requestRepricing(itemId, oldPrice) {
     const newPrice = prompt(`当前定价为 RM ${oldPrice}。\n如果遇到特殊情况需要加钱，请输入新的价格 (如: 150)：`);
-    if (!newPrice || isNaN(newPrice) || parseFloat(newPrice) <= oldPrice) return alert('价格无效或不能低于原价');
-    
+    if (!newPrice || isNaN(newPrice) || parseFloat(newPrice) <= oldPrice) return alert('价格无效');
     const diff = parseFloat(newPrice) - parseFloat(oldPrice);
-    if (myWallet.balance < diff) return alert(`您的余额不足以支付差价 (需要 RM ${diff})`);
-
-    if(!confirm(`您确认将任务金额提高至 RM ${newPrice} 吗？\n(系统将立刻扣除 RM ${diff} 托管费)`)) return;
-
+    if (myWallet.balance < diff) return alert(`余额不足以支付差价 (需要 RM ${diff})`);
+    if(!confirm(`确认提高至 RM ${newPrice} 吗？`)) return;
     const newBal = myWallet.balance - diff;
     await supabase.from('wallets').update({ balance: newBal }).eq('user_id', myUserCode);
-    myWallet.balance = newBal;
-    walletAmount.textContent = newBal.toFixed(2);
-
+    myWallet.balance = newBal; walletAmount.textContent = newBal.toFixed(2);
     await supabase.from('demands').update({ price: parseFloat(newPrice) }).eq('id', itemId);
     fetchData(true);
   }
@@ -611,14 +552,9 @@
     document.getElementById('kycFormArea').style.display = 'none';
     document.getElementById('kycPendingArea').style.display = 'none';
     document.getElementById('kycVerifiedArea').style.display = 'none';
-
-    if (myWallet.kyc_status === 'verified') {
-      document.getElementById('kycVerifiedArea').style.display = 'block';
-    } else if (myWallet.kyc_status === 'pending') {
-      document.getElementById('kycPendingArea').style.display = 'block';
-    } else {
-      document.getElementById('kycFormArea').style.display = 'block';
-    }
+    if (myWallet.kyc_status === 'verified') document.getElementById('kycVerifiedArea').style.display = 'block';
+    else if (myWallet.kyc_status === 'pending') document.getElementById('kycPendingArea').style.display = 'block';
+    else document.getElementById('kycFormArea').style.display = 'block';
   };
 
   ['front', 'back', 'selfie'].forEach(type => {
@@ -626,49 +562,22 @@
     document.getElementById(elId).addEventListener('change', (e) => {
       if(e.target.files[0]) {
         kycFiles[type] = e.target.files[0];
-        document.getElementById('lbl' + (type === 'front' ? 'IcFront' : (type === 'back' ? 'IcBack' : 'Selfie'))).textContent = `✅ ${type.toUpperCase()} 已选择`;
+        document.getElementById('lbl' + (type === 'front' ? 'IcFront' : (type === 'back' ? 'IcBack' : 'Selfie'))).textContent = `✅ 已选择`;
       }
     });
   });
 
   window.submitKyc = async () => {
-    const name = document.getElementById('kycName').value.trim();
-    const ic = document.getElementById('kycIc').value.trim();
-    const bank = document.getElementById('kycBank').value.trim();
-    
-    if (!name || !ic || !bank || !kycFiles.front || !kycFiles.back || !kycFiles.selfie) {
-      return alert('请填完整信息并上传三张照片！');
-    }
-
-    document.getElementById('btnSubmitKyc').textContent = '正在安全上传...';
-    document.getElementById('btnSubmitKyc').disabled = true;
-
+    const name = document.getElementById('kycName').value.trim(), ic = document.getElementById('kycIc').value.trim(), bank = document.getElementById('kycBank').value.trim();
+    if (!name || !ic || !bank || !kycFiles.front || !kycFiles.back || !kycFiles.selfie) return alert('请填完整并上传照片！');
+    document.getElementById('btnSubmitKyc').textContent = '...'; document.getElementById('btnSubmitKyc').disabled = true;
     try {
-      const up = async (file, prefix) => {
-        const fn = `${myUserCode}_${prefix}_${Date.now()}.jpg`;
-        await supabase.storage.from('kyc_docs').upload(fn, file);
-        return fn;
-      };
-      
-      const fUrl = await up(kycFiles.front, 'icf');
-      const bUrl = await up(kycFiles.back, 'icb');
-      const sUrl = await up(kycFiles.selfie, 'selfie');
-
-      await supabase.from('wallets').update({
-        kyc_status: 'pending',
-        real_name: name, ic_number: ic, bank_info: bank,
-        ic_front_url: fUrl, ic_back_url: bUrl, selfie_url: sUrl
-      }).eq('user_id', myUserCode);
-
-      alert('资料已提交！请等待管理员审核。');
-      document.getElementById('kycModal').style.display = 'none';
-      loadWallet();
-    } catch(e) {
-      alert('上传失败: ' + e.message);
-    } finally {
-      document.getElementById('btnSubmitKyc').textContent = '提交审核';
-      document.getElementById('btnSubmitKyc').disabled = false;
-    }
+      const up = async (file, prefix) => { const fn = `${myUserCode}_${prefix}_${Date.now()}.jpg`; await supabase.storage.from('kyc_docs').upload(fn, file); return fn; };
+      const fUrl = await up(kycFiles.front, 'icf'), bUrl = await up(kycFiles.back, 'icb'), sUrl = await up(kycFiles.selfie, 'selfie');
+      await supabase.from('wallets').update({ kyc_status: 'pending', real_name: name, ic_number: ic, bank_info: bank, ic_front_url: fUrl, ic_back_url: bUrl, selfie_url: sUrl }).eq('user_id', myUserCode);
+      alert('已提交审核'); document.getElementById('kycModal').style.display = 'none'; loadWallet();
+    } catch(e) { alert('失败: ' + e.message); } 
+    finally { document.getElementById('btnSubmitKyc').textContent = '提交审核'; document.getElementById('btnSubmitKyc').disabled = false; }
   };
 
   function render() {
@@ -676,7 +585,6 @@
     let filtered = globalItems.filter(it => {
       if (currentCat !== 'all' && it.cat !== currentCat) return false;
       const isMine = it.user_id === currentUser.id;
-      
       if (!isMine) {
         if (!it.state || !it.district) return false; 
         if (it.state !== currentPubState || it.district !== currentPubDist) return false;
@@ -708,14 +616,10 @@
 
         let actionBtnHtml = '';
         if (isMine) {
-           if (!item.done) {
-              actionBtnHtml = `<button class="repricing-btn" onclick="window.requestRepricing('${item.id}', ${itemPrice})">💰 协商加价</button>
-                               <button class="done-btn" onclick="window.confirmDone('${item.id}', ${itemPrice})">✓ 确认完成并打款</button>`;
-           }
+           if (!item.done) actionBtnHtml = `<button class="repricing-btn" onclick="window.requestRepricing('${item.id}', ${itemPrice})">💰 协商加价</button><button class="done-btn" onclick="window.confirmDone('${item.id}', ${itemPrice})">✓ 确认完成并打款</button>`;
         } else {
-           // 【核心修复】免费单（price为0）无需认证即可接单；收费单必须实名
            if (itemPrice > 0 && myWallet.kyc_status !== 'verified') {
-              actionBtnHtml = `<button class="help-btn" style="background:#999;" onclick="alert('接单赚钱必须先完成实名认证！')">💬 需实名认证才能接单</button>`;
+              actionBtnHtml = `<button class="help-btn" style="background:#999;" onclick="alert('接单赚钱必须先完成实名认证！')">💬 需实名认证</button>`;
            } else {
               actionBtnHtml = `<button class="help-btn" onclick="window.openChat('${item.id}', '${item.user_id}', '${myUserCode}')">💬 ${itemPrice > 0 ? '我来帮你 (赚 RM '+itemPrice+')' : '免费帮忙'}</button>`;
            }
@@ -782,17 +686,14 @@
   }
   function buildCatChips() {
     let html = `<div class="label">${t('lblCat')}</div>`;
-    CATS.forEach(c => { 
-      html += `<button class="chip ${c.key === currentCat ? 'active' : ''}" data-key="${c.key}">${c.icon} ${getCatName(c)}</button>`; 
-    });
+    CATS.forEach(c => { html += `<button class="chip ${c.key === currentCat ? 'active' : ''}" data-key="${c.key}">${c.icon} ${getCatName(c)}</button>`; });
     catRow.innerHTML = html;
     catRow.querySelectorAll('.chip').forEach(btn => {
       btn.addEventListener('click', (e) => {
         currentCat = e.currentTarget.dataset.key; 
         catRow.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
         e.currentTarget.classList.add('active'); 
-        updatePriceHint();
-        render();
+        updatePriceHint(); render();
       });
     });
     updatePriceHint();
