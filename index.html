@@ -3,35 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hibro - 邻里帮帮帮</title>
+<title>邻里帮帮帮 - Hibro</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{ --green:#4CAF50; --line:#a5d8a0; }
   *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body{ margin:0; min-height:100vh; padding:20px 16px 80px; background:linear-gradient(180deg,#e3f9dd 0%,#c6f0bd 55%,#b0e9a6 100%); background-attachment:fixed; font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif; text-align:center; }
   
-  .header-area { position: relative; max-width: 600px; margin: 0 auto; padding-top: 60px; }
-  .title{ margin:0; color:#1565c0; font-size:clamp(28px,8vw,45px); letter-spacing:1px; text-shadow:0 2px 0 rgba(255,255,255,.8); line-height: 1.2; }
-  .subtitle{ margin:10px 0 0; color:#d32f2f; font-size:clamp(20px,5vw,30px); font-weight:700; }
+  .header-area { position: relative; max-width: 600px; margin: 0 auto; padding-top: 10px; }
+  .title{ margin:0; color:#1565c0; font-size:clamp(30px,9vw,50px); letter-spacing:2px; text-shadow:0 2px 0 rgba(255,255,255,.8); }
+  .subtitle{ margin:10px 0 0; color:#d32f2f; font-size:clamp(24px,6vw,36px); font-weight:700; }
   
-  .top-actions { position: absolute; right: 0; top: 5px; display: flex; flex-direction: row; gap: 8px; align-items: center; }
-  .lang-select { padding: 5px 10px; border-radius: 20px; border: 2px solid #ff9800; background: #fff; color: #ff9800; font-weight: bold; font-size: 13px; outline: none; cursor: pointer; }
-  .cs-btn { background: #fff; border: 2px solid #2196F3; color: #2196F3; padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; }
+  .top-actions { position: absolute; right: 0; top: 10px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+  .lang-select { padding: 6px 10px; border-radius: 20px; border: 2px solid #ff9800; background: #fff; color: #ff9800; font-weight: bold; font-size: 13px; cursor: pointer; outline: none; }
+  .cs-btn { background: #fff; border: 2px solid #2196F3; color: #2196F3; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 6px rgba(33,150,243,.2); }
+  .cs-btn:hover { background: #e3f2fd; }
 
-  .user-bar { max-width: 600px; margin: 0 auto 10px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.7); padding: 10px 15px; border-radius: 10px; font-size: 13px; }
+  #authBox { background: #fff; max-width: 400px; margin: 30px auto; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+  .auth-input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
+  .auth-btn { width: 100%; padding: 12px; background: var(--green); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
+  .auth-btn.secondary { background: #eee; color: #333; }
+  .auth-msg { font-size: 14px; color: #d32f2f; margin-bottom: 10px; min-height: 20px; }
+
+  #mainApp { display: none; }
+  .user-bar { max-width: 600px; margin: 0 auto 10px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.7); padding: 10px 15px; border-radius: 10px; }
   .logout-btn { background: #ff5252; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-weight: bold;}
 
   .gps-bar { max-width: 600px; margin: 0 auto 15px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; background: #fff; padding: 10px 15px; border-radius: 10px; font-size: 14px; box-shadow: 0 2px 6px rgba(0,0,0,.05); }
+  .gps-status { color: #666; font-weight: bold; }
+  .gps-status.on { color: var(--green); }
   .select-mini { padding: 5px; border-radius: 5px; border: 1px solid #a5d8a0; outline: none; font-weight: bold; color: #2e7d32; }
 
-  /* 发帖区 */
-  .input-row{ display:flex; flex-direction:column; gap:10px; width:100%; max-width:600px; margin:10px auto 0; }
-  #demandInput{ width:100%; font-size:17px; padding:14px 18px; border:none; border-radius:999px; outline:none; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.08); box-sizing: border-box; }
-  .price-submit-row { display:flex; gap:10px; align-items:center; justify-content:center; width: 100%; }
-  .price-input-row { display:flex; align-items:center; gap: 5px; background: #fff; padding: 5px 15px; border-radius: 999px; box-shadow: 0 2px 6px rgba(0,0,0,.08); flex: 1; }
-  .price-input-row label { font-size:14px; font-weight:bold; color:#e65100; white-space: nowrap; }
-  #priceInput { width: 100%; font-size:16px; padding:10px 0; border:none; outline:none; text-align:center; font-weight:bold; color: #4a3b00; }
-  #submitBtn{ flex:0 0 auto; font-size:17px; font-weight:700; padding:14px 30px; border:none; border-radius:999px; background:#ffd400; color:#4a3b00; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,.12); }
+  .input-row{ display:flex; gap:10px; width:100%; max-width:600px; margin:10px auto 0; }
+  #demandInput{ flex:1 1 auto; font-size:17px; padding:14px 18px; border:none; border-radius:999px; outline:none; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.08); }
+  #submitBtn{ flex:0 0 auto; font-size:17px; font-weight:700; padding:14px 26px; border:none; border-radius:999px; background:#ffd400; color:#4a3b00; cursor:pointer; }
   
   .upload-row{ max-width:600px; margin: 10px auto 0; display: flex; align-items: center; gap: 10px; }
   .upload-label { background: #fff; padding: 8px 15px; border-radius: 8px; font-size: 14px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,.08); display: inline-flex; align-items: center; gap: 5px; }
@@ -41,7 +46,7 @@
   .select-row{ display:flex; flex-wrap:wrap; justify-content:center; gap:10px; max-width:600px; margin:16px auto 0; }
   .select-group{ flex:1 1 45%; text-align:left; }
   .select-group label{ display:block; font-size:13px; font-weight:600; color:#4c6b4c; margin-bottom:5px; padding-left:4px; }
-  .select-group select{ width:100%; font-size:15px; padding:10px 12px; border:1.5px solid #a5d8a0; border-radius:10px; outline:none; background: #fff; box-sizing: border-box; }
+  .select-group select{ width:100%; font-size:15px; padding:10px 12px; border:1.5px solid #a5d8a0; border-radius:10px; outline:none; background: #fff; }
 
   .zone-hint { max-width: 600px; margin: 10px auto 0; font-size: 13px; font-weight: bold; color: #d32f2f; text-align: center; background: #ffebee; padding: 6px; border-radius: 8px; display: none; }
 
@@ -49,6 +54,10 @@
   .chip-row .label{ width:100%; text-align:center; font-size:13px; color:#4c6b4c; font-weight:600; }
   .chip{ position: relative; font-size:14px; padding:8px 15px; border-radius:999px; border:1.5px solid transparent; background:rgba(255,255,255,.7); color:#4c6b4c; cursor:pointer; }
   .chip.active{ background:var(--green); border-color:#3d8b40; color:#fff; font-weight:700; }
+  
+  .red-dot { position: absolute; top: -2px; right: -2px; width: 12px; height: 12px; background: #ff3b30; border-radius: 50%; border: 2px solid #fff; display: none; box-shadow: 0 2px 4px rgba(255,59,48,0.4); }
+
+  .price-hint { max-width: 600px; margin: 10px auto 0; font-size: 15px; font-weight: bold; color: #e65100; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; }
 
   #list{ width:100%; max-width:600px; margin:20px auto 0; text-align:left; }
   .item{ position:relative; display:flex; width: 100%; gap:12px; padding-bottom:18px; }
@@ -67,11 +76,11 @@
   .tag.errand{ background:#fff3e0; color:#e65100; } .tag.pet   { background:#f3e5f5; color:#6a1b9a; }
   .tag.chat  { background:#eceff1; color:#455a64; } .tag.dist-tag { background:#fffde7; color:#f57f17; border:1px solid #fff59d;}
   .tag.radius-tag { background:#e1f5fe; color:#0277bd; }
-  .tag.price-tag { background: #ffea00; color: #b26500; font-size: 13px; font-weight: 800; border: 1px solid #ffd54f; }
-  .tag.cleaning { background:#f3e5f5; color:#7b1fa2; } .tag.plumbing { background:#e0f7fa; color:#00695c; }
-  .tag.credit-tag { background: #fff8e1; color: #f57f17; font-weight: bold; border: 1px solid #ffecb3; }
+  .tag.price-tag { background: #ffea00; color: #b26500; font-size: 13px; font-weight: 800; border: 1px solid #ffd54f; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+  .tag.cleaning { background:#f3e5f5; color:#7b1fa2; } 
+  .tag.plumbing { background:#e0f7fa; color:#00695c; }
 
-  .text { margin:0; font-size:18px; color:#222; word-break:break-word; white-space:pre-wrap; }
+  .text { margin:0; font-size:18px; color:#222; word-break:break-word; white-space:pre-wrap; position: relative; }
   .item.done .text{ text-decoration:line-through; color:#7a8c7a; }
   .img-preview { max-width: 100%; max-height: 200px; border-radius: 10px; margin-top: 8px; cursor: pointer; }
   
@@ -79,67 +88,78 @@
   .time{ margin-right:auto; font-size:12px; color:#7a8c7a; }
   .done-btn{ font-size:12px; padding:4px 12px; border-radius:999px; border:1.5px solid var(--green); background:transparent; color:#2e7d32; cursor:pointer; }
   .del{ width:22px; height:22px; border:none; border-radius:50%; background:#ff8a80; color:#fff; cursor:pointer; }
-  .help-btn { background: #2196F3; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; }
-  .reply-btn { background: #ff9800; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; }
-  .like-btn { background: #f0f0f0; color: #555; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; }
+  .help-btn { background: #2196F3; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(33,150,243,.3); }
+  .reply-btn { background: #ff9800; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; animation: pulse 2s infinite; }
+  .like-btn { background: #f0f0f0; color: #555; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; }
   .like-btn.liked { background: #ffebee; color: #e53935; }
   .map-btn { background: #e3f2fd; color: #1565c0; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
-  .hide-btn { background: #f5f5f5; color: #9e9e9e; border: none; padding: 6px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; }
-  .repricing-btn { background: #9c27b0; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; }
+  .hide-btn { background: #f5f5f5; color: #9e9e9e; border: none; padding: 6px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; margin-left: 5px; }
+  .hide-btn:hover { background: #eeeeee; color: #616161; }
 
-  .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
+  .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
   .modal-content { background: #fff; width: 90%; max-width: 400px; border-radius: 15px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
   
-  .chat-content { height: 75vh; }
+  .chat-list-content { max-height: 75vh; }
+  .chat-list-body { overflow-y: auto; flex: 1; background: #f5f7f5; }
+  .chat-list-item { padding: 15px; border-bottom: 1px solid #eee; display: flex; flex-direction: column; gap: 5px; cursor: pointer; text-align: left; transition: background 0.2s; }
+  .chat-list-item:hover { background: #e8f5e9; }
+  .chat-list-user { font-weight: bold; color: #1565c0; font-size: 14px; }
+  .chat-list-msg { font-size: 13px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .chat-content { height: 70vh; }
   .chat-header { padding: 15px; background: var(--green); color: white; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
   .chat-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
   .chat-messages { flex: 1; padding: 15px; overflow-y: auto; background: #f5f7f5; display: flex; flex-direction: column; gap: 10px; }
-  .msg-bubble { max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 15px; word-break: break-word; text-align: left; }
+  .msg-bubble { max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 15px; word-break: break-word; text-align: left; position: relative; }
   .msg-mine { background: #dcf8c6; align-self: flex-end; border-bottom-right-radius: 2px; }
   .msg-other { background: #fff; align-self: flex-start; border-bottom-left-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
   .chat-input-area { padding: 10px; background: #fff; display: flex; gap: 10px; border-top: 1px solid #eee; }
   .chat-input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
   .chat-send { background: var(--green); color: white; border: none; padding: 0 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
 
-  .form-group { margin-bottom: 15px; text-align: left; }
-  .form-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #333; }
-  .form-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
-  .form-file { border: 1px dashed #2196F3; padding: 15px; border-radius: 8px; text-align: center; background: #e3f2fd; cursor: pointer; font-size: 13px; font-weight: bold; color: #1565c0; display: block; }
-  .form-submit { width: 100%; padding: 12px; background: #2196F3; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+  .cs-content { padding: 20px; text-align: left; }
+  .cs-content h3 { margin: 0 0 10px 0; color: #333; text-align: center; }
+  .cs-content p { font-size: 14px; color: #666; margin-bottom: 15px; text-align: center; }
+  .cs-textarea { width: 100%; height: 120px; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-family: inherit; font-size: 15px; resize: none; margin-bottom: 15px; outline: none; }
+  .cs-submit { width: 100%; padding: 12px; background: #2196F3; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
+  .cs-wa-btn { display: block; width: 100%; padding: 12px; background: #25D366; color: white; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; text-align: center; box-sizing: border-box; }
 
-  /* 评分星星 */
-  .star-rating { display: flex; justify-content: center; gap: 10px; margin: 20px 0; }
-  .star { font-size: 40px; cursor: pointer; color: #ccc; transition: color 0.2s; }
-  .star.active { color: #ffd700; }
+  #toast { display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ff5252; color: white; padding: 12px 24px; border-radius: 30px; font-weight: bold; z-index: 2000; box-shadow: 0 4px 12px rgba(255,82,82,0.4); cursor: pointer; animation: dropDown 0.3s ease-out; }
+  @keyframes dropDown { from { top: -50px; opacity: 0; } to { top: 20px; opacity: 1; } }
 </style>
 </head>
 <body>
 
+  <div id="toast" onclick="window.scrollTo(0,0)">🔔 New Message / 新消息！</div>
+
   <div class="header-area">
+    <h1 class="title">邻里帮帮帮</h1>
     <div class="top-actions">
       <select class="lang-select" id="langSelect" onchange="window.changeLanguage(this.value)">
-        <option value="zh">中文</option>
-        <option value="ms">Bahasa Melayu</option>
-        <option value="en">English</option>
+        <option value="zh">🇨🇳 中文</option>
+        <option value="ms">🇲🇾 Bahasa Melayu</option>
+        <option value="en">🇬🇧 English</option>
       </select>
-      <button class="cs-btn" id="btnCs" onclick="window.openCustomerService()">🎧 客服</button>
+      <button class="cs-btn" id="btnCs" onclick="window.openCustomerService()">🎧 客服中心</button>
     </div>
-    <h1 class="title" id="txtMainTitle">邻里帮帮帮</h1>
     <p class="subtitle" id="txtSubtitle">住户互助平台</p>
   </div>
 
   <div id="authBox">
     <h3 id="txtAuthTitle">住户实名认证登录</h3>
-    <div class="auth-msg" id="authMsg" style="color:red; min-height:20px;"></div>
-    <input type="email" id="emailInput" class="auth-input" placeholder="请输入邮箱" style="width:100%; padding:10px; margin-bottom:10px; box-sizing:border-box;">
-    <input type="password" id="passwordInput" class="auth-input" placeholder="请输入密码" style="width:100%; padding:10px; margin-bottom:10px; box-sizing:border-box;">
-    <button id="loginBtn" class="auth-btn" style="width:100%; padding:12px; background:var(--green); color:white; border:none; border-radius:8px; font-weight:bold; margin-bottom:10px;">登 录</button>
-    <button id="signupBtn" class="auth-btn secondary" style="width:100%; padding:12px; background:#eee; border:none; border-radius:8px; font-weight:bold;">注册新账号</button>
+    <div class="auth-msg" id="authMsg"></div>
+    <input type="email" id="emailInput" class="auth-input" placeholder="请输入邮箱">
+    <input type="password" id="passwordInput" class="auth-input" placeholder="请输入密码">
+    <button id="loginBtn" class="auth-btn" id="btnLogin">登 录</button>
+    <button id="signupBtn" class="auth-btn secondary" id="btnSignup">注册新账号</button>
   </div>
 
   <div id="mainApp">
     <div class="user-bar">
-      <span>👤 <span id="userCode" style="color:#1565c0; font-weight:bold;">HIBRO-0000</span> (<span id="userEmail"></span>)</span>
+      <span style="font-size:14px; color:#2e7d32; font-weight:bold;">
+        👤 <span id="userCode" style="color:#1565c0;">HIBRO-0000</span> 
+        <span style="font-size:12px; color:#666; margin-left:5px;">(<span id="userEmail"></span>)</span>
+      </span>
       <button id="logoutBtn" class="logout-btn">退出</button>
     </div>
 
@@ -159,20 +179,13 @@
       </div>
     </div>
 
-    <!-- 发帖区（无门槛） -->
     <div class="input-row">
       <input id="demandInput" type="text" maxlength="60" placeholder="输入你的需求...">
-      <div class="price-submit-row">
-        <div class="price-input-row">
-          <label id="lblPrice">💰 愿意出价: RM</label>
-          <input id="priceInput" type="number" min="0" placeholder="0" value="">
-        </div>
-        <button id="submitBtn" type="button">发布</button>
-      </div>
+      <button id="submitBtn" type="button">发布</button>
     </div>
 
     <div class="upload-row">
-      <label class="upload-label" id="lblUpload" for="imageInput">📷 附加图片</label>
+      <label class="upload-label" for="imageInput">📷 附加图片</label>
       <input type="file" id="imageInput" accept="image/*">
       <img id="imagePreview" src="" alt="预览">
     </div>
@@ -189,62 +202,24 @@
     </div>
 
     <div class="zone-hint" id="zoneHint"></div>
-    <div class="chip-row" id="catRow"><div class="label" id="lblCat">🏷️ 分类：</div></div>
+
+    <div class="chip-row" id="catRow">
+      <div class="label" id="lblCat">🏷️ 分类：</div>
+    </div>
+
+    <div class="price-hint" id="priceHint"></div>
 
     <div id="list" class="loading">正在加载云端数据...</div>
-    <div id="count" style="text-align:center; color:#666; margin-top:10px; font-size:14px;"></div>
+    <div id="count"></div>
   </div>
 
-  <!-- 实名认证弹窗 -->
-  <div id="kycModal" class="modal">
-    <div class="modal-content" style="padding: 20px; max-height: 90vh; overflow-y: auto;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3 style="margin:0; color:#1565c0;" id="txtKycTitle">🛡️ 成为认证接单员</h3>
-        <button style="background:none; border:none; font-size:24px; cursor:pointer;" onclick="document.getElementById('kycModal').style.display='none'">×</button>
+  <div id="chatListModal" class="modal">
+    <div class="modal-content chat-list-content">
+      <div class="chat-header" style="background:#ff9800;">
+        <span id="txtChatListTitle">📬 谁来找你了</span>
+        <button class="chat-close" onclick="window.closeChatList()">×</button>
       </div>
-      <p style="font-size:13px; color:#d32f2f; text-align:left; margin-bottom:15px;" id="txtKycDesc">⚠️ 为了保障邻居安全，接单赚钱必须先实名认证。您的真实姓名和 IC 只有管理员能看，邻居只能看到你的“外号”和“信用分”。</p>
-      <div id="kycFormArea">
-        <div class="form-group"><label id="lblKycName">外号/昵称 (对外显示)</label><input type="text" id="kycName" placeholder="如: 水管阿强"></div>
-        <div class="form-group"><label id="lblKycReal">真实姓名 (仅后台可见)</label><input type="text" id="kycRealName" placeholder="身份证上的名字"></div>
-        <div class="form-group"><label id="lblKycIc">身份证号码 (IC)</label><input type="text" id="kycIc" placeholder="如: 990101-14-5555"></div>
-        <div class="form-group"><label id="lblKycBank">收款银行/电子钱包</label><input type="text" id="kycBank" placeholder="如: Maybank 1122334455"></div>
-        
-        <div class="form-group"><label id="lblKycIcF">上传 IC 正面</label><label for="kycIcFront" class="form-file" id="lblIcFront">📸 点击上传</label><input type="file" id="kycIcFront" accept="image/*" style="display:none;"></div>
-        <div class="form-group"><label id="lblKycIcB">上传 IC 背面</label><label for="kycIcBack" class="form-file" id="lblIcBack">📸 点击上传</label><input type="file" id="kycIcBack" accept="image/*" style="display:none;"></div>
-        <div class="form-group"><label id="lblKycSelfie">本人自拍照</label><label for="kycSelfie" class="form-file" id="lblSelfie">🤳 点击上传</label><input type="file" id="kycSelfie" accept="image/*" style="display:none;"></div>
-        
-        <button class="form-submit" id="btnSubmitKyc" onclick="window.submitKyc()">提交审核</button>
-      </div>
-      <div id="kycPendingArea" style="display:none; text-align:center; padding: 20px;"><h3 style="color:#ff9800;">⏳ 审核中，请等待管理员通过</h3></div>
-    </div>
-  </div>
-
-  <!-- 评分弹窗 -->
-  <div id="ratingModal" class="modal">
-    <div class="modal-content" style="padding: 20px; text-align: center;">
-      <h3 style="color:#e65100; margin-top:0;">🌟 请为接单员打分</h3>
-      <p style="font-size:14px; color:#666;" id="ratingDesc">他的服务态度如何？</p>
-      <div class="star-rating" id="starContainer">
-        <span class="star" onclick="window.setRating(1)">★</span>
-        <span class="star" onclick="window.setRating(2)">★</span>
-        <span class="star" onclick="window.setRating(3)">★</span>
-        <span class="star" onclick="window.setRating(4)">★</span>
-        <span class="star" onclick="window.setRating(5)">★</span>
-      </div>
-      <button onclick="window.submitRating()" style="width:100%; padding:12px; background:#ffd700; color:#4a3b00; font-weight:bold; border:none; border-radius:8px; font-size:16px; cursor:pointer;">提交评价并结单</button>
-    </div>
-  </div>
-
-  <!-- 客服弹窗 -->
-  <div id="csModal" class="modal">
-    <div class="modal-content" style="padding: 20px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3 style="margin:0;" id="txtCsTitle">🎧 客服与投诉</h3>
-        <button style="background:none; border:none; font-size:24px; cursor:pointer;" onclick="document.getElementById('csModal').style.display='none'">×</button>
-      </div>
-      <textarea id="csTextarea" style="width:100%; height:100px; margin-bottom:10px; padding:10px; box-sizing:border-box;" placeholder="请描述您的问题..."></textarea>
-      <button onclick="window.submitTicket()" style="width:100%; padding:10px; background:#2196F3; color:white; border:none; border-radius:5px; cursor:pointer;" id="btnCsSubmit">提交</button>
-      <button onclick="document.getElementById('csModal').style.display='none'" style="width:100%; padding:10px; background:#eee; border:none; margin-top:5px; border-radius:5px; cursor:pointer;" id="btnCsClose">取消 / 关闭</button>
+      <div class="chat-list-body" id="chatListBody"></div>
     </div>
   </div>
 
@@ -257,7 +232,23 @@
       <div class="chat-messages" id="chatMessages"></div>
       <div class="chat-input-area">
         <input type="text" id="chatInput" class="chat-input" placeholder="输入消息...">
-        <button class="chat-send" onclick="window.sendMsg()" id="btnChatSend">发送</button>
+        <button class="chat-send" onclick="window.sendMsg()">发送</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="csModal" class="modal">
+    <div class="modal-content">
+      <div class="chat-header" style="background:#2196F3;">
+        <span id="txtCsTitle">🎧 客服与投诉中心</span>
+        <button class="chat-close" onclick="window.closeCustomerService()">×</button>
+      </div>
+      <div class="cs-content">
+        <p id="txtCsDesc">如果遇到纠纷、系统问题或对邻居有意见，请在此留言，管理员会尽快介入处理。</p>
+        <textarea id="csTextarea" class="cs-textarea" placeholder="请详细描述您的问题..."></textarea>
+        <button class="cs-submit" id="csSubmitBtn" onclick="window.submitTicket()">提交给管理员</button>
+        <div style="text-align: center; font-size: 13px; color: #999; margin: 10px 0;">—— 或者 ——</div>
+        <a href="#" id="csWaBtn" class="cs-wa-btn" target="_blank">💬 紧急情况，一键 WhatsApp 联系</a>
       </div>
     </div>
   </div>
@@ -270,45 +261,47 @@
   const SUPABASE_KEY = 'sb_publishable_1dvjfyqSXHfo4eFBmcEdIA_m6ryxkS6';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+  const WHATSAPP_NUMBER = '60123456789'; 
+
   const UI_TEXT = {
     zh: {
-      mainTitle: '邻里帮帮帮', subtitle: '住户互助平台', csBtn: '🎧 客服中心', authTitle: '住户实名认证登录', 
-      btnLogin: '登 录', btnSignup: '注册新账号', lblState: '📍 州/直辖区：', lblDistrict: '🏘️ 县/分区：', 
-      lblCat: '🏷️ 分类：', btnSubmit: '发布', inputPlac: '输入你的需求...', upload: '📷 附加图片', logout: '退出', 
-      gpsOn: '📍 定位成功', gpsLoading: '📍 正在获取位置...', sortLatest: '最新发布', sortDist: '距离最近', 
-      range2: '2 公里内', range5: '5 公里内', range10: '10 公里内', rangeAll: '全城',
-      chatTitle: '💬 与 {0} 聊天中', chatSend: '发送', lblPrice: '💰 愿意出价: RM', 
-      zoneHint: '⚠️ 当前仅显示【{0}】区域',
-      csTitle: '🎧 客服与投诉', csPlac: '请描述您的问题...', csSubmit: '提交', csClose: '取消 / 关闭',
-      kycTitle: '🛡️ 成为认证接单员', kycDesc: '⚠️ 为了保障邻居安全，接单赚钱必须先实名认证。您的真实姓名和 IC 只有管理员能看，邻居只能看到你的“外号”和“信用分”。',
-      kycName: '外号/昵称 (对外显示)', kycReal: '真实姓名 (仅后台可见)', kycIc: '身份证号码 (IC)', kycBank: '收款银行/电子钱包',
-      kycF: '上传 IC 正面', kycB: '上传 IC 背面', kycS: '本人自拍照', kycUp: '📸 点击上传', kycSubmit: '提交审核'
+      subtitle: '住户互助平台', csBtn: '🎧 客服中心', authTitle: '住户实名认证登录', btnLogin: '登 录', btnSignup: '注册新账号',
+      lblState: '📍 州/直辖区：', lblDistrict: '🏘️ 县/分区：', lblCat: '🏷️ 分类：', btnSubmit: '发布', 
+      inputPlac: '输入你的需求...', upload: '📷 附加图片', logout: '退出', gpsOn: '📍 定位成功', gpsLoading: '📍 正在获取位置...',
+      sortLatest: '最新发布', sortDist: '距离最近', range2: '2 公里内', range5: '5 公里内', range10: '10 公里内', rangeAll: '全城',
+      empty: '这里还没有同区域的求助~', count: '当前共 {0} 条 · 待完成 {1} 条',
+      chatListTitle: '📬 谁来找你了', chatTitle: '💬 与 {0} 聊天中', chatInput: '输入消息...', chatSend: '发送',
+      csTitle: '🎧 客服与投诉中心', csDesc: '如果遇到纠纷、系统问题或对邻居有意见，请在此留言，管理员会尽快介入处理。',
+      csPlac: '请详细描述您的问题...', csBtnSubmit: '提交给管理员', csBtnWa: '💬 紧急情况，一键 WhatsApp 联系',
+      newMsgToast: '🔔 收到一条新私聊消息！',
+      btnHelp: '💬 我来帮你 (赚 RM {0})', btnReplyList: '💬 查看私聊 ({0})', btnHide: '🚫 隐藏', btnMap: '📍 查看地图位置',
+      btnDone: '✓ 完成', btnUndo: '↺ 撤销', btnFree: '🆓 免费', msgTranslate: '🌐 翻译中...'
     },
     ms: {
-      mainTitle: 'Hibro Bantuan Jiran', subtitle: 'Platform Bantuan Jiran', csBtn: '🎧 Pusat Khidmat', authTitle: 'Log Masuk Penduduk', 
-      btnLogin: 'Log Masuk', btnSignup: 'Daftar Akaun', lblState: '📍 Negeri/Wilayah:', lblDistrict: '🏘️ Daerah/Bahagian:', 
-      lblCat: '🏷️ Kategori:', btnSubmit: 'Hantar', inputPlac: 'Masukkan keperluan anda...', upload: '📷 Lampir Gambar', logout: 'Keluar', 
-      gpsOn: '📍 Lokasi Berjaya', gpsLoading: '📍 Mendapatkan lokasi...', sortLatest: 'Terkini', sortDist: 'Terdekat', 
-      range2: 'Dalam 2 KM', range5: 'Dalam 5 KM', range10: 'Dalam 10 KM', rangeAll: 'Seluruh Bandar',
-      chatTitle: '💬 Berbual dengan {0}', chatSend: 'Hantar', lblPrice: '💰 Tawaran Harga: RM', 
-      zoneHint: '⚠️ Hanya kawasan【{0}】',
-      csTitle: '🎧 Pusat Khidmat & Aduan', csPlac: 'Terangkan masalah anda...', csSubmit: 'Hantar', csClose: 'Batal / Tutup',
-      kycTitle: '🛡️ Sahkan Identiti Pekerja', kycDesc: '⚠️ Untuk keselamatan, pekerja mesti disahkan. Nama sebenar & IC hanya untuk admin. Jiran hanya nampak "Nama Samaran" dan "Skor Kredit".',
-      kycName: 'Nama Samaran (Papar Awam)', kycReal: 'Nama Sebenar (Admin Sahaja)', kycIc: 'Nombor IC', kycBank: 'Akaun Bank / e-Wallet',
-      kycF: 'Muat naik IC Depan', kycB: 'Muat naik IC Belakang', kycS: 'Gambar Selfie', kycUp: '📸 Klik muat naik', kycSubmit: 'Hantar Semakan'
+      subtitle: 'Platform Bantuan Jiran', csBtn: '🎧 Pusat Khidmat', authTitle: 'Log Masuk Penduduk', btnLogin: 'Log Masuk', btnSignup: 'Daftar Akaun',
+      lblState: '📍 Negeri/Wilayah:', lblDistrict: '🏘️ Daerah/Bahagian:', lblCat: '🏷️ Kategori:', btnSubmit: 'Hantar', 
+      inputPlac: 'Masukkan keperluan anda...', upload: '📷 Lampir Gambar', logout: 'Keluar', gpsOn: '📍 Lokasi Berjaya', gpsLoading: '📍 Mendapatkan lokasi...',
+      sortLatest: 'Terkini', sortDist: 'Terdekat', range2: 'Dalam 2 KM', range5: 'Dalam 5 KM', range10: 'Dalam 10 KM', rangeAll: 'Seluruh Bandar',
+      empty: 'Tiada permintaan di kawasan ini~', count: 'Jumlah {0} · Belum selesai {1}',
+      chatListTitle: '📬 Siapa yang mencari anda', chatTitle: '💬 Berbual dengan {0}', chatInput: 'Taip mesej...', chatSend: 'Hantar',
+      csTitle: '🎧 Pusat Khidmat & Aduan', csDesc: 'Jika ada masalah atau aduan, sila tinggalkan mesej di sini.',
+      csPlac: 'Terangkan masalah anda...', csBtnSubmit: 'Hantar kepada Admin', csBtnWa: '💬 Hubungi WhatsApp',
+      newMsgToast: '🔔 Mesej peribadi baru diterima!',
+      btnHelp: '💬 Saya Boleh Bantu (RM {0})', btnReplyList: '💬 Lihat Sembang ({0})', btnHide: '🚫 Sembunyi', btnMap: '📍 Lihat Peta',
+      btnDone: '✓ Selesai', btnUndo: '↺ Batal', btnFree: '🆓 Percuma', msgTranslate: '🌐 Menterjemah...'
     },
     en: {
-      mainTitle: 'Hibro Mutual Aid', subtitle: 'Neighborhood Mutual Aid', csBtn: '🎧 Support Center', authTitle: 'Resident Login', 
-      btnLogin: 'Login', btnSignup: 'Sign Up', lblState: '📍 State/Territory:', lblDistrict: '🏘️ District:', 
-      lblCat: '🏷️ Category:', btnSubmit: 'Post', inputPlac: 'Enter your request...', upload: '📷 Attach Image', logout: 'Logout', 
-      gpsOn: '📍 Location Found', gpsLoading: '📍 Getting location...', sortLatest: 'Latest', sortDist: 'Nearest', 
-      range2: 'Within 2 KM', range5: 'Within 5 KM', range10: 'Within 10 KM', rangeAll: 'Whole City',
-      chatTitle: '💬 Chatting with {0}', chatSend: 'Send', lblPrice: '💰 Offer Price: RM', 
-      zoneHint: '⚠️ Showing【{0}】only',
-      csTitle: '🎧 Support & Complaints', csPlac: 'Describe your issue...', csSubmit: 'Submit', csClose: 'Cancel / Close',
-      kycTitle: '🛡️ Helper Verification', kycDesc: '⚠️ For safety, helpers must be verified. Real name & IC are for admin only. Neighbors only see your "Nickname" and "Credit Score".',
-      kycName: 'Nickname (Public)', kycReal: 'Real Name (Admin Only)', kycIc: 'IC Number', kycBank: 'Bank / e-Wallet Account',
-      kycF: 'Upload IC Front', kycB: 'Upload IC Back', kycS: 'Selfie Photo', kycUp: '📸 Click to upload', kycSubmit: 'Submit Review'
+      subtitle: 'Neighborhood Mutual Aid', csBtn: '🎧 Support Center', authTitle: 'Resident Login', btnLogin: 'Login', btnSignup: 'Sign Up',
+      lblState: '📍 State/Territory:', lblDistrict: '🏘️ District:', lblCat: '🏷️ Category:', btnSubmit: 'Post', 
+      inputPlac: 'Enter your request...', upload: '📷 Attach Image', logout: 'Logout', gpsOn: '📍 Location Found', gpsLoading: '📍 Getting location...',
+      sortLatest: 'Latest', sortDist: 'Nearest', range2: 'Within 2 KM', range5: 'Within 5 KM', range10: 'Within 10 KM', rangeAll: 'Whole City',
+      empty: 'No requests in this area yet~', count: 'Total {0} · Pending {1}',
+      chatListTitle: '📬 Who is looking for you', chatTitle: '💬 Chatting with {0}', chatInput: 'Type a message...', chatSend: 'Send',
+      csTitle: '🎧 Support & Complaints', csDesc: 'If you face any issues or have complaints, please leave a message here.',
+      csPlac: 'Describe your issue...', csBtnSubmit: 'Submit to Admin', csBtnWa: '💬 WhatsApp Support',
+      newMsgToast: '🔔 New private message received!',
+      btnHelp: '💬 I Can Help (Earn RM {0})', btnReplyList: '💬 View Chats ({0})', btnHide: '🚫 Hide', btnMap: '📍 View Map',
+      btnDone: '✓ Done', btnUndo: '↺ Undo', btnFree: '🆓 Free', msgTranslate: '🌐 Translating...'
     }
   };
 
@@ -320,53 +313,17 @@
     return str;
   }
 
-  function applyLanguageUI() {
-    document.getElementById('langSelect').value = currentLang;
-    document.getElementById('txtMainTitle').textContent = t('mainTitle');
-    document.getElementById('txtSubtitle').textContent = t('subtitle');
-    document.getElementById('btnCs').textContent = t('csBtn');
-    document.getElementById('txtAuthTitle').textContent = t('authTitle');
-    document.getElementById('loginBtn').textContent = t('btnLogin');
-    document.getElementById('signupBtn').textContent = t('btnSignup');
-    document.getElementById('logoutBtn').textContent = t('logout');
-    document.getElementById('lblState').textContent = t('lblState');
-    document.getElementById('lblDistrict').textContent = t('lblDistrict');
-    document.getElementById('lblCat').textContent = t('lblCat');
-    document.getElementById('lblPrice').textContent = t('lblPrice');
-    document.getElementById('demandInput').placeholder = t('inputPlac');
-    document.getElementById('submitBtn').textContent = t('btnSubmit');
-    document.getElementById('lblUpload').textContent = t('upload');
+  async function translateText(text) {
+    if (currentLang === 'zh') return text;
+    if (!text || text.trim() === '') return text;
     
-    document.getElementById('sortSelect').options[0].text = t('sortLatest');
-    document.getElementById('sortSelect').options[1].text = t('sortDist');
-    document.getElementById('rangeSelect').options[0].text = t('range2');
-    document.getElementById('rangeSelect').options[1].text = t('range5');
-    document.getElementById('rangeSelect').options[2].text = t('range10');
-    document.getElementById('rangeSelect').options[3].text = t('rangeAll');
-
-    document.getElementById('txtCsTitle').textContent = t('csTitle');
-    document.getElementById('csTextarea').placeholder = t('csPlac');
-    document.getElementById('btnCsSubmit').textContent = t('csSubmit');
-    document.getElementById('btnCsClose').textContent = t('csClose');
-
-    document.getElementById('txtKycTitle').textContent = t('kycTitle');
-    document.getElementById('txtKycDesc').textContent = t('kycDesc');
-    document.getElementById('lblKycName').textContent = t('kycName');
-    document.getElementById('lblKycReal').textContent = t('kycReal');
-    document.getElementById('lblKycIc').textContent = t('kycIc');
-    document.getElementById('lblKycBank').textContent = t('kycBank');
-    document.getElementById('lblKycIcF').textContent = t('kycF');
-    document.getElementById('lblKycIcB').textContent = t('kycB');
-    document.getElementById('lblKycSelfie').textContent = t('kycS');
-    document.getElementById('lblIcFront').textContent = t('kycUp');
-    document.getElementById('lblIcBack').textContent = t('kycUp');
-    document.getElementById('lblSelfie').textContent = t('kycUp');
-    document.getElementById('btnSubmitKyc').textContent = t('kycSubmit');
-    document.getElementById('btnChatSend').textContent = t('chatSend');
-
-    buildCatChips();
-    updateZoneHint();
-    if (myProfile) loadProfile();
+    try {
+      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${currentLang}&dt=t&q=${encodeURIComponent(text)}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data && data[0]) return data[0].map(item => item[0]).join('');
+    } catch (e) { console.warn("翻译出错", e); }
+    return text;
   }
 
   window.changeLanguage = (lang) => {
@@ -376,6 +333,48 @@
     render();
   };
 
+  function applyLanguageUI() {
+    document.getElementById('langSelect').value = currentLang;
+    document.getElementById('txtSubtitle').textContent = t('subtitle');
+    document.getElementById('btnCs').textContent = t('csBtn');
+    document.getElementById('txtAuthTitle').textContent = t('authTitle');
+    document.getElementById('btnLogin').textContent = t('btnLogin');
+    document.getElementById('btnSignup').textContent = t('btnSignup');
+    document.getElementById('logoutBtn').textContent = t('logout');
+    
+    document.getElementById('lblState').textContent = t('lblState');
+    document.getElementById('lblDistrict').textContent = t('lblDistrict');
+    document.getElementById('lblCat').textContent = t('lblCat');
+    document.getElementById('demandInput').placeholder = t('inputPlac');
+    document.getElementById('submitBtn').textContent = t('btnSubmit');
+    document.querySelector('.upload-label').textContent = t('upload');
+
+    const sortSelect = document.getElementById('sortSelect');
+    sortSelect.options[0].text = t('sortLatest');
+    sortSelect.options[1].text = t('sortDist');
+    
+    const rangeSelect = document.getElementById('rangeSelect');
+    rangeSelect.options[0].text = t('range2');
+    rangeSelect.options[1].text = t('range5');
+    rangeSelect.options[2].text = t('range10');
+    rangeSelect.options[3].text = t('rangeAll');
+
+    document.getElementById('txtChatListTitle').textContent = t('chatListTitle');
+    document.getElementById('chatInput').placeholder = t('chatInput');
+    document.querySelector('.chat-send').textContent = t('chatSend');
+    
+    document.getElementById('txtCsTitle').textContent = t('csTitle');
+    document.getElementById('txtCsDesc').textContent = t('csDesc');
+    document.getElementById('csTextarea').placeholder = t('csPlac');
+    document.getElementById('csSubmitBtn').textContent = t('csBtnSubmit');
+    document.getElementById('csWaBtn').textContent = t('csBtnWa');
+    document.getElementById('toast').textContent = t('newMsgToast');
+
+    buildCatChips();
+    updateZoneHint();
+  }
+
+  // ================== 全马 16 个州属及直辖区完整数据 ==================
   const FULL_MALAYSIA = [
     { key:'johor', name:'柔佛 Johor', districts:['新山 Johor Bahru','峇株巴辖 Batu Pahat','居銮 Kluang','哥打丁宜 Kota Tinggi','丰盛港 Mersing','麻坡 Muar','笨珍 Pontian','昔加末 Segamat','古来 Kulai','东甲 Tangkak']},
     { key:'kedah', name:'吉打 Kedah', districts:['华玲 Baling','万拉峇鲁 Bandar Baharu','哥打士打 Kota Setar','瓜拉姆达 Kuala Muda','古邦巴素 Kubang Pasu','居林 Kulim','浮罗交怡 Langkawi','巴东得腊 Padang Terap','锡 Sik','铅 Yan','笨筒 Pendang','波各先那 Pokok Sena']},
@@ -396,17 +395,14 @@
   ];
   
   const CATS = [
-    { key:'urgent',  nameZh:'紧急', nameEn:'Urgent', nameMs:'Kecemasan', icon:'⚡' },
-    { key:'tools',   nameZh:'借工具', nameEn:'Borrow Tools', nameMs:'Pinjam Alatan', icon:'🔧' },
-    { key:'errand',  nameZh:'代跑腿', nameEn:'Errand', nameMs:'Jasa Kurier', icon:'🛒' },
-    { key:'cleaning',nameZh:'保洁服务', nameEn:'Cleaning', nameMs:'Pembersihan', icon:'🧹' },
-    { key:'plumbing',nameZh:'通下水道', nameEn:'Plumbing', nameMs:'Paip Tersumbat', icon:'🪠' },
-    { key:'pet',     nameZh:'宠物', nameEn:'Pets', nameMs:'Haiwan Peliharaan', icon:'🐾' },
-    { key:'chat',    nameZh:'闲聊', nameEn:'Chat', nameMs:'Sembang', icon:'💬' }
+    { key:'urgent',  nameZh:'紧急', nameEn:'Urgent', nameMs:'Kecemasan', icon:'⚡', price: 0 },
+    { key:'tools',   nameZh:'借工具', nameEn:'Borrow Tools', nameMs:'Pinjam Alatan', icon:'🔧', price: 2 },
+    { key:'errand',  nameZh:'代跑腿', nameEn:'Errand', nameMs:'Jasa Kurier', icon:'🛒', price: 5 },
+    { key:'cleaning',nameZh:'保洁服务', nameEn:'Cleaning', nameMs:'Pembersihan', icon:'🧹', price: 15 },
+    { key:'plumbing',nameZh:'通下水道', nameEn:'Plumbing', nameMs:'Paip Tersumbat', icon:'🪠', price: 20 },
+    { key:'pet',     nameZh:'宠物', nameEn:'Pets', nameMs:'Haiwan Peliharaan', icon:'🐾', price: 3 },
+    { key:'chat',    nameZh:'闲聊', nameEn:'Chat', nameMs:'Sembang', icon:'💬', price: 0 }
   ];
-
-  let STATE_MAP = {}; FULL_MALAYSIA.forEach(s => STATE_MAP[s.key] = s);
-  let CAT_MAP = {}; CATS.forEach(c => CAT_MAP[c.key] = c);
 
   function getCatName(cat) {
     if (currentLang === 'en') return cat.nameEn;
@@ -414,81 +410,88 @@
     return cat.nameZh;
   }
 
+  let STATE_MAP = {}; FULL_MALAYSIA.forEach(s => STATE_MAP[s.key] = s);
+  let CAT_MAP = {}; CATS.forEach(c => CAT_MAP[c.key] = c);
+
   const authBox = document.getElementById('authBox'), mainApp = document.getElementById('mainApp');
   const emailInput = document.getElementById('emailInput'), passwordInput = document.getElementById('passwordInput');
   const authMsg = document.getElementById('authMsg'), userEmailSpan = document.getElementById('userEmail');
   const userCodeSpan = document.getElementById('userCode');
   const listEl = document.getElementById('list'), inputEl = document.getElementById('demandInput');
-  const priceInput = document.getElementById('priceInput');
   const btnEl = document.getElementById('submitBtn'), countEl = document.getElementById('count');
   const catRow = document.getElementById('catRow'), gpsStatus = document.getElementById('gpsStatus');
   const rangeSelect = document.getElementById('rangeSelect'), sortSelect = document.getElementById('sortSelect');
   const pubStateSel = document.getElementById('publishState'), pubDistSel = document.getElementById('publishDistrict');
   const imageInput = document.getElementById('imageInput'), imagePreview = document.getElementById('imagePreview');
-  const zoneHint = document.getElementById('zoneHint');
+  const toastEl = document.getElementById('toast'), zoneHint = document.getElementById('zoneHint');
+  const csWaBtn = document.getElementById('csWaBtn');
+  const priceHint = document.getElementById('priceHint');
   const chatTitle = document.getElementById('chatTitle');
 
   let currentCat = 'urgent', currentPubState = 'sarawak', currentPubDist = '';
-  let currentUser = null, myUserCode = '', myProfile = null, globalItems = [], myLat = null, myLng = null, maxDistance = 999;
+  let currentUser = null, myUserCode = '', globalItems = [], myLat = null, myLng = null, maxDistance = 999;
   let realtimeChannel = null, globalSort = 'latest', selectedFile = null;
-  let incomingMessages = [], chatDemandId = null, chatReceiverId = null, chatChannel = null;
-  let chatPollTimer = null, homePollTimer = null;
-  let kycFiles = { front: null, back: null, selfie: null };
-  let pendingRatingItem = null;
+  
+  let incomingMessages = []; 
+  let chatDemandId = null, chatReceiverId = null, chatChannel = null;
+  let chatPollTimer = null; let homePollTimer = null;
+
+  let hiddenIds = JSON.parse(localStorage.getItem('hibro_hidden_ids') || '[]');
+  let lastReadTimes = JSON.parse(localStorage.getItem('hibro_last_read') || '{}');
+  let translatedCache = {};
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&': '&amp;','<': '&lt;','>': '&gt;','"': '&quot;',"'": '&#39;'}[c])); }
-  
+  function timeAgo(iso) {
+    if (!iso) return '...'; const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+    if (currentLang === 'zh') {
+      if (diff < 60) return '刚刚'; if (diff < 3600) return Math.floor(diff / 60) + ' 分钟前';
+      if (diff < 86400) return Math.floor(diff / 3600) + ' 小时前'; return Math.floor(diff / 86400) + ' 天前';
+    } else if (currentLang === 'ms') {
+      if (diff < 60) return 'Baru sahaja'; if (diff < 3600) return Math.floor(diff / 60) + ' min lalu';
+      if (diff < 86400) return Math.floor(diff / 3600) + ' jam lalu'; return Math.floor(diff / 86400) + ' hari lalu';
+    } else {
+      if (diff < 60) return 'Just now'; if (diff < 3600) return Math.floor(diff / 60) + ' mins ago';
+      if (diff < 86400) return Math.floor(diff / 3600) + ' hours ago'; return Math.floor(diff / 86400) + ' days ago';
+    }
+  }
+  function getDistance(lat1, lon1, lat2, lon2) {
+    if (lat1 == null || lon1 == null || lat2 == null || lon2 == null) return null;
+    const R = 6371, dLat = (lat2 - lat1) * Math.PI / 180, dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  }
+
+  function showToast() {
+    toastEl.style.display = 'block';
+    setTimeout(() => { toastEl.style.display = 'none'; }, 5000);
+  }
+
   async function checkUser() {
     const { data: { session } } = await supabase.auth.getSession();
     if (session) { 
       currentUser = session.user; 
       myUserCode = 'HIBRO-' + currentUser.id.split('-')[0].toUpperCase();
-      userCodeSpan.textContent = myUserCode;
-      userEmailSpan.textContent = currentUser.email;
-      
-      await loadProfile();
-
-      authBox.style.display = 'none'; mainApp.style.display = 'block';
-      
-      initSelectors(); 
-      buildCatChips(); 
-      applyLanguageUI(); 
-      
-      getUserLocation(); fetchData(); setupRealtime();
-
-      if (homePollTimer) clearInterval(homePollTimer);
-      homePollTimer = setInterval(() => {
-        if (mainApp.style.display !== 'none' && currentUser && !chatDemandId) fetchData(true); 
-      }, 3000);
+      showMainApp(); 
     } 
     else { authBox.style.display = 'block'; mainApp.style.display = 'none'; }
   }
 
-  async function loadProfile() {
-    let { data, error } = await supabase.from('wallets').select('*').eq('user_id', myUserCode).single();
-    if (!data) {
-      await supabase.from('wallets').insert([{ user_id: myUserCode, kyc_status: 'unverified' }]);
-      myProfile = { kyc_status: 'unverified', real_name: '匿名', rating: 5.0 };
-    } else {
-      myProfile = data;
-    }
-  }
-
   document.getElementById('loginBtn').addEventListener('click', async () => {
     const email = emailInput.value.trim(), password = passwordInput.value;
-    if(!email || !password) { authMsg.textContent = '请输入邮箱密码'; return; }
+    if(!email || !password) { authMsg.textContent = 'Please fill all'; return; }
+    authMsg.textContent = '...';
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) authMsg.textContent = error.message; else window.location.reload();
   });
-  
   document.getElementById('signupBtn').addEventListener('click', async () => {
     const email = emailInput.value.trim(), password = passwordInput.value;
-    if(!email || !password) { authMsg.textContent = '请输入邮箱密码'; return; }
+    if(!email || !password) { authMsg.textContent = 'Please fill all'; return; }
+    if(password.length < 6) { authMsg.textContent = 'Password >= 6'; return; }
+    authMsg.textContent = '...';
     const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) authMsg.textContent = error.message;
-    else { authMsg.style.color = 'green'; authMsg.textContent = '注册成功，请登录'; if(data.session) window.location.reload(); }
+    else { authMsg.textContent = 'Success! Please login.'; if(data.session) window.location.reload(); }
   });
-  
   document.getElementById('logoutBtn').addEventListener('click', async () => {
     if (realtimeChannel) supabase.removeChannel(realtimeChannel);
     if (chatPollTimer) clearInterval(chatPollTimer);
@@ -500,8 +503,25 @@
     if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(
       (pos) => { myLat = pos.coords.latitude; myLng = pos.coords.longitude; gpsStatus.textContent = t('gpsOn'); gpsStatus.classList.add('on'); render(); },
-      () => { gpsStatus.textContent = '⚠️ 定位失败'; maxDistance = 999; rangeSelect.value = "999"; render(); }
+      () => { gpsStatus.textContent = '⚠️ No GPS'; maxDistance = 999; rangeSelect.value = "999"; render(); }
     );
+  }
+
+  function showMainApp() {
+    authBox.style.display = 'none'; mainApp.style.display = 'block';
+    userCodeSpan.textContent = myUserCode;
+    userEmailSpan.textContent = currentUser.email;
+    
+    applyLanguageUI(); 
+    initSelectors(); getUserLocation(); fetchData(); setupRealtime();
+
+    if (homePollTimer) clearInterval(homePollTimer);
+    homePollTimer = setInterval(() => {
+      if (mainApp.style.display !== 'none' && currentUser && !chatDemandId) fetchData(true); 
+    }, 3000);
+
+    rangeSelect.addEventListener('change', (e) => { maxDistance = parseFloat(e.target.value); render(); });
+    sortSelect.addEventListener('change', (e) => { globalSort = e.target.value; render(); });
   }
 
   function setupRealtime() {
@@ -510,10 +530,12 @@
       .on('postgres_changes', { event: '*', schema: 'public', table: 'demands' }, () => fetchData(true))
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
         if (payload.new.receiver_id === currentUser.id) {
+          if (!chatDemandId || chatDemandId !== payload.new.demand_id) showToast();
           fetchData(true);
           if (chatDemandId && payload.new.demand_id === chatDemandId) loadMessages();
         }
-      }).subscribe();
+      })
+      .subscribe();
   }
 
   imageInput.addEventListener('change', (e) => {
@@ -523,163 +545,211 @@
       const reader = new FileReader();
       reader.onload = (e) => { imagePreview.src = e.target.result; imagePreview.style.display = 'block'; };
       reader.readAsDataURL(file);
-    }
+    } else { selectedFile = null; imagePreview.style.display = 'none'; imagePreview.src = ''; }
   });
 
   async function fetchData(silent) {
-    if (!silent && globalItems.length === 0) listEl.innerHTML = '<div class="loading">加载中...</div>';
-    const { data } = await supabase.from('demands').select('*').order('created_at', { ascending: false }).limit(100);
-    globalItems = data || []; 
+    if (!silent && globalItems.length === 0) listEl.innerHTML = '<div class="loading">Loading...</div>';
     
-    const { data: msgs } = await supabase.from('messages').select('*').eq('receiver_id', currentUser.id).order('created_at', { ascending: false });
+    const { data, error } = await supabase.from('demands').select('*').order('created_at', { ascending: false }).limit(100);
+    if (error) return;
+    globalItems = data || []; 
+
+    const { data: msgs } = await supabase.from('messages')
+        .select('*')
+        .eq('receiver_id', currentUser.id)
+        .order('created_at', { ascending: false });
     if (msgs) incomingMessages = msgs;
+
     render();
   }
 
   async function addItem() {
     const text = inputEl.value.trim();
     if (!text) { inputEl.focus(); return; }
-    const priceVal = parseFloat(priceInput.value) || 0;
-    
     btnEl.disabled = true; btnEl.textContent = '...';
 
     let imageUrl = null;
     if (selectedFile) {
-      const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${selectedFile.name.split('.').pop()}`;
-      const { error } = await supabase.storage.from('images').upload(fileName, selectedFile);
-      if (!error) imageUrl = supabase.storage.from('images').getPublicUrl(fileName).data.publicUrl;
+      const fileExt = selectedFile.name.split('.').pop();
+      const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const { error: uploadError } = await supabase.storage.from('images').upload(fileName, selectedFile);
+      if (uploadError) { alert('Image upload failed: ' + uploadError.message); btnEl.disabled = false; btnEl.textContent = t('btnSubmit'); return; }
+      const { data: urlData } = supabase.storage.from('images').getPublicUrl(fileName);
+      imageUrl = urlData.publicUrl;
     }
 
     const newItem = {
       text: text, cat: currentCat, state: currentPubState, district: currentPubDist,
-      done: false, user_id: currentUser.id, lat: myLat, lng: myLng, radius_km: 2, image_url: imageUrl, 
-      likes: [], price: priceVal 
+      done: false, user_id: currentUser.id, lat: myLat, lng: myLng, radius_km: 2, image_url: imageUrl, likes: []
     };
 
     const { data, error } = await supabase.from('demands').insert([newItem]).select();
-    
     btnEl.disabled = false; btnEl.textContent = t('btnSubmit');
-    if (error) { alert('发布失败：' + error.message); return; }
+    if (error) { alert('Failed: ' + error.message); return; }
     
-    inputEl.value = ''; priceInput.value = ''; imageInput.value = ''; selectedFile = null; imagePreview.style.display = 'none';
-    fetchData(true);
+    inputEl.value = ''; imageInput.value = ''; selectedFile = null; imagePreview.style.display = 'none';
+    if (data && data[0]) { globalItems.unshift(data[0]); render(); } else { fetchData(true); }
   }
 
-  async function modifyPrice(itemId, currentPrice) {
-    const newPrice = prompt(`当前帖子标价为 RM ${currentPrice}。\n如果双方私下谈好了新价格，请输入新的金额：`, currentPrice);
-    if (newPrice === null || isNaN(newPrice) || parseFloat(newPrice) < 0) return alert('价格无效');
-    
-    await supabase.from('demands').update({ price: parseFloat(newPrice) }).eq('id', itemId);
-    alert('✅ 价格已更新！');
-    fetchData(true);
-  }
-
-  // 点击完成，弹出评分框
-  async function initiateConfirmDone(itemId) {
-    const { data: msgs } = await supabase.from('messages').select('sender_id').eq('demand_id', itemId).order('created_at', { ascending: false }).limit(1);
-    if (!msgs || msgs.length === 0) return alert('该任务还没有人接单哦！');
-    
-    pendingRatingItem = { id: itemId, helperId: msgs[0].sender_id };
-    document.getElementById('starContainer').querySelectorAll('.star').forEach(s => s.classList.remove('active'));
-    document.getElementById('ratingModal').style.display = 'flex';
-  }
-
-  let selectedRating = 5;
-  window.setRating = (val) => {
-    selectedRating = val;
-    const stars = document.getElementById('starContainer').querySelectorAll('.star');
-    stars.forEach((s, idx) => {
-      if (idx < val) s.classList.add('active');
-      else s.classList.remove('active');
-    });
-  };
+  async function toggleDone(id, status) { await supabase.from('demands').update({ done: !status }).eq('id', id); }
+  async function removeItem(id) { if(confirm('Delete?')) await supabase.from('demands').delete().eq('id', id); }
+  async function expandRadius(id, r) { let nr = r === 2 ? 6 : (r === 6 ? 10 : 999); await supabase.from('demands').update({ radius_km: nr }).eq('id', id); }
   
-  window.submitRating = async () => {
-    if(!pendingRatingItem) return;
-    const helperCode = 'HIBRO-' + pendingRatingItem.helperId.split('-')[0].toUpperCase();
-    const itemId = pendingRatingItem.id;
+  async function toggleLike(id) {
+    const item = globalItems.find(x => x.id === id);
+    if (!item) return;
+    let currentLikes = item.likes || [];
+    const isLiked = currentLikes.includes(currentUser.id);
+    if (isLiked) currentLikes = currentLikes.filter(uid => uid !== currentUser.id);
+    else currentLikes.push(currentUser.id);
+    item.likes = currentLikes; render();
+    await supabase.from('demands').update({ likes: currentLikes }).eq('id', id);
+  }
 
-    // 更新任务状态
-    await supabase.from('demands').update({ done: true }).eq('id', itemId);
-    
-    // 给接单人加分（这里简单模拟，直接加，实际应算平均分）
-    const { data: hw } = await supabase.from('wallets').select('rating').eq('user_id', helperCode).single();
-    if (hw) {
-      let oldR = hw.rating || 5.0;
-      let newR = ((oldR * 4) + selectedRating) / 5; // 模拟最近5次平均
-      await supabase.from('wallets').update({ rating: parseFloat(newR.toFixed(1)) }).eq('user_id', helperCode);
-    }
-    
-    document.getElementById('ratingModal').style.display = 'none';
-    alert(`✅ 任务已结单，感谢您的评价！`);
-    pendingRatingItem = null;
-    fetchData(true);
+  window.hideItem = (id) => {
+    if (!confirm('Hide this post?')) return;
+    hiddenIds.push(id);
+    localStorage.setItem('hibro_hidden_ids', JSON.stringify(hiddenIds));
+    render();
   };
 
-  async function removeItem(id) { if(confirm('确定删除吗？')) await supabase.from('demands').delete().eq('id', id); }
+  function updateZoneHint() {
+    zoneHint.style.display = 'block';
+    zoneHint.textContent = currentLang === 'zh' ? `⚠️ 当前仅显示【${currentPubDist}】区域` : (currentLang === 'ms' ? `⚠️ Hanya menunjukkan kawasan【${currentPubDist}】` : `⚠️ Showing【${currentPubDist}】only`);
+  }
 
-  window.openKycModal = () => {
-    document.getElementById('kycModal').style.display = 'flex';
-    document.getElementById('kycFormArea').style.display = 'none';
-    document.getElementById('kycPendingArea').style.display = 'none';
+  function initSelectors() {
+    pubStateSel.innerHTML = FULL_MALAYSIA.map(s => `<option value="${s.key}">${s.name}</option>`).join('');
+    pubStateSel.value = currentPubState; 
+    updatePubDistrict();
     
-    if (myProfile.kyc_status === 'verified') {
-      alert('您已经是认证接单员啦！');
-      document.getElementById('kycModal').style.display = 'none';
-    } else if (myProfile.kyc_status === 'pending') {
-      document.getElementById('kycPendingArea').style.display = 'block';
-    } else {
-      document.getElementById('kycFormArea').style.display = 'block';
-    }
-  };
-
-  ['front', 'back', 'selfie'].forEach(type => {
-    const elId = type === 'front' ? 'kycIcFront' : (type === 'back' ? 'kycIcBack' : 'kycSelfie');
-    document.getElementById(elId).addEventListener('change', (e) => {
-      if(e.target.files[0]) {
-        kycFiles[type] = e.target.files[0];
-        document.getElementById('lbl' + (type === 'front' ? 'IcFront' : (type === 'back' ? 'IcBack' : 'Selfie'))).textContent = `✅ 已选择`;
-      }
+    pubStateSel.addEventListener('change', (e) => { 
+        currentPubState = e.target.value; 
+        updatePubDistrict(); 
+        render(); 
     });
-  });
+    
+    pubDistSel.addEventListener('change', (e) => { 
+        currentPubDist = e.target.value; 
+        updateZoneHint();
+        render(); 
+    });
+  }
 
-  window.submitKyc = async () => {
-    const nick = document.getElementById('kycName').value.trim();
-    const realName = document.getElementById('kycRealName').value.trim();
-    const ic = document.getElementById('kycIc').value.trim();
-    const bank = document.getElementById('kycBank').value.trim();
+  function updatePubDistrict() {
+    const st = STATE_MAP[currentPubState];
+    pubDistSel.innerHTML = st.districts.map(d => `<option value="${d}">${d}</option>`).join('');
+    currentPubDist = st.districts[0] || '';
+    updateZoneHint(); 
+  }
+
+  function buildCatChips() {
+    let html = `<div class="label">${t('lblCat')}</div>`;
+    CATS.forEach(c => { 
+      html += `<button class="chip ${c.key === currentCat ? 'active' : ''}" data-key="${c.key}">
+                 ${c.icon} ${getCatName(c)}
+                 <span class="red-dot" id="dot-${c.key}"></span>
+               </button>`; 
+    });
+    catRow.innerHTML = html;
+    updatePriceHint();
+
+    catRow.querySelectorAll('.chip').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const key = e.currentTarget.dataset.key;
+        currentCat = key; 
+        
+        lastReadTimes[key] = new Date().toISOString();
+        localStorage.setItem('hibro_last_read', JSON.stringify(lastReadTimes));
+        document.getElementById(`dot-${key}`).style.display = 'none';
+
+        catRow.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
+        e.currentTarget.classList.add('active'); 
+        updatePriceHint();
+        render();
+      });
+    });
+  }
+
+  function checkUnreadStatus() {
+    if (!currentUser) return;
+
+    CATS.forEach(cat => {
+      const dotEl = document.getElementById(`dot-${cat.key}`);
+      if (!dotEl) return;
+
+      const lastRead = lastReadTimes[cat.key] ? new Date(lastReadTimes[cat.key]).getTime() : 0;
+
+      const hasNew = globalItems.some(it => {
+        if (it.cat !== cat.key || it.user_id === currentUser.id || hiddenIds.includes(it.id)) return false;
+        if (!it.state || !it.district) return false;
+        if (it.state !== currentPubState || it.district !== currentPubDist) return false;
+
+        const createTime = new Date(it.created_at).getTime();
+        if (createTime <= lastRead) return false;
+
+        if (myLat && myLng && it.lat && it.lng) {
+          const dist = getDistance(myLat, myLng, it.lat, it.lng);
+          if (maxDistance !== 999 && dist > maxDistance) return false;
+          const itemRadius = it.radius_km || 2; 
+          if (itemRadius !== 999 && dist > itemRadius) return false;
+        }
+        return true;
+      });
+
+      if (hasNew && currentCat !== cat.key) dotEl.style.display = 'block';
+      else if (currentCat === cat.key) dotEl.style.display = 'none';
+    });
+  }
+
+  function updatePriceHint() {
+    const cat = CAT_MAP[currentCat];
+    if (cat) {
+      if (cat.price > 0) {
+        priceHint.innerHTML = `💰 RM ${cat.price} / ` + (currentLang === 'zh'?'次':(currentLang==='ms'?'kali':'time'));
+      } else {
+        priceHint.innerHTML = t('btnFree');
+      }
+    }
+  }
+
+  async function autoTranslateDOM(elementId, originalText) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    if (currentLang === 'zh') { el.textContent = originalText; return; }
     
-    if (!nick || !realName || !ic || !bank || !kycFiles.front || !kycFiles.back || !kycFiles.selfie) return alert('请填完整并上传照片！');
-    document.getElementById('btnSubmitKyc').textContent = '...'; document.getElementById('btnSubmitKyc').disabled = true;
+    const cacheKey = originalText + '_' + currentLang;
+    if (translatedCache[cacheKey]) {
+      el.textContent = translatedCache[cacheKey];
+      return;
+    }
+
+    el.textContent = originalText; 
+
+    const translated = await translateText(originalText);
+    translatedCache[cacheKey] = translated;
     
-    try {
-      const up = async (file, prefix) => { const fn = `${myUserCode}_${prefix}_${Date.now()}.jpg`; await supabase.storage.from('kyc_docs').upload(fn, file); return fn; };
-      const fUrl = await up(kycFiles.front, 'icf'), bUrl = await up(kycFiles.back, 'icb'), sUrl = await up(kycFiles.selfie, 'selfie');
-      
-      await supabase.from('wallets').update({ 
-        kyc_status: 'pending', 
-        real_name: nick,
-        ic_number: `${realName} | ${ic}`, 
-        bank_info: bank,
-        ic_front_url: fUrl, 
-        ic_back_url: bUrl, 
-        selfie_url: sUrl 
-      }).eq('user_id', myUserCode);
-      
-      alert('已提交！请等待管理员审核。'); document.getElementById('kycModal').style.display = 'none'; loadProfile();
-    } catch(e) { alert('失败: ' + e.message); } 
-    finally { document.getElementById('btnSubmitKyc').textContent = t('kycSubmit'); document.getElementById('btnSubmitKyc').disabled = false; }
-  };
+    if (document.getElementById(elementId)) {
+        const newEl = document.getElementById(elementId);
+        newEl.textContent = translated;
+    }
+  }
 
   function render() {
     listEl.innerHTML = '';
+    
     let filtered = globalItems.filter(it => {
       if (currentCat !== 'all' && it.cat !== currentCat) return false;
+      
       const isMine = it.user_id === currentUser.id;
+      if (!isMine && hiddenIds.includes(it.id)) return false;
+
       if (!isMine) {
         if (!it.state || !it.district) return false; 
         if (it.state !== currentPubState || it.district !== currentPubDist) return false;
       }
+
       if (myLat && myLng && it.lat && it.lng) {
         const dist = getDistance(myLat, myLng, it.lat, it.lng);
         if (maxDistance !== 999 && dist > maxDistance) return false;
@@ -689,144 +759,293 @@
       return true;
     });
 
+    if (globalSort === 'distance' && myLat && myLng) {
+      filtered.sort((a, b) => {
+        const dA = (a.lat && a.lng) ? getDistance(myLat, myLng, a.lat, a.lng) : 99999;
+        const dB = (b.lat && b.lng) ? getDistance(myLat, myLng, b.lat, b.lng) : 99999;
+        return dA - dB;
+      });
+    }
+
+    if (filtered.length === 0) {
+      listEl.innerHTML = `<div class="empty">${t('empty')}</div>`; countEl.textContent = ''; 
+      checkUnreadStatus(); 
+      return;
+    }
+
+    let latestId = filtered.find(it => !it.done)?.id;
+
     filtered.forEach(item => {
       try {
         const cat = CAT_MAP[item.cat] || CAT_MAP.chat;
         const isMine = item.user_id === currentUser.id;
-        const itemPrice = item.price; 
         
         let distHtml = '';
         if (myLat && myLng && item.lat && item.lng) {
           const dist = getDistance(myLat, myLng, item.lat, item.lng);
-          distHtml = `<span class="tag dist-tag">🚶 ${dist < 1 ? (dist*1000).toFixed(0)+'m' : dist.toFixed(1)+'km'}</span>`;
+          let distText = dist < 1 ? Math.round(dist * 1000) + ' m' : dist.toFixed(1) + ' km';
+          distHtml = `<span class="tag dist-tag">🚶 ${distText}</span>`;
+        }
+
+        const r = item.radius_km || 2;
+        let radiusHtml = `<span class="tag radius-tag">📢 ${r === 999 ? 'Whole City' : r + 'km'}</span>`;
+
+        let expandBtnHtml = '';
+        const publishTime = new Date(item.created_at || Date.now()).getTime();
+        const diffMinutes = (Date.now() - publishTime) / 1000 / 60;
+        if (isMine && !item.done && diffMinutes >= 3 && r !== 999) {
+          let btnText = '📢 Expand Radius (+4km)';
+          expandBtnHtml = `<button class="expand-btn" onclick="window.expandRadius('${item.id}', ${r})">${btnText}</button>`;
+        }
+
+        let imgHtml = item.image_url ? `<img src="${item.image_url}" class="img-preview" onclick="window.open('${item.image_url}')" alt="img">` : '';
+
+        let mapBtnHtml = '';
+        if (item.lat && item.lng) {
+            mapBtnHtml = `<a href="https://maps.google.com/?q=${item.lat},${item.lng}" target="_blank" class="map-btn">${t('btnMap')}</a>`;
         }
 
         const likesArr = item.likes || [];
         const isLiked = likesArr.includes(currentUser.id);
         const likeBtnHtml = `<button class="like-btn ${isLiked ? 'liked' : ''}" onclick="window.toggleLike('${item.id}')">${isLiked ? '❤️' : '🤍'} ${likesArr.length}</button>`;
 
-        let actionBtnHtml = '';
+        let replyBtnHtml = '';
         if (isMine) {
-           if (!item.done) actionBtnHtml = `<button class="repricing-btn" onclick="window.modifyPrice('${item.id}', ${itemPrice})">💰 修改价格</button><button class="done-btn" onclick="window.initiateConfirmDone('${item.id}')">✓ 完成并评价</button>`;
-        } else {
-           if (myProfile.kyc_status !== 'verified') {
-              actionBtnHtml = `<button class="help-btn" style="background:#999;" onclick="window.openKycModal()">🛡️ 需实名认证才能接单</button>`;
-           } else {
-              actionBtnHtml = `<button class="help-btn" onclick="window.openChat('${item.id}', '${item.user_id}', '${myProfile.real_name || '邻居'}')">💬 我来帮你 (RM ${itemPrice})</button>`;
-           }
+          const relatedMsgs = incomingMessages.filter(m => m.demand_id === item.id);
+          const uniqueSenders = [...new Set(relatedMsgs.map(m => m.sender_id))];
+          if (uniqueSenders.length > 0) {
+            replyBtnHtml = `<button class="reply-btn" onclick="window.openChatList('${item.id}')">${t('btnReplyList', uniqueSenders.length)}</button>`;
+          }
         }
 
+        const priceLabel = cat.price > 0 
+            ? `<span class="tag price-tag">💰 RM ${cat.price}</span>` 
+            : `<span class="tag price-tag" style="background:#e8f5e9;color:#2e7d32;border-color:#a5d6a7;">${t('btnFree')}</span>`;
+
         const row = document.createElement('div');
-        row.className = 'item' + (item.done ? ' done' : '');
+        row.className = 'item' + (item.id === latestId ? ' latest' : '') + (item.done ? ' done' : '');
+        
+        const textId = 'txt_' + item.id.replace(/-/g, '');
+
         row.innerHTML = `
           <span class="dot"></span>
           <div class="bubble">
             <div class="bubble-head">
-              <span class="tag price-tag">💰 RM ${itemPrice}</span>
+              ${priceLabel}
               ${distHtml}
               <span class="tag ${cat.key}">${cat.icon} ${getCatName(cat)}</span>
-              ${item.done ? '<span class="tag" style="background:#e0e0e0;color:#616161;margin-left:auto;">✓ 已结单</span>' : ''}
+              ${isMine ? radiusHtml : ''}
+              ${item.done ? `<span class="tag" style="background:#e0e0e0;color:#616161;margin-left:auto;">${t('btnDone')}</span>` : ''}
             </div>
-            <p class="text">${esc(item.text)}</p>
-            ${item.image_url ? `<img src="${item.image_url}" class="img-preview">` : ''}
+            <p class="text" id="${textId}"></p> 
+            ${imgHtml}
+            ${expandBtnHtml}
+            <div class="meta" style="margin-bottom: 5px;">
+                ${mapBtnHtml}
+            </div>
             <div class="meta">
-              <span class="time">${new Date(item.created_at).toLocaleString()}</span>
+              <span class="time">${timeAgo(item.created_at)}</span>
               ${likeBtnHtml}
-              ${actionBtnHtml}
+              ${isMine ? `
+                ${replyBtnHtml}
+                <button class="done-btn" onclick="window.toggleDone('${item.id}', ${item.done})">${item.done ? t('btnUndo') : t('btnDone')}</button>
+                <button class="del" onclick="window.removeItem('${item.id}')">×</button>
+              ` : `
+                <button class="help-btn" onclick="window.openChat('${item.id}', '${item.user_id}', '${myUserCode}')">${t('btnHelp', cat.price)}</button>
+                <button class="hide-btn" onclick="window.hideItem('${item.id}')">${t('btnHide')}</button>
+              `}
             </div>
           </div>
         `;
         listEl.appendChild(row);
-      } catch (err) {}
+        
+        setTimeout(() => autoTranslateDOM(textId, item.text), 100);
+
+      } catch (err) { console.error("Render Error", item, err); }
     });
+
+    const pending = filtered.filter(it => !it.done).length;
+    countEl.textContent = t('count', filtered.length, pending);
+    checkUnreadStatus();
   }
 
-  function getDistance(lat1, lon1, lat2, lon2) {
-    if (lat1 == null || lon1 == null || lat2 == null || lon2 == null) return null;
-    const R = 6371, dLat = (lat2 - lat1) * Math.PI / 180, dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  }
+  const chatListModal = document.getElementById('chatListModal');
+  const chatListBody = document.getElementById('chatListBody');
 
-  window.toggleLike = async (id) => {
-    const item = globalItems.find(x => x.id === id);
-    if (!item) return;
-    let currentLikes = item.likes || [];
-    if (currentLikes.includes(currentUser.id)) currentLikes = currentLikes.filter(u => u !== currentUser.id);
-    else currentLikes.push(currentUser.id);
-    item.likes = currentLikes; render();
-    await supabase.from('demands').update({ likes: currentLikes }).eq('id', id);
+  window.openChatList = (demandId) => {
+    const relatedMsgs = incomingMessages.filter(m => m.demand_id === demandId);
+    const uniqueSenders = [...new Set(relatedMsgs.map(m => m.sender_id))];
+    
+    if (uniqueSenders.length === 0) return;
+
+    chatListBody.innerHTML = '';
+    
+    uniqueSenders.forEach(senderId => {
+      const userMsgs = relatedMsgs.filter(m => m.sender_id === senderId);
+      const lastMsg = userMsgs[0]; 
+      const senderCode = 'HIBRO-' + senderId.split('-')[0].toUpperCase();
+      
+      const div = document.createElement('div');
+      div.className = 'chat-list-item';
+      div.onclick = () => {
+        chatListModal.style.display = 'none';
+        window.openChat(demandId, senderId, senderCode);
+      };
+      
+      const msgId = 'msglist_' + senderId.replace(/-/g, '');
+      div.innerHTML = `
+        <div class="chat-list-user">👤 ${senderCode}</div>
+        <div class="chat-list-msg" id="${msgId}"></div>
+        <div style="font-size:11px; color:#aaa; text-align:right;">${timeAgo(lastMsg.created_at)}</div>
+      `;
+      chatListBody.appendChild(div);
+      
+      setTimeout(() => autoTranslateDOM(msgId, lastMsg.content), 100);
+    });
+
+    chatListModal.style.display = 'flex';
   };
 
-  function initSelectors() {
-    pubStateSel.innerHTML = FULL_MALAYSIA.map(s => `<option value="${s.key}">${s.name}</option>`).join('');
-    pubStateSel.value = currentPubState; 
-    updatePubDistrict();
-    pubStateSel.addEventListener('change', (e) => { currentPubState = e.target.value; updatePubDistrict(); render(); });
-    pubDistSel.addEventListener('change', (e) => { currentPubDist = e.target.value; updateZoneHint(); render(); });
-  }
-  function updatePubDistrict() {
-    const st = STATE_MAP[currentPubState];
-    pubDistSel.innerHTML = st.districts.map(d => `<option value="${d}">${d}</option>`).join('');
-    currentPubDist = st.districts[0] || '';
-    updateZoneHint(); 
-  }
-  function updateZoneHint() {
-    zoneHint.style.display = 'block';
-    zoneHint.textContent = t('zoneHint', currentPubDist);
-  }
-  function buildCatChips() {
-    let html = `<div class="label">${t('lblCat')}</div>`;
-    CATS.forEach(c => { html += `<button class="chip ${c.key === currentCat ? 'active' : ''}" data-key="${c.key}">${c.icon} ${getCatName(c)}</button>`; });
-    catRow.innerHTML = html;
-    catRow.querySelectorAll('.chip').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        currentCat = e.currentTarget.dataset.key; 
-        catRow.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
-        e.currentTarget.classList.add('active'); 
-        render();
-      });
-    });
-  }
+  window.closeChatList = () => {
+    chatListModal.style.display = 'none';
+  };
+
+  const chatModal = document.getElementById('chatModal');
+  const chatMessages = document.getElementById('chatMessages');
+  const chatInput = document.getElementById('chatInput');
 
   window.openChat = async (demandId, receiverId, titleText) => {
+    if (receiverId === currentUser.id) return alert('Cannot chat with yourself');
     chatDemandId = demandId; chatReceiverId = receiverId;
+    
     chatTitle.textContent = t('chatTitle', titleText);
-    document.getElementById('chatModal').style.display = 'flex';
+    
+    chatModal.style.display = 'flex';
+    toastEl.style.display = 'none';
+    chatMessages.innerHTML = '<div style="text-align:center;color:#999;font-size:12px;">Loading...</div>';
+    chatInput.value = '';
+    
     await loadMessages();
+
+    if (chatPollTimer) clearInterval(chatPollTimer);
+    chatPollTimer = setInterval(() => { if (chatDemandId) loadMessages(); }, 1500);
+
+    if (chatChannel) supabase.removeChannel(chatChannel);
+    chatChannel = supabase.channel('chat-' + demandId)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `demand_id=eq.${demandId}` }, payload => { loadMessages(); }).subscribe();
   };
+
   window.closeChat = () => {
-    document.getElementById('chatModal').style.display = 'none';
+    chatModal.style.display = 'none';
+    if (chatChannel) { supabase.removeChannel(chatChannel); chatChannel = null; }
+    if (chatPollTimer) { clearInterval(chatPollTimer); chatPollTimer = null; }
     chatDemandId = null; chatReceiverId = null;
   };
+
+  let lastMsgCount = 0; 
+
   async function loadMessages() {
-    const { data } = await supabase.from('messages').select('*').eq('demand_id', chatDemandId).order('created_at', { ascending: true });
-    if (!data) return;
+    const { data, error } = await supabase.from('messages').select('*').eq('demand_id', chatDemandId).order('created_at', { ascending: true });
+    if (error) return;
+
     const myMsgs = data.filter(m => (m.sender_id === currentUser.id && m.receiver_id === chatReceiverId) || (m.sender_id === chatReceiverId && m.receiver_id === currentUser.id));
-    document.getElementById('chatMessages').innerHTML = myMsgs.map(m => `<div class="msg-bubble ${m.sender_id === currentUser.id ? 'msg-mine' : 'msg-other'}">${esc(m.content)}</div>`).join('');
-    document.getElementById('chatMessages').scrollTop = 999999;
+
+    if (myMsgs.length === 0) {
+      chatMessages.innerHTML = '<div style="text-align:center;color:#999;margin-top:20px;">Say hi~</div>';
+    } else {
+      chatMessages.innerHTML = '';
+      myMsgs.forEach((m, index) => {
+        const isMine = m.sender_id === currentUser.id;
+        const div = document.createElement('div');
+        div.className = `msg-bubble ${isMine ? 'msg-mine' : 'msg-other'}`;
+        div.id = 'chatmsg_' + index;
+        if (isMine) {
+           div.textContent = m.content;
+        } else {
+           div.textContent = m.content; 
+           setTimeout(() => autoTranslateDOM('chatmsg_' + index, m.content), 50);
+        }
+        chatMessages.appendChild(div);
+      });
+      
+      if (myMsgs.length > lastMsgCount) {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        lastMsgCount = myMsgs.length;
+      }
+    }
   }
+
   window.sendMsg = async () => {
-    const val = document.getElementById('chatInput').value.trim();
+    const val = chatInput.value.trim();
     if (!val) return;
-    document.getElementById('chatInput').value = '';
+    chatInput.value = '';
+    
+    const tempDiv = document.createElement('div');
+    tempDiv.className = 'msg-bubble msg-mine';
+    tempDiv.textContent = val;
+    if (chatMessages.querySelector('div[style]')) chatMessages.innerHTML = ''; 
+    chatMessages.appendChild(tempDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
     await supabase.from('messages').insert([{ demand_id: chatDemandId, sender_id: currentUser.id, receiver_id: chatReceiverId, content: val }]);
+    
+    chatInput.focus();
     loadMessages(); 
   };
 
-  window.openCustomerService = () => document.getElementById('csModal').style.display = 'flex';
-  window.submitTicket = async () => {
-    const content = document.getElementById('csTextarea').value.trim();
-    if(!content) return;
-    await supabase.from('tickets').insert([{ user_email: myUserCode, content }]);
-    alert('已提交'); document.getElementById('csModal').style.display = 'none';
+  chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') window.sendMsg(); });
+
+
+  const csModal = document.getElementById('csModal');
+  const csTextarea = document.getElementById('csTextarea');
+  const csSubmitBtn = document.getElementById('csSubmitBtn');
+
+  window.openCustomerService = () => {
+    const waText = encodeURIComponent(`Hello, I am ${myUserCode}. I need help.`);
+    csWaBtn.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${waText}`;
+    csModal.style.display = 'flex';
+    csTextarea.value = '';
+    csSubmitBtn.textContent = t('csBtnSubmit');
+    csSubmitBtn.disabled = false;
   };
 
-  window.initiateConfirmDone = initiateConfirmDone;
-  window.setRating = setRating;
-  window.submitRating = submitRating;
+  window.closeCustomerService = () => {
+    csModal.style.display = 'none';
+  };
 
+  window.submitTicket = async () => {
+    const content = csTextarea.value.trim();
+    if (!content) { alert('Please fill in details'); return; }
+
+    csSubmitBtn.textContent = '...';
+    csSubmitBtn.disabled = true;
+
+    const user_info = `${myUserCode} | ${currentUser.email}`;
+
+    const { error } = await supabase.from('tickets').insert([
+      { user_email: user_info, content: content }
+    ]);
+
+    if (error) {
+      alert('Failed: ' + error.message);
+      csSubmitBtn.textContent = t('csBtnSubmit');
+      csSubmitBtn.disabled = false;
+    } else {
+      csSubmitBtn.textContent = '✅ Success';
+      csSubmitBtn.style.background = '#4CAF50';
+      setTimeout(() => {
+        window.closeCustomerService();
+        csSubmitBtn.style.background = '#2196F3';
+      }, 2000);
+    }
+  };
+
+  window.toggleDone = toggleDone; 
+  window.removeItem = removeItem; 
+  window.expandRadius = expandRadius;
+  window.toggleLike = toggleLike; 
   btnEl.addEventListener('click', addItem);
+
   checkUser();
 })();
 </script>
