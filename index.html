@@ -10,30 +10,34 @@
   *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body{ margin:0; min-height:100vh; padding:20px 16px 80px; background:linear-gradient(180deg,#e3f9dd 0%,#c6f0bd 55%,#b0e9a6 100%); background-attachment:fixed; font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif; text-align:center; }
   
-  .header-area { position: relative; max-width: 600px; margin: 0 auto; padding-top: 60px; }
-  .title{ margin:0; color:#1565c0; font-size:clamp(28px,8vw,45px); letter-spacing:1px; text-shadow:0 2px 0 rgba(255,255,255,.8); line-height: 1.2; }
-  .subtitle{ margin:10px 0 0; color:#d32f2f; font-size:clamp(20px,5vw,30px); font-weight:700; }
+  .header-area { position: relative; max-width: 600px; margin: 0 auto; padding-top: 10px; }
+  .title{ margin:0; color:#1565c0; font-size:clamp(30px,9vw,50px); letter-spacing:2px; text-shadow:0 2px 0 rgba(255,255,255,.8); }
+  .subtitle{ margin:10px 0 0; color:#d32f2f; font-size:clamp(24px,6vw,36px); font-weight:700; }
   
-  .top-actions { position: absolute; right: 0; top: 5px; display: flex; flex-direction: row; gap: 8px; align-items: center; }
-  .lang-select { padding: 5px 10px; border-radius: 20px; border: 2px solid #ff9800; background: #fff; color: #ff9800; font-weight: bold; font-size: 13px; outline: none; cursor: pointer; }
-  .cs-btn { background: #fff; border: 2px solid #2196F3; color: #2196F3; padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; }
+  .top-actions { position: absolute; right: 0; top: 10px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+  .lang-select { padding: 6px 10px; border-radius: 20px; border: 2px solid #ff9800; background: #fff; color: #ff9800; font-weight: bold; font-size: 13px; cursor: pointer; outline: none; }
+  .cs-btn { background: #fff; border: 2px solid #2196F3; color: #2196F3; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 6px rgba(33,150,243,.2); }
+  .cs-btn:hover { background: #e3f2fd; }
 
-  .user-bar { max-width: 600px; margin: 0 auto 10px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.7); padding: 10px 15px; border-radius: 10px; font-size: 13px; }
+  #authBox { background: #fff; max-width: 400px; margin: 30px auto; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+  .auth-input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
+  .auth-btn { width: 100%; padding: 12px; background: var(--green); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
+  .auth-btn.secondary { background: #eee; color: #333; }
+  .auth-msg { font-size: 14px; color: #d32f2f; margin-bottom: 10px; min-height: 20px; }
+
+  #mainApp { display: none; }
+  .user-bar { max-width: 600px; margin: 0 auto 10px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.7); padding: 10px 15px; border-radius: 10px; }
   .logout-btn { background: #ff5252; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-weight: bold;}
 
   .gps-bar { max-width: 600px; margin: 0 auto 15px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; background: #fff; padding: 10px 15px; border-radius: 10px; font-size: 14px; box-shadow: 0 2px 6px rgba(0,0,0,.05); }
+  .gps-status { color: #666; font-weight: bold; }
+  .gps-status.on { color: var(--green); }
   .select-mini { padding: 5px; border-radius: 5px; border: 1px solid #a5d8a0; outline: none; font-weight: bold; color: #2e7d32; }
 
-  /* 发帖区优化 */
-  .input-row{ display:flex; flex-direction:column; gap:10px; width:100%; max-width:600px; margin:10px auto 0; }
-  #demandInput{ width:100%; font-size:17px; padding:14px 18px; border:none; border-radius:999px; outline:none; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.08); }
-  
-  .price-submit-row { display:flex; gap:10px; align-items:center; justify-content:center; width: 100%; }
-  .price-input-row { display:flex; align-items:center; gap: 5px; background: #fff; padding: 5px 15px; border-radius: 999px; box-shadow: 0 2px 6px rgba(0,0,0,.08); flex: 1; }
-  .price-input-row label { font-size:14px; font-weight:bold; color:#e65100; white-space: nowrap; }
-  #priceInput { width: 100%; font-size:16px; padding:10px 0; border:none; outline:none; text-align:center; font-weight:bold; color: #4a3b00; }
-  
-  #submitBtn{ flex:0 0 auto; font-size:17px; font-weight:700; padding:14px 30px; border:none; border-radius:999px; background:#ffd400; color:#4a3b00; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,.12); }
+  .input-row{ display:flex; gap:10px; width:100%; max-width:600px; margin:10px auto 0; }
+  #demandInput{ flex:1 1 auto; font-size:17px; padding:14px 18px; border:none; border-radius:999px; outline:none; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.08); }
+  #submitBtn{ flex:0 0 auto; font-size:17px; font-weight:700; padding:14px 26px; border:none; border-radius:999px; background:#ffd400; color:#4a3b00; cursor:pointer; }
+  #submitBtn:disabled{ opacity:.6; cursor:not-allowed; }
   
   .upload-row{ max-width:600px; margin: 10px auto 0; display: flex; align-items: center; gap: 10px; }
   .upload-label { background: #fff; padding: 8px 15px; border-radius: 8px; font-size: 14px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,.08); display: inline-flex; align-items: center; gap: 5px; }
@@ -51,6 +55,10 @@
   .chip-row .label{ width:100%; text-align:center; font-size:13px; color:#4c6b4c; font-weight:600; }
   .chip{ position: relative; font-size:14px; padding:8px 15px; border-radius:999px; border:1.5px solid transparent; background:rgba(255,255,255,.7); color:#4c6b4c; cursor:pointer; }
   .chip.active{ background:var(--green); border-color:#3d8b40; color:#fff; font-weight:700; }
+  
+  .red-dot { position: absolute; top: -2px; right: -2px; width: 12px; height: 12px; background: #ff3b30; border-radius: 50%; border: 2px solid #fff; display: none; box-shadow: 0 2px 4px rgba(255,59,48,0.4); }
+
+  .price-hint { max-width: 600px; margin: 10px auto 0; font-size: 15px; font-weight: bold; color: #e65100; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; }
 
   #list{ width:100%; max-width:600px; margin:20px auto 0; text-align:left; }
   .item{ position:relative; display:flex; width: 100%; gap:12px; padding-bottom:18px; }
@@ -69,10 +77,11 @@
   .tag.errand{ background:#fff3e0; color:#e65100; } .tag.pet   { background:#f3e5f5; color:#6a1b9a; }
   .tag.chat  { background:#eceff1; color:#455a64; } .tag.dist-tag { background:#fffde7; color:#f57f17; border:1px solid #fff59d;}
   .tag.radius-tag { background:#e1f5fe; color:#0277bd; }
-  .tag.price-tag { background: #ffea00; color: #b26500; font-size: 13px; font-weight: 800; border: 1px solid #ffd54f; }
-  .tag.cleaning { background:#f3e5f5; color:#7b1fa2; } .tag.plumbing { background:#e0f7fa; color:#00695c; }
+  .tag.price-tag { background: #ffea00; color: #b26500; font-size: 13px; font-weight: 800; border: 1px solid #ffd54f; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+  .tag.cleaning { background:#f3e5f5; color:#7b1fa2; } 
+  .tag.plumbing { background:#e0f7fa; color:#00695c; }
 
-  .text { margin:0; font-size:18px; color:#222; word-break:break-word; white-space:pre-wrap; }
+  .text { margin:0; font-size:18px; color:#222; word-break:break-word; overflow-wrap:anywhere; white-space:pre-wrap; position: relative; }
   .item.done .text{ text-decoration:line-through; color:#7a8c7a; }
   .img-preview { max-width: 100%; max-height: 200px; border-radius: 10px; margin-top: 8px; cursor: pointer; }
   
@@ -80,62 +89,80 @@
   .time{ margin-right:auto; font-size:12px; color:#7a8c7a; }
   .done-btn{ font-size:12px; padding:4px 12px; border-radius:999px; border:1.5px solid var(--green); background:transparent; color:#2e7d32; cursor:pointer; }
   .del{ width:22px; height:22px; border:none; border-radius:50%; background:#ff8a80; color:#fff; cursor:pointer; }
-  .help-btn { background: #2196F3; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; }
+  .help-btn { background: #2196F3; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(33,150,243,.3); }
   .reply-btn { background: #ff9800; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; }
-  .like-btn { background: #f0f0f0; color: #555; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; }
+  .like-btn { background: #f0f0f0; color: #555; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; }
   .like-btn.liked { background: #ffebee; color: #e53935; }
   .map-btn { background: #e3f2fd; color: #1565c0; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
-  .hide-btn { background: #f5f5f5; color: #9e9e9e; border: none; padding: 6px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; }
-  .repricing-btn { background: #9c27b0; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; }
+  .hide-btn { background: #f5f5f5; color: #9e9e9e; border: none; padding: 6px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; margin-left: 5px; }
+  .hide-btn:hover { background: #eeeeee; color: #616161; }
+  .expand-btn { background:#fff3e0; color:#e65100; border:1px solid #ffb74d; padding:5px 10px; border-radius:8px; font-size:12px; font-weight:bold; cursor:pointer; margin-top:8px; }
+  .empty { text-align:center; color:#7a8c7a; padding:30px 0; font-size:15px; }
 
-  .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
+  .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
   .modal-content { background: #fff; width: 90%; max-width: 400px; border-radius: 15px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
   
-  .chat-content { height: 75vh; }
+  .chat-list-content { max-height: 75vh; }
+  .chat-list-body { overflow-y: auto; flex: 1; background: #f5f7f5; }
+  .chat-list-item { padding: 15px; border-bottom: 1px solid #eee; display: flex; flex-direction: column; gap: 5px; cursor: pointer; text-align: left; transition: background 0.2s; }
+  .chat-list-item:hover { background: #e8f5e9; }
+  .chat-list-user { font-weight: bold; color: #1565c0; font-size: 14px; }
+  .chat-list-msg { font-size: 13px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .chat-content { height: 70vh; }
   .chat-header { padding: 15px; background: var(--green); color: white; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
   .chat-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
   .chat-messages { flex: 1; padding: 15px; overflow-y: auto; background: #f5f7f5; display: flex; flex-direction: column; gap: 10px; }
-  .msg-bubble { max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 15px; word-break: break-word; text-align: left; }
+  .msg-bubble { max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 15px; word-break: break-word; text-align: left; position: relative; }
   .msg-mine { background: #dcf8c6; align-self: flex-end; border-bottom-right-radius: 2px; }
   .msg-other { background: #fff; align-self: flex-start; border-bottom-left-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
   .chat-input-area { padding: 10px; background: #fff; display: flex; gap: 10px; border-top: 1px solid #eee; }
   .chat-input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
   .chat-send { background: var(--green); color: white; border: none; padding: 0 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
 
-  .form-group { margin-bottom: 15px; text-align: left; }
-  .form-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #333; }
-  .form-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
-  .form-file { border: 1px dashed #2196F3; padding: 15px; border-radius: 8px; text-align: center; background: #e3f2fd; cursor: pointer; font-size: 13px; font-weight: bold; color: #1565c0; display: block; }
-  .form-submit { width: 100%; padding: 12px; background: #2196F3; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+  .cs-content { padding: 20px; text-align: left; }
+  .cs-content p { font-size: 14px; color: #666; margin-bottom: 15px; text-align: center; }
+  .cs-textarea { width: 100%; height: 120px; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-family: inherit; font-size: 15px; resize: none; margin-bottom: 15px; outline: none; }
+  .cs-submit { width: 100%; padding: 12px; background: #2196F3; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
+  .cs-submit:disabled { opacity: .6; cursor: not-allowed; }
+  .cs-wa-btn { display: block; width: 100%; padding: 12px; background: #25D366; color: white; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; text-align: center; box-sizing: border-box; }
+
+  #toast { display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ff5252; color: white; padding: 12px 24px; border-radius: 30px; font-weight: bold; z-index: 2000; box-shadow: 0 4px 12px rgba(255,82,82,0.4); cursor: pointer; animation: dropDown 0.3s ease-out; }
+  @keyframes dropDown { from { top: -50px; opacity: 0; } to { top: 20px; opacity: 1; } }
 </style>
 </head>
 <body>
 
+  <div id="toast" onclick="document.getElementById('toast').style.display='none'; window.scrollTo(0,0);">🔔 New Message / 新消息！</div>
+
   <div class="header-area">
+    <h1 class="title" id="txtMainTitle">邻里帮帮帮</h1>
     <div class="top-actions">
       <select class="lang-select" id="langSelect" onchange="window.changeLanguage(this.value)">
         <option value="zh">中文</option>
         <option value="ms">Bahasa Melayu</option>
         <option value="en">English</option>
       </select>
-      <button class="cs-btn" id="btnCs" onclick="window.openCustomerService()">🎧 客服</button>
+      <button class="cs-btn" id="btnCs" onclick="window.openCustomerService()">🎧 客服中心</button>
     </div>
-    <h1 class="title" id="txtMainTitle">邻里帮帮帮</h1>
     <p class="subtitle" id="txtSubtitle">住户互助平台</p>
   </div>
 
   <div id="authBox">
     <h3 id="txtAuthTitle">住户实名认证登录</h3>
-    <div class="auth-msg" id="authMsg" style="color:red; min-height:20px;"></div>
-    <input type="email" id="emailInput" class="auth-input" placeholder="请输入邮箱" style="width:100%; padding:10px; margin-bottom:10px; box-sizing:border-box;">
-    <input type="password" id="passwordInput" class="auth-input" placeholder="请输入密码" style="width:100%; padding:10px; margin-bottom:10px; box-sizing:border-box;">
-    <button id="loginBtn" class="auth-btn" style="width:100%; padding:12px; background:var(--green); color:white; border:none; border-radius:8px; font-weight:bold; margin-bottom:10px;">登 录</button>
-    <button id="signupBtn" class="auth-btn secondary" style="width:100%; padding:12px; background:#eee; border:none; border-radius:8px; font-weight:bold;">注册新账号</button>
+    <div class="auth-msg" id="authMsg"></div>
+    <input type="email" id="emailInput" class="auth-input" placeholder="请输入邮箱">
+    <input type="password" id="passwordInput" class="auth-input" placeholder="请输入密码">
+    <button id="loginBtn" class="auth-btn">登 录</button>
+    <button id="signupBtn" class="auth-btn secondary">注册新账号</button>
   </div>
 
   <div id="mainApp">
     <div class="user-bar">
-      <span>👤 <span id="userCode" style="color:#1565c0; font-weight:bold;">HIBRO-0000</span> (<span id="userEmail"></span>)</span>
+      <span style="font-size:14px; color:#2e7d32; font-weight:bold;">
+        👤 <span id="userCode" style="color:#1565c0;">HIBRO-0000</span> 
+        <span style="font-size:12px; color:#666; margin-left:5px;">(<span id="userEmail"></span>)</span>
+      </span>
       <button id="logoutBtn" class="logout-btn">退出</button>
     </div>
 
@@ -157,13 +184,7 @@
 
     <div class="input-row">
       <input id="demandInput" type="text" maxlength="60" placeholder="输入你的需求...">
-      <div class="price-submit-row">
-        <div class="price-input-row">
-          <label id="lblPrice">💰 愿意出价: RM</label>
-          <input id="priceInput" type="number" min="0" placeholder="0" value="">
-        </div>
-        <button id="submitBtn" type="button">发布</button>
-      </div>
+      <button id="submitBtn" type="button">发布</button>
     </div>
 
     <div class="upload-row">
@@ -184,45 +205,24 @@
     </div>
 
     <div class="zone-hint" id="zoneHint"></div>
-    <div class="chip-row" id="catRow"><div class="label" id="lblCat">🏷️ 分类：</div></div>
+
+    <div class="chip-row" id="catRow">
+      <div class="label" id="lblCat">🏷️ 分类：</div>
+    </div>
+
+    <div class="price-hint" id="priceHint"></div>
 
     <div id="list" class="loading">正在加载云端数据...</div>
-    <div id="count" style="text-align:center; color:#666; margin-top:10px; font-size:14px;"></div>
+    <div id="count"></div>
   </div>
 
-  <!-- 实名认证弹窗 -->
-  <div id="kycModal" class="modal">
-    <div class="modal-content" style="padding: 20px; max-height: 90vh; overflow-y: auto;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3 style="margin:0; color:#1565c0;" id="txtKycTitle">🛡️ 成为认证接单员</h3>
-        <button style="background:none; border:none; font-size:24px; cursor:pointer;" onclick="document.getElementById('kycModal').style.display='none'">×</button>
+  <div id="chatListModal" class="modal">
+    <div class="modal-content chat-list-content">
+      <div class="chat-header" style="background:#ff9800;">
+        <span id="txtChatListTitle">📬 谁来找你了</span>
+        <button class="chat-close" onclick="window.closeChatList()">×</button>
       </div>
-      <p style="font-size:13px; color:#d32f2f; text-align:left; margin-bottom:15px;" id="txtKycDesc">⚠️ 为了保障邻居安全，接单赚钱必须先实名认证。您的真实姓名和 IC 只有管理员能看，邻居只能看到你的“外号”。</p>
-      <div id="kycFormArea">
-        <div class="form-group"><label id="lblKycName">外号/昵称 (对外显示)</label><input type="text" id="kycName" placeholder="如: 水管阿强"></div>
-        <div class="form-group"><label id="lblKycReal">真实姓名 (仅后台可见)</label><input type="text" id="kycRealName" placeholder="身份证上的名字"></div>
-        <div class="form-group"><label id="lblKycIc">身份证号码 (IC)</label><input type="text" id="kycIc" placeholder="如: 990101-14-5555"></div>
-        
-        <div class="form-group"><label id="lblKycIcF">上传 IC 正面</label><label for="kycIcFront" class="form-file" id="lblIcFront">📸 点击上传</label><input type="file" id="kycIcFront" accept="image/*" style="display:none;"></div>
-        <div class="form-group"><label id="lblKycIcB">上传 IC 背面</label><label for="kycIcBack" class="form-file" id="lblIcBack">📸 点击上传</label><input type="file" id="kycIcBack" accept="image/*" style="display:none;"></div>
-        <div class="form-group"><label id="lblKycSelfie">本人自拍照</label><label for="kycSelfie" class="form-file" id="lblSelfie">🤳 点击上传</label><input type="file" id="kycSelfie" accept="image/*" style="display:none;"></div>
-        
-        <button class="form-submit" id="btnSubmitKyc" onclick="window.submitKyc()">提交审核</button>
-      </div>
-      <div id="kycPendingArea" style="display:none; text-align:center; padding: 20px;"><h3 style="color:#ff9800;">⏳ 审核中，请等待管理员通过</h3></div>
-    </div>
-  </div>
-
-  <!-- 客服弹窗 -->
-  <div id="csModal" class="modal">
-    <div class="modal-content" style="padding: 20px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3 style="margin:0;" id="txtCsTitle">🎧 客服与投诉</h3>
-        <button style="background:none; border:none; font-size:24px; cursor:pointer;" onclick="document.getElementById('csModal').style.display='none'">×</button>
-      </div>
-      <textarea id="csTextarea" style="width:100%; height:100px; margin-bottom:10px; padding:10px; box-sizing:border-box;" placeholder="请描述您的问题..."></textarea>
-      <button onclick="window.submitTicket()" style="width:100%; padding:10px; background:#2196F3; color:white; border:none; border-radius:5px; cursor:pointer;" id="btnCsSubmit">提交</button>
-      <button onclick="document.getElementById('csModal').style.display='none'" style="width:100%; padding:10px; background:#eee; border:none; margin-top:5px; border-radius:5px; cursor:pointer;" id="btnCsClose">取消 / 关闭</button>
+      <div class="chat-list-body" id="chatListBody"></div>
     </div>
   </div>
 
@@ -235,7 +235,23 @@
       <div class="chat-messages" id="chatMessages"></div>
       <div class="chat-input-area">
         <input type="text" id="chatInput" class="chat-input" placeholder="输入消息...">
-        <button class="chat-send" onclick="window.sendMsg()" id="btnChatSend">发送</button>
+        <button class="chat-send" onclick="window.sendMsg()">发送</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="csModal" class="modal">
+    <div class="modal-content">
+      <div class="chat-header" style="background:#2196F3;">
+        <span id="txtCsTitle">🎧 客服与投诉中心</span>
+        <button class="chat-close" onclick="window.closeCustomerService()">×</button>
+      </div>
+      <div class="cs-content">
+        <p id="txtCsDesc">如果遇到纠纷、系统问题或对邻居有意见，请在此留言，管理员会尽快介入处理。</p>
+        <textarea id="csTextarea" class="cs-textarea" placeholder="请详细描述您的问题..."></textarea>
+        <button class="cs-submit" id="csSubmitBtn" onclick="window.submitTicket()">提交给管理员</button>
+        <div style="text-align: center; font-size: 13px; color: #999; margin: 10px 0;">—— 或者 ——</div>
+        <a href="#" id="csWaBtn" class="cs-wa-btn" target="_blank">💬 紧急情况，一键 WhatsApp 联系</a>
       </div>
     </div>
   </div>
@@ -248,521 +264,190 @@
   const SUPABASE_KEY = 'sb_publishable_1dvjfyqSXHfo4eFBmcEdIA_m6ryxkS6';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+  const WHATSAPP_NUMBER = '60123456789'; 
+
+  // ================== 全盘多语言字典 ==================
   const UI_TEXT = {
     zh: {
-      mainTitle: '邻里帮帮帮', subtitle: '住户互助平台', csBtn: '🎧 客服中心', authTitle: '住户实名认证登录', 
-      btnLogin: '登 录', btnSignup: '注册新账号', lblState: '📍 州/直辖区：', lblDistrict: '🏘️ 县/分区：', 
-      lblCat: '🏷️ 分类：', btnSubmit: '发布', inputPlac: '输入你的需求...', upload: '📷 附加图片', logout: '退出', 
-      gpsOn: '📍 定位成功', gpsLoading: '📍 正在获取位置...', sortLatest: '最新发布', sortDist: '距离最近', 
-      range2: '2 公里内', range5: '5 公里内', range10: '10 公里内', rangeAll: '全城',
-      chatTitle: '💬 与 {0} 聊天中', chatSend: '发送', lblPrice: '💰 愿意出价: RM', 
-      zoneHint: '⚠️ 当前仅显示【{0}】区域',
-      csTitle: '🎧 客服与投诉', csPlac: '请描述您的问题...', csSubmit: '提交', csClose: '取消 / 关闭',
-      kycTitle: '🛡️ 成为认证接单员', kycDesc: '⚠️ 为了保障邻居安全，接单赚钱必须先实名认证。您的真实姓名和 IC 只有管理员能看，邻居只能看到你的“外号”。',
-      kycName: '外号/昵称 (对外显示)', kycReal: '真实姓名 (仅后台可见)', kycIc: '身份证号码 (IC)',
-      kycF: '上传 IC 正面', kycB: '上传 IC 背面', kycS: '本人自拍照', kycUp: '📸 点击上传', kycSubmit: '提交审核'
+      mainTitle: '邻里帮帮帮',
+      subtitle: '住户互助平台', 
+      csBtn: '🎧 客服中心', 
+      authTitle: '住户实名认证登录', 
+      emailPlac: '请输入邮箱',
+      pwdPlac: '请输入密码',
+      btnLogin: '登 录', 
+      btnSignup: '注册新账号',
+      lblState: '📍 州/直辖区：', 
+      lblDistrict: '🏘️ 县/分区：', 
+      lblCat: '🏷️ 分类：', 
+      btnSubmit: '发布', 
+      inputPlac: '输入你的需求...', 
+      upload: '📷 附加图片', 
+      logout: '退出', 
+      gpsOn: '📍 定位成功', 
+      gpsLoading: '📍 正在获取位置...',
+      gpsFail: '⚠️ 定位失败',
+      sortLatest: '最新发布', 
+      sortDist: '距离最近', 
+      range2: '2 公里内', 
+      range5: '5 公里内', 
+      range10: '10 公里内', 
+      rangeAll: '全城',
+      loading: '正在加载云端数据...',
+      empty: '这里还没有同区域的求助~', 
+      count: '当前共 {0} 条 · 待完成 {1} 条',
+      chatListTitle: '📬 谁来找你了', 
+      chatTitle: '💬 与 {0} 聊天中', 
+      chatInput: '输入消息...', 
+      chatSend: '发送',
+      csTitle: '🎧 客服与投诉中心', 
+      csDesc: '如果遇到纠纷、系统问题或对邻居有意见，请在此留言，管理员会尽快介入处理。',
+      csPlac: '请详细描述您的问题...', 
+      csBtnSubmit: '提交给管理员', 
+      csBtnWa: '💬 紧急情况，一键 WhatsApp 联系',
+      newMsgToast: '🔔 收到一条新私聊消息！',
+      btnHelp: '💬 我来帮你 (赚 RM {0})', 
+      btnReplyList: '💬 查看私聊 ({0})', 
+      btnHide: '🚫 隐藏', 
+      btnMap: '📍 查看地图位置',
+      btnDone: '✓ 完成', 
+      btnUndo: '↺ 撤销', 
+      btnFree: '🆓 免费', 
+      btnExpand: '📢 扩大范围 (+4km)',
+      msgTranslate: '🌐 翻译中...',
+      alertFill: '请填写完整信息',
+      alertPwd: '密码至少6位',
+      alertSuccess: '成功！请登录',
+      alertImgFail: '图片上传失败: ',
+      alertImgSize: '图片不能超过 5MB',
+      alertPostFail: '发布失败：',
+      alertDelete: '确定删除吗？',
+      alertHide: '确定将这条信息隐藏吗？',
+      alertSelfChat: '不能和自己私聊哦',
+      alertTicketFill: '请先填写问题描述哦~',
+      alertTicketFail: '提交失败，请重试：'
     },
     ms: {
-      mainTitle: 'Hibro Bantuan Jiran', subtitle: 'Platform Bantuan Jiran', csBtn: '🎧 Pusat Khidmat', authTitle: 'Log Masuk Penduduk', 
-      btnLogin: 'Log Masuk', btnSignup: 'Daftar Akaun', lblState: '📍 Negeri/Wilayah:', lblDistrict: '🏘️ Daerah/Bahagian:', 
-      lblCat: '🏷️ Kategori:', btnSubmit: 'Hantar', inputPlac: 'Masukkan keperluan anda...', upload: '📷 Lampir Gambar', logout: 'Keluar', 
-      gpsOn: '📍 Lokasi Berjaya', gpsLoading: '📍 Mendapatkan lokasi...', sortLatest: 'Terkini', sortDist: 'Terdekat', 
-      range2: 'Dalam 2 KM', range5: 'Dalam 5 KM', range10: 'Dalam 10 KM', rangeAll: 'Seluruh Bandar',
-      chatTitle: '💬 Berbual dengan {0}', chatSend: 'Hantar', lblPrice: '💰 Tawaran Harga: RM', 
-      zoneHint: '⚠️ Hanya kawasan【{0}】',
-      csTitle: '🎧 Pusat Khidmat & Aduan', csPlac: 'Terangkan masalah anda...', csSubmit: 'Hantar', csClose: 'Batal / Tutup',
-      kycTitle: '🛡️ Sahkan Identiti Pekerja', kycDesc: '⚠️ Untuk keselamatan, pekerja mesti disahkan. Nama sebenar & IC hanya untuk admin. Jiran hanya nampak "Nama Samaran".',
-      kycName: 'Nama Samaran (Papar Awam)', kycReal: 'Nama Sebenar (Admin Sahaja)', kycIc: 'Nombor IC',
-      kycF: 'Muat naik IC Depan', kycB: 'Muat naik IC Belakang', kycS: 'Gambar Selfie', kycUp: '📸 Klik muat naik', kycSubmit: 'Hantar Semakan'
+      mainTitle: 'Hibro Bantuan Jiran',
+      subtitle: 'Platform Bantuan Jiran', 
+      csBtn: '🎧 Pusat Khidmat', 
+      authTitle: 'Log Masuk Penduduk', 
+      emailPlac: 'Masukkan emel',
+      pwdPlac: 'Masukkan kata laluan',
+      btnLogin: 'Log Masuk', 
+      btnSignup: 'Daftar Akaun',
+      lblState: '📍 Negeri/Wilayah:', 
+      lblDistrict: '🏘️ Daerah/Bahagian:', 
+      lblCat: '🏷️ Kategori:', 
+      btnSubmit: 'Hantar', 
+      inputPlac: 'Masukkan keperluan anda...', 
+      upload: '📷 Lampir Gambar', 
+      logout: 'Keluar', 
+      gpsOn: '📍 Lokasi Berjaya', 
+      gpsLoading: '📍 Mendapatkan lokasi...',
+      gpsFail: '⚠️ Tiada GPS',
+      sortLatest: 'Terkini', 
+      sortDist: 'Terdekat', 
+      range2: 'Dalam 2 KM', 
+      range5: 'Dalam 5 KM', 
+      range10: 'Dalam 10 KM', 
+      rangeAll: 'Seluruh Bandar',
+      loading: 'Memuatkan data...',
+      empty: 'Tiada permintaan di kawasan ini~', 
+      count: 'Jumlah {0} · Belum selesai {1}',
+      chatListTitle: '📬 Siapa yang mencari anda', 
+      chatTitle: '💬 Berbual dengan {0}', 
+      chatInput: 'Taip mesej...', 
+      chatSend: 'Hantar',
+      csTitle: '🎧 Pusat Khidmat & Aduan', 
+      csDesc: 'Jika ada masalah atau aduan, sila tinggalkan mesej di sini.',
+      csPlac: 'Terangkan masalah anda...', 
+      csBtnSubmit: 'Hantar kepada Admin', 
+      csBtnWa: '💬 Hubungi WhatsApp',
+      newMsgToast: '🔔 Mesej peribadi baru diterima!',
+      btnHelp: '💬 Saya Boleh Bantu (RM {0})', 
+      btnReplyList: '💬 Lihat Sembang ({0})', 
+      btnHide: '🚫 Sembunyi', 
+      btnMap: '📍 Lihat Peta',
+      btnDone: '✓ Selesai', 
+      btnUndo: '↺ Batal', 
+      btnFree: '🆓 Percuma', 
+      btnExpand: '📢 Luaskan Radius (+4km)',
+      msgTranslate: '🌐 Menterjemah...',
+      alertFill: 'Sila isi semua ruangan',
+      alertPwd: 'Kata laluan sekurang-kurangnya 6 aksara',
+      alertSuccess: 'Berjaya! Sila log masuk',
+      alertImgFail: 'Gagal muat naik gambar: ',
+      alertImgSize: 'Gambar mesti di bawah 5MB',
+      alertPostFail: 'Gagal menghantar: ',
+      alertDelete: 'Pasti mahu padam?',
+      alertHide: 'Sembunyikan pos ini?',
+      alertSelfChat: 'Tidak boleh berbual dengan diri sendiri',
+      alertTicketFill: 'Sila isi aduan anda~',
+      alertTicketFail: 'Gagal menghantar: '
     },
     en: {
-      mainTitle: 'Hibro Mutual Aid', subtitle: 'Neighborhood Mutual Aid', csBtn: '🎧 Support Center', authTitle: 'Resident Login', 
-      btnLogin: 'Login', btnSignup: 'Sign Up', lblState: '📍 State/Territory:', lblDistrict: '🏘️ District:', 
-      lblCat: '🏷️ Category:', btnSubmit: 'Post', inputPlac: 'Enter your request...', upload: '📷 Attach Image', logout: 'Logout', 
-      gpsOn: '📍 Location Found', gpsLoading: '📍 Getting location...', sortLatest: 'Latest', sortDist: 'Nearest', 
-      range2: 'Within 2 KM', range5: 'Within 5 KM', range10: 'Within 10 KM', rangeAll: 'Whole City',
-      chatTitle: '💬 Chatting with {0}', chatSend: 'Send', lblPrice: '💰 Offer Price: RM', 
-      zoneHint: '⚠️ Showing【{0}】only',
-      csTitle: '🎧 Support & Complaints', csPlac: 'Describe your issue...', csSubmit: 'Submit', csClose: 'Cancel / Close',
-      kycTitle: '🛡️ Helper Verification', kycDesc: '⚠️ For safety, helpers must be verified. Real name & IC are for admin only. Neighbors only see your "Nickname".',
-      kycName: 'Nickname (Public)', kycReal: 'Real Name (Admin Only)', kycIc: 'IC Number',
-      kycF: 'Upload IC Front', kycB: 'Upload IC Back', kycS: 'Selfie Photo', kycUp: '📸 Click to upload', kycSubmit: 'Submit Review'
+      mainTitle: 'Hibro Mutual Aid',
+      subtitle: 'Neighborhood Mutual Aid', 
+      csBtn: '🎧 Support Center', 
+      authTitle: 'Resident Login', 
+      emailPlac: 'Enter email',
+      pwdPlac: 'Enter password',
+      btnLogin: 'Login', 
+      btnSignup: 'Sign Up',
+      lblState: '📍 State/Territory:', 
+      lblDistrict: '🏘️ District:', 
+      lblCat: '🏷️ Category:', 
+      btnSubmit: 'Post', 
+      inputPlac: 'Enter your request...', 
+      upload: '📷 Attach Image', 
+      logout: 'Logout', 
+      gpsOn: '📍 Location Found', 
+      gpsLoading: '📍 Getting location...',
+      gpsFail: '⚠️ No GPS',
+      sortLatest: 'Latest', 
+      sortDist: 'Nearest', 
+      range2: 'Within 2 KM', 
+      range5: 'Within 5 KM', 
+      range10: 'Within 10 KM', 
+      rangeAll: 'Whole City',
+      loading: 'Loading data...',
+      empty: 'No requests in this area yet~', 
+      count: 'Total {0} · Pending {1}',
+      chatListTitle: '📬 Who is looking for you', 
+      chatTitle: '💬 Chatting with {0}', 
+      chatInput: 'Type a message...', 
+      chatSend: 'Send',
+      csTitle: '🎧 Support & Complaints', 
+      csDesc: 'If you face any issues or have complaints, please leave a message here.',
+      csPlac: 'Describe your issue...', 
+      csBtnSubmit: 'Submit to Admin', 
+      csBtnWa: '💬 WhatsApp Support',
+      newMsgToast: '🔔 New private message received!',
+      btnHelp: '💬 I Can Help (Earn RM {0})', 
+      btnReplyList: '💬 View Chats ({0})', 
+      btnHide: '🚫 Hide', 
+      btnMap: '📍 View Map',
+      btnDone: '✓ Done', 
+      btnUndo: '↺ Undo', 
+      btnFree: '🆓 Free', 
+      btnExpand: '📢 Expand Radius (+4km)',
+      msgTranslate: '🌐 Translating...',
+      alertFill: 'Please fill in all fields',
+      alertPwd: 'Password must be at least 6 characters',
+      alertSuccess: 'Success! Please login.',
+      alertImgFail: 'Image upload failed: ',
+      alertImgSize: 'Image must be under 5MB',
+      alertPostFail: 'Failed to post: ',
+      alertDelete: 'Delete this post?',
+      alertHide: 'Hide this post?',
+      alertSelfChat: 'Cannot chat with yourself',
+      alertTicketFill: 'Please fill in details',
+      alertTicketFail: 'Failed to submit: '
     }
   };
 
   let currentLang = localStorage.getItem('hibro_lang') || 'zh';
 
   function t(key, ...args) {
-    let str = UI_TEXT[currentLang][key] || UI_TEXT['zh'][key] || key;
-    args.forEach((val, idx) => { str = str.replace(`{${idx}}`, val); });
-    return str;
-  }
-
-  // 核心修复：在加载时立刻应用语言
-  function applyLanguageUI() {
-    document.getElementById('langSelect').value = currentLang;
-    document.getElementById('txtMainTitle').textContent = t('mainTitle');
-    document.getElementById('txtSubtitle').textContent = t('subtitle');
-    document.getElementById('btnCs').textContent = t('csBtn');
-    document.getElementById('txtAuthTitle').textContent = t('authTitle');
-    document.getElementById('loginBtn').textContent = t('btnLogin');
-    document.getElementById('signupBtn').textContent = t('btnSignup');
-    document.getElementById('logoutBtn').textContent = t('logout');
-    document.getElementById('lblState').textContent = t('lblState');
-    document.getElementById('lblDistrict').textContent = t('lblDistrict');
-    document.getElementById('lblCat').textContent = t('lblCat');
-    document.getElementById('lblPrice').textContent = t('lblPrice');
-    document.getElementById('demandInput').placeholder = t('inputPlac');
-    document.getElementById('submitBtn').textContent = t('btnSubmit');
-    document.getElementById('lblUpload').textContent = t('upload');
-    
-    document.getElementById('sortSelect').options[0].text = t('sortLatest');
-    document.getElementById('sortSelect').options[1].text = t('sortDist');
-    document.getElementById('rangeSelect').options[0].text = t('range2');
-    document.getElementById('rangeSelect').options[1].text = t('range5');
-    document.getElementById('rangeSelect').options[2].text = t('range10');
-    document.getElementById('rangeSelect').options[3].text = t('rangeAll');
-
-    document.getElementById('txtCsTitle').textContent = t('csTitle');
-    document.getElementById('csTextarea').placeholder = t('csPlac');
-    document.getElementById('btnCsSubmit').textContent = t('csSubmit');
-    document.getElementById('btnCsClose').textContent = t('csClose');
-
-    document.getElementById('txtKycTitle').textContent = t('kycTitle');
-    document.getElementById('txtKycDesc').textContent = t('kycDesc');
-    document.getElementById('lblKycName').textContent = t('kycName');
-    document.getElementById('lblKycReal').textContent = t('kycReal');
-    document.getElementById('lblKycIc').textContent = t('kycIc');
-    document.getElementById('lblKycIcF').textContent = t('kycF');
-    document.getElementById('lblKycIcB').textContent = t('kycB');
-    document.getElementById('lblKycSelfie').textContent = t('kycS');
-    document.getElementById('lblIcFront').textContent = t('kycUp');
-    document.getElementById('lblIcBack').textContent = t('kycUp');
-    document.getElementById('lblSelfie').textContent = t('kycUp');
-    document.getElementById('btnSubmitKyc').textContent = t('kycSubmit');
-    document.getElementById('btnChatSend').textContent = t('chatSend');
-
-    buildCatChips();
-    updateZoneHint();
-  }
-
-  window.changeLanguage = (lang) => {
-    currentLang = lang;
-    localStorage.setItem('hibro_lang', lang);
-    applyLanguageUI();
-    render();
-  };
-
-  const FULL_MALAYSIA = [
-    { key:'johor', name:'柔佛 Johor', districts:['新山 Johor Bahru','峇株巴辖 Batu Pahat','居銮 Kluang','哥打丁宜 Kota Tinggi','丰盛港 Mersing','麻坡 Muar','笨珍 Pontian','昔加末 Segamat','古来 Kulai','东甲 Tangkak']},
-    { key:'kedah', name:'吉打 Kedah', districts:['华玲 Baling','万拉峇鲁 Bandar Baharu','哥打士打 Kota Setar','瓜拉姆达 Kuala Muda','古邦巴素 Kubang Pasu','居林 Kulim','浮罗交怡 Langkawi','巴东得腊 Padang Terap','锡 Sik','铅 Yan','笨筒 Pendang','波各先那 Pokok Sena']},
-    { key:'kelantan', name:'吉兰丹 Kelantan', districts:['万捷 Bachok','哥打巴鲁 Kota Bharu','马樟 Machang','巴西马 Pasir Mas','巴西富地 Pasir Puteh','丹那美拉 Tanah Merah','道北 Tumpat','话望生 Gua Musang','瓜拉吉赖 Kuala Krai','日里 Jeli']},
-    { key:'melaka', name:'马六甲 Melaka', districts:['亚罗牙也 Alor Gajah','野新 Jasin','马六甲中央 Melaka Tengah']},
-    { key:'negeri-sembilan', name:'森美兰 Negeri Sembilan', districts:['日叻务 Jelebu','瓜拉庇劳 Kuala Pilah','波德申 Port Dickson','林茂 Rembau','芙蓉 Seremban','淡边 Tampin','仁保 Jempol']},
-    { key:'pahang', name:'彭亨 Pahang', districts:['文冬 Bentong','金马仑高原 Cameron Highlands','而连突 Jerantut','关丹 Kuantan','立卑 Lipis','北根 Pekan','劳勿 Raub','淡马鲁 Temerloh','云冰 Rompin','马兰 Maran','百乐 Bera']},
-    { key:'pulau-pinang', name:'槟城 Pulau Pinang', districts:['威中县 Seberang Perai Tengah','威北县 Seberang Perai Utara','威南县 Seberang Perai Selatan','东北县 Timur Laut','西南县 Barat Daya']},
-    { key:'perak', name:'霹雳 Perak', districts:['峇登巴冷 Batang Padang','曼绒 Manjung','近打 Kinta','吉辇 Kerian','江沙 Kuala Kangsar','拉律峇登司南马 Larut dan Matang','下霹雳 Hilir Perak','上霹雳 Hulu Perak','中霹雳 Perak Tengah','金宝 Kampar','慕亚林 Muallim','巴眼拿督 Bagan Datuk','士南马 Selama']},
-    { key:'perlis', name:'玻璃市 Perlis', districts:['玻璃市 Perlis']},
-    { key:'selangor', name:'雪兰莪 Selangor', districts:['鹅唛 Gombak','巴生 Klang','瓜拉冷岳 Kuala Langat','瓜拉雪兰莪 Kuala Selangor','八打灵 Petaling','沙白安南 Sabak Bernam','雪邦 Sepang','乌鲁冷岳 Ulu Langat','乌鲁雪兰莪 Ulu Selangor']},
-    { key:'terengganu', name:'登嘉楼 Terengganu', districts:['勿述 Besut','龙运 Dungun','甘马挽 Kemaman','瓜拉登嘉楼 Kuala Terengganu','马江 Marang','乌鲁登嘉楼 Hulu Terengganu','士兆 Setiu','瓜拉尼鲁斯 Kuala Nerus']},
-    { key:'sabah', name:'沙巴 Sabah', districts:['斗湖 Tawau','拿笃 Lahad Datu','山打根 Sandakan','亚庇 Kota Kinabalu','根地咬 Keningau','古达 Kudat','仙本那 Semporna','保佛 Beaufort','吧巴 Papar','斗亚兰 Tuaran','兰瑙 Ranau','丹南 Tenom','担布南 Tambunan','哥打马鲁都 Kota Marudu','比鲁兰 Beluran','京那巴当岸 Kinabatangan','纳巴湾 Nabawan','必达士 Pitas','特鲁必 Telupid','东革 Tongod','古打毛律 Kota Belud','瓜拉班尤 Kuala Penyu','实必丹 Sipitang','王麻骨 Membakut','冰湘岸 Pensiangan','普南 Putatan']},
-    { key:'sarawak', name:'砂拉越 Sarawak', districts:['古晋 Kuching','诗巫 Sibu','美里 Miri','民都鲁 Bintulu','木中 Betong','加帛 Kapit','林梦 Limbang','沐胶 Mukah','三马拉汉 Samarahan','泗里街 Sarikei','西连 Serian','斯里阿曼 Sri Aman','鲁勃安都 Lubok Antu','老越 Lawas','达佬 Daro','达岛 Tatau','布拉甲 Belaga','苏必士 Subis','砂拉卓 Saratok','加拿逸 Kanowit','朱劳 Julau','马拉端 Meradong','巴干 Pakan','桑坡 Song','加迪拔 Katibas','达叻 Dalat','万年烟 Balingian','马鲁帝 Marudi','巴南 Baram','德朗乌山 Telang Usan','姆鲁 Mulu']},
-    { key:'kl', name:'吉隆坡 WP Kuala Lumpur', districts:['吉隆坡 Kuala Lumpur']},
-    { key:'labuan', name:'纳闽 WP Labuan', districts:['纳闽 Labuan']},
-    { key:'putrajaya', name:'布城 WP Putrajaya', districts:['布城 Putrajaya']}
-  ];
-  
-  const CATS = [
-    { key:'urgent',  nameZh:'紧急', nameEn:'Urgent', nameMs:'Kecemasan', icon:'⚡' },
-    { key:'tools',   nameZh:'借工具', nameEn:'Borrow Tools', nameMs:'Pinjam Alatan', icon:'🔧' },
-    { key:'errand',  nameZh:'代跑腿', nameEn:'Errand', nameMs:'Jasa Kurier', icon:'🛒' },
-    { key:'cleaning',nameZh:'保洁服务', nameEn:'Cleaning', nameMs:'Pembersihan', icon:'🧹' },
-    { key:'plumbing',nameZh:'通下水道', nameEn:'Plumbing', nameMs:'Paip Tersumbat', icon:'🪠' },
-    { key:'pet',     nameZh:'宠物', nameEn:'Pets', nameMs:'Haiwan Peliharaan', icon:'🐾' },
-    { key:'chat',    nameZh:'闲聊', nameEn:'Chat', nameMs:'Sembang', icon:'💬' }
-  ];
-
-  let STATE_MAP = {}; FULL_MALAYSIA.forEach(s => STATE_MAP[s.key] = s);
-  let CAT_MAP = {}; CATS.forEach(c => CAT_MAP[c.key] = c);
-
-  function getCatName(cat) {
-    if (currentLang === 'en') return cat.nameEn;
-    if (currentLang === 'ms') return cat.nameMs;
-    return cat.nameZh;
-  }
-
-  const authBox = document.getElementById('authBox'), mainApp = document.getElementById('mainApp');
-  const emailInput = document.getElementById('emailInput'), passwordInput = document.getElementById('passwordInput');
-  const authMsg = document.getElementById('authMsg'), userEmailSpan = document.getElementById('userEmail');
-  const userCodeSpan = document.getElementById('userCode');
-  const listEl = document.getElementById('list'), inputEl = document.getElementById('demandInput');
-  const priceInput = document.getElementById('priceInput');
-  const btnEl = document.getElementById('submitBtn'), countEl = document.getElementById('count');
-  const catRow = document.getElementById('catRow'), gpsStatus = document.getElementById('gpsStatus');
-  const rangeSelect = document.getElementById('rangeSelect'), sortSelect = document.getElementById('sortSelect');
-  const pubStateSel = document.getElementById('publishState'), pubDistSel = document.getElementById('publishDistrict');
-  const imageInput = document.getElementById('imageInput'), imagePreview = document.getElementById('imagePreview');
-  const zoneHint = document.getElementById('zoneHint');
-  const chatTitle = document.getElementById('chatTitle');
-
-  let currentCat = 'urgent', currentPubState = 'sarawak', currentPubDist = '';
-  let currentUser = null, myUserCode = '', myProfile = null, globalItems = [], myLat = null, myLng = null, maxDistance = 999;
-  let realtimeChannel = null, globalSort = 'latest', selectedFile = null;
-  let incomingMessages = [], chatDemandId = null, chatReceiverId = null, chatChannel = null;
-  let chatPollTimer = null, homePollTimer = null;
-  let kycFiles = { front: null, back: null, selfie: null };
-
-  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&': '&amp;','<': '&lt;','>': '&gt;','"': '&quot;',"'": '&#39;'}[c])); }
-  
-  async function checkUser() {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session) { 
-      currentUser = session.user; 
-      myUserCode = 'HIBRO-' + currentUser.id.split('-')[0].toUpperCase();
-      userCodeSpan.textContent = myUserCode;
-      userEmailSpan.textContent = currentUser.email;
-      
-      await loadProfile();
-
-      // 必须先初始化下拉框和分类，再应用语言，最后加载数据
-      initSelectors(); 
-      buildCatChips(); 
-      applyLanguageUI(); 
-
-      authBox.style.display = 'none'; mainApp.style.display = 'block';
-      getUserLocation(); fetchData(); setupRealtime();
-
-      if (homePollTimer) clearInterval(homePollTimer);
-      homePollTimer = setInterval(() => {
-        if (mainApp.style.display !== 'none' && currentUser && !chatDemandId) fetchData(true); 
-      }, 3000);
-    } 
-    else { authBox.style.display = 'block'; mainApp.style.display = 'none'; }
-  }
-
-  async function loadProfile() {
-    let { data, error } = await supabase.from('wallets').select('*').eq('user_id', myUserCode).single();
-    if (!data) {
-      await supabase.from('wallets').insert([{ user_id: myUserCode, kyc_status: 'unverified' }]);
-      myProfile = { kyc_status: 'unverified', real_name: '匿名' };
-    } else {
-      myProfile = data;
-    }
-  }
-
-  document.getElementById('loginBtn').addEventListener('click', async () => {
-    const email = emailInput.value.trim(), password = passwordInput.value;
-    if(!email || !password) { authMsg.textContent = '请输入邮箱密码'; return; }
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) authMsg.textContent = error.message; else window.location.reload();
-  });
-  
-  document.getElementById('signupBtn').addEventListener('click', async () => {
-    const email = emailInput.value.trim(), password = passwordInput.value;
-    if(!email || !password) { authMsg.textContent = '请输入邮箱密码'; return; }
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) authMsg.textContent = error.message;
-    else { authMsg.style.color = 'green'; authMsg.textContent = '注册成功，请登录'; if(data.session) window.location.reload(); }
-  });
-  
-  document.getElementById('logoutBtn').addEventListener('click', async () => {
-    if (realtimeChannel) supabase.removeChannel(realtimeChannel);
-    if (chatPollTimer) clearInterval(chatPollTimer);
-    if (homePollTimer) clearInterval(homePollTimer);
-    await supabase.auth.signOut(); window.location.reload();
-  });
-
-  function getUserLocation() {
-    if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(
-      (pos) => { myLat = pos.coords.latitude; myLng = pos.coords.longitude; gpsStatus.textContent = t('gpsOn'); gpsStatus.classList.add('on'); render(); },
-      () => { gpsStatus.textContent = '⚠️ 定位失败'; maxDistance = 999; rangeSelect.value = "999"; render(); }
-    );
-  }
-
-  function setupRealtime() {
-    if (realtimeChannel) return;
-    realtimeChannel = supabase.channel('global-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'demands' }, () => fetchData(true))
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
-        if (payload.new.receiver_id === currentUser.id) {
-          fetchData(true);
-          if (chatDemandId && payload.new.demand_id === chatDemandId) loadMessages();
-        }
-      }).subscribe();
-  }
-
-  imageInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      selectedFile = file;
-      const reader = new FileReader();
-      reader.onload = (e) => { imagePreview.src = e.target.result; imagePreview.style.display = 'block'; };
-      reader.readAsDataURL(file);
-    }
-  });
-
-  async function fetchData(silent) {
-    if (!silent && globalItems.length === 0) listEl.innerHTML = '<div class="loading">加载中...</div>';
-    const { data } = await supabase.from('demands').select('*').order('created_at', { ascending: false }).limit(100);
-    globalItems = data || []; 
-    
-    const { data: msgs } = await supabase.from('messages').select('*').eq('receiver_id', currentUser.id).order('created_at', { ascending: false });
-    if (msgs) incomingMessages = msgs;
-    render();
-  }
-
-  async function addItem() {
-    const text = inputEl.value.trim();
-    if (!text) { inputEl.focus(); return; }
-    const priceVal = parseFloat(priceInput.value) || 0;
-    
-    btnEl.disabled = true; btnEl.textContent = '...';
-
-    let imageUrl = null;
-    if (selectedFile) {
-      const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${selectedFile.name.split('.').pop()}`;
-      const { error } = await supabase.storage.from('images').upload(fileName, selectedFile);
-      if (!error) imageUrl = supabase.storage.from('images').getPublicUrl(fileName).data.publicUrl;
-    }
-
-    const newItem = {
-      text: text, cat: currentCat, state: currentPubState, district: currentPubDist,
-      done: false, user_id: currentUser.id, lat: myLat, lng: myLng, radius_km: 2, image_url: imageUrl, 
-      likes: [], price: priceVal 
-    };
-
-    const { data, error } = await supabase.from('demands').insert([newItem]).select();
-    
-    btnEl.disabled = false; btnEl.textContent = t('btnSubmit');
-    if (error) { alert('发布失败：' + error.message); return; }
-    
-    inputEl.value = ''; priceInput.value = ''; imageInput.value = ''; selectedFile = null; imagePreview.style.display = 'none';
-    fetchData(true);
-  }
-
-  async function modifyPrice(itemId, currentPrice) {
-    const newPrice = prompt(`当前帖子标价为 RM ${currentPrice}。\n如果双方私下谈好了新价格，请输入新的金额：`, currentPrice);
-    if (newPrice === null || isNaN(newPrice) || parseFloat(newPrice) < 0) return alert('价格无效');
-    
-    await supabase.from('demands').update({ price: parseFloat(newPrice) }).eq('id', itemId);
-    alert('✅ 价格已更新！');
-    fetchData(true);
-  }
-
-  async function toggleDone(id, status) { 
-    if(!confirm(`确定任务已完成吗？`)) return;
-    await supabase.from('demands').update({ done: !status }).eq('id', id); 
-    fetchData(true);
-  }
-  
-  async function removeItem(id) { if(confirm('确定删除吗？')) await supabase.from('demands').delete().eq('id', id); }
-
-  window.openKycModal = () => {
-    document.getElementById('kycModal').style.display = 'flex';
-    document.getElementById('kycFormArea').style.display = 'none';
-    document.getElementById('kycPendingArea').style.display = 'none';
-    
-    if (myProfile.kyc_status === 'verified') {
-      alert('您已经是认证接单员啦！');
-      document.getElementById('kycModal').style.display = 'none';
-    } else if (myProfile.kyc_status === 'pending') {
-      document.getElementById('kycPendingArea').style.display = 'block';
-    } else {
-      document.getElementById('kycFormArea').style.display = 'block';
-    }
-  };
-
-  ['front', 'back', 'selfie'].forEach(type => {
-    const elId = type === 'front' ? 'kycIcFront' : (type === 'back' ? 'kycIcBack' : 'kycSelfie');
-    document.getElementById(elId).addEventListener('change', (e) => {
-      if(e.target.files[0]) {
-        kycFiles[type] = e.target.files[0];
-        document.getElementById('lbl' + (type === 'front' ? 'IcFront' : (type === 'back' ? 'IcBack' : 'Selfie'))).textContent = `✅ 已选择`;
-      }
-    });
-  });
-
-  window.submitKyc = async () => {
-    const nick = document.getElementById('kycName').value.trim();
-    const realName = document.getElementById('kycRealName').value.trim();
-    const ic = document.getElementById('kycIc').value.trim();
-    
-    if (!nick || !realName || !ic || !kycFiles.front || !kycFiles.back || !kycFiles.selfie) return alert('请填完整并上传照片！');
-    document.getElementById('btnSubmitKyc').textContent = '...'; document.getElementById('btnSubmitKyc').disabled = true;
-    
-    try {
-      const up = async (file, prefix) => { const fn = `${myUserCode}_${prefix}_${Date.now()}.jpg`; await supabase.storage.from('kyc_docs').upload(fn, file); return fn; };
-      const fUrl = await up(kycFiles.front, 'icf'), bUrl = await up(kycFiles.back, 'icb'), sUrl = await up(kycFiles.selfie, 'selfie');
-      
-      await supabase.from('wallets').update({ 
-        kyc_status: 'pending', 
-        real_name: nick,
-        ic_number: `${realName} | ${ic}`, 
-        ic_front_url: fUrl, 
-        ic_back_url: bUrl, 
-        selfie_url: sUrl 
-      }).eq('user_id', myUserCode);
-      
-      alert('已提交！请等待管理员审核。'); document.getElementById('kycModal').style.display = 'none'; loadProfile();
-    } catch(e) { alert('失败: ' + e.message); } 
-    finally { document.getElementById('btnSubmitKyc').textContent = t('kycSubmit'); document.getElementById('btnSubmitKyc').disabled = false; }
-  };
-
-  function render() {
-    listEl.innerHTML = '';
-    let filtered = globalItems.filter(it => {
-      if (currentCat !== 'all' && it.cat !== currentCat) return false;
-      const isMine = it.user_id === currentUser.id;
-      if (!isMine) {
-        if (!it.state || !it.district) return false; 
-        if (it.state !== currentPubState || it.district !== currentPubDist) return false;
-      }
-      if (myLat && myLng && it.lat && it.lng) {
-        const dist = getDistance(myLat, myLng, it.lat, it.lng);
-        if (maxDistance !== 999 && dist > maxDistance) return false;
-        const itemRadius = it.radius_km || 2; 
-        if (itemRadius !== 999 && dist > itemRadius) return false;
-      }
-      return true;
-    });
-
-    filtered.forEach(item => {
-      try {
-        const cat = CAT_MAP[item.cat] || CAT_MAP.chat;
-        const isMine = item.user_id === currentUser.id;
-        const itemPrice = item.price; 
-        
-        let distHtml = '';
-        if (myLat && myLng && item.lat && item.lng) {
-          const dist = getDistance(myLat, myLng, item.lat, item.lng);
-          distHtml = `<span class="tag dist-tag">🚶 ${dist < 1 ? (dist*1000).toFixed(0)+'m' : dist.toFixed(1)+'km'}</span>`;
-        }
-
-        const likesArr = item.likes || [];
-        const isLiked = likesArr.includes(currentUser.id);
-        const likeBtnHtml = `<button class="like-btn ${isLiked ? 'liked' : ''}" onclick="window.toggleLike('${item.id}')">${isLiked ? '❤️' : '🤍'} ${likesArr.length}</button>`;
-
-        let actionBtnHtml = '';
-        if (isMine) {
-           if (!item.done) actionBtnHtml = `<button class="repricing-btn" onclick="window.modifyPrice('${item.id}', ${itemPrice})">💰 修改价格</button><button class="done-btn" onclick="window.toggleDone('${item.id}', ${item.done})">✓ 已完成</button>`;
-        } else {
-           if (myProfile.kyc_status !== 'verified') {
-              actionBtnHtml = `<button class="help-btn" style="background:#999;" onclick="window.openKycModal()">🛡️ 需实名认证才能接单</button>`;
-           } else {
-              actionBtnHtml = `<button class="help-btn" onclick="window.openChat('${item.id}', '${item.user_id}', '${myProfile.real_name || '邻居'}')">💬 我来帮你 (RM ${itemPrice})</button>`;
-           }
-        }
-
-        const row = document.createElement('div');
-        row.className = 'item' + (item.done ? ' done' : '');
-        row.innerHTML = `
-          <span class="dot"></span>
-          <div class="bubble">
-            <div class="bubble-head">
-              <span class="tag price-tag">💰 RM ${itemPrice}</span>
-              ${distHtml}
-              <span class="tag ${cat.key}">${cat.icon} ${getCatName(cat)}</span>
-              ${item.done ? '<span class="tag" style="background:#e0e0e0;color:#616161;margin-left:auto;">✓ 已结单</span>' : ''}
-            </div>
-            <p class="text">${esc(item.text)}</p>
-            ${item.image_url ? `<img src="${item.image_url}" class="img-preview">` : ''}
-            <div class="meta">
-              <span class="time">${new Date(item.created_at).toLocaleString()}</span>
-              ${likeBtnHtml}
-              ${actionBtnHtml}
-            </div>
-          </div>
-        `;
-        listEl.appendChild(row);
-      } catch (err) {}
-    });
-  }
-
-  function getDistance(lat1, lon1, lat2, lon2) {
-    if (lat1 == null || lon1 == null || lat2 == null || lon2 == null) return null;
-    const R = 6371, dLat = (lat2 - lat1) * Math.PI / 180, dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  }
-
-  window.toggleLike = async (id) => {
-    const item = globalItems.find(x => x.id === id);
-    if (!item) return;
-    let currentLikes = item.likes || [];
-    if (currentLikes.includes(currentUser.id)) currentLikes = currentLikes.filter(u => u !== currentUser.id);
-    else currentLikes.push(currentUser.id);
-    item.likes = currentLikes; render();
-    await supabase.from('demands').update({ likes: currentLikes }).eq('id', id);
-  };
-
-  function initSelectors() {
-    pubStateSel.innerHTML = FULL_MALAYSIA.map(s => `<option value="${s.key}">${s.name}</option>`).join('');
-    pubStateSel.value = currentPubState; 
-    updatePubDistrict();
-    pubStateSel.addEventListener('change', (e) => { currentPubState = e.target.value; updatePubDistrict(); render(); });
-    pubDistSel.addEventListener('change', (e) => { currentPubDist = e.target.value; updateZoneHint(); render(); });
-  }
-  function updatePubDistrict() {
-    const st = STATE_MAP[currentPubState];
-    pubDistSel.innerHTML = st.districts.map(d => `<option value="${d}">${d}</option>`).join('');
-    currentPubDist = st.districts[0] || '';
-    updateZoneHint(); 
-  }
-  function updateZoneHint() {
-    zoneHint.style.display = 'block';
-    zoneHint.textContent = t('zoneHint', currentPubDist);
-  }
-  function buildCatChips() {
-    let html = `<div class="label">${t('lblCat')}</div>`;
-    CATS.forEach(c => { html += `<button class="chip ${c.key === currentCat ? 'active' : ''}" data-key="${c.key}">${c.icon} ${getCatName(c)}</button>`; });
-    catRow.innerHTML = html;
-    catRow.querySelectorAll('.chip').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        currentCat = e.currentTarget.dataset.key; 
-        catRow.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
-        e.currentTarget.classList.add('active'); 
-        render();
-      });
-    });
-  }
-
-  window.openChat = async (demandId, receiverId, titleText) => {
-    chatDemandId = demandId; chatReceiverId = receiverId;
-    chatTitle.textContent = t('chatTitle', titleText);
-    document.getElementById('chatModal').style.display = 'flex';
-    await loadMessages();
-  };
-  window.closeChat = () => {
-    document.getElementById('chatModal').style.display = 'none';
-    chatDemandId = null; chatReceiverId = null;
-  };
-  async function loadMessages() {
-    const { data } = await supabase.from('messages').select('*').eq('demand_id', chatDemandId).order('created_at', { ascending: true });
-    if (!data) return;
-    const myMsgs = data.filter(m => (m.sender_id === currentUser.id && m.receiver_id === chatReceiverId) || (m.sender_id === chatReceiverId && m.receiver_id === currentUser.id));
-    document.getElementById('chatMessages').innerHTML = myMsgs.map(m => `<div class="msg-bubble ${m.sender_id === currentUser.id ? 'msg-mine' : 'msg-other'}">${esc(m.content)}</div>`).join('');
-    document.getElementById('chatMessages').scrollTop = 999999;
-  }
-  window.sendMsg = async () => {
-    const val = document.getElementById('chatInput').value.trim();
-    if (!val) return;
-    document.getElementById('chatInput').value = '';
-    await supabase.from('messages').insert([{ demand_id: chatDemandId, sender_id: currentUser.id, receiver_id: chatReceiverId, content: val }]);
-    loadMessages(); 
-  };
-
-  window.openCustomerService = () => document.getElementById('csModal').style.display = 'flex';
-  window.submitTicket = async () => {
-    const content = document.getElementById('csTextarea').value.trim();
-    if(!content) return;
-    await supabase.from('tickets').insert([{ user_email: myUserCode, content }]);
-    alert('已提交'); document.getElementById('csModal').style.display = 'none';
-  };
-
-  btnEl.addEventListener('click', addItem);
-  checkUser();
-})();
-</script>
-</body>
-</html>
+    let str = UI_TEXT[currentLang][key] || UI_TEXT['
