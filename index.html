@@ -18,21 +18,20 @@
   .lang-select { padding: 5px 10px; border-radius: 20px; border: 2px solid #ff9800; background: #fff; color: #ff9800; font-weight: bold; font-size: 13px; outline: none; cursor: pointer; }
   .cs-btn { background: #fff; border: 2px solid #2196F3; color: #2196F3; padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; }
 
+  .wallet-bar { max-width: 600px; margin: 0 auto 10px; display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 12px 15px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,.05); border-left: 5px solid #ff9800; }
+  .wallet-balance { font-weight: bold; color: #e65100; font-size: 15px; }
+  .kyc-btn { background: #2196F3; color: #fff; border: none; padding: 6px 12px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 13px; }
+  .kyc-btn.verified { background: #4CAF50; }
+
   .user-bar { max-width: 600px; margin: 0 auto 10px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.7); padding: 10px 15px; border-radius: 10px; font-size: 13px; }
   .logout-btn { background: #ff5252; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-weight: bold;}
 
   .gps-bar { max-width: 600px; margin: 0 auto 15px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; background: #fff; padding: 10px 15px; border-radius: 10px; font-size: 14px; box-shadow: 0 2px 6px rgba(0,0,0,.05); }
   .select-mini { padding: 5px; border-radius: 5px; border: 1px solid #a5d8a0; outline: none; font-weight: bold; color: #2e7d32; }
 
-  .input-row{ display:flex; flex-direction:column; gap:10px; width:100%; max-width:600px; margin:10px auto 0; }
-  #demandInput{ width:100%; font-size:17px; padding:14px 18px; border:none; border-radius:999px; outline:none; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.08); box-sizing: border-box; }
-  
-  .price-submit-row { display:flex; gap:10px; align-items:center; justify-content:center; width: 100%; }
-  .price-input-row { display:flex; align-items:center; gap: 5px; background: #fff; padding: 5px 15px; border-radius: 999px; box-shadow: 0 2px 6px rgba(0,0,0,.08); flex: 1; }
-  .price-input-row label { font-size:14px; font-weight:bold; color:#e65100; white-space: nowrap; }
-  #priceInput { width: 100%; font-size:16px; padding:10px 0; border:none; outline:none; text-align:center; font-weight:bold; color: #4a3b00; }
-  
-  #submitBtn{ flex:0 0 auto; font-size:17px; font-weight:700; padding:14px 30px; border:none; border-radius:999px; background:#ffd400; color:#4a3b00; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,.12); }
+  .input-row{ display:flex; gap:10px; width:100%; max-width:600px; margin:10px auto 0; }
+  #demandInput{ flex:1 1 auto; font-size:17px; padding:14px 18px; border:none; border-radius:999px; outline:none; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.08); }
+  #submitBtn{ flex:0 0 auto; font-size:17px; font-weight:700; padding:14px 26px; border:none; border-radius:999px; background:#ffd400; color:#4a3b00; cursor:pointer; }
   
   .upload-row{ max-width:600px; margin: 10px auto 0; display: flex; align-items: center; gap: 10px; }
   .upload-label { background: #fff; padding: 8px 15px; border-radius: 8px; font-size: 14px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,.08); display: inline-flex; align-items: center; gap: 5px; }
@@ -42,7 +41,7 @@
   .select-row{ display:flex; flex-wrap:wrap; justify-content:center; gap:10px; max-width:600px; margin:16px auto 0; }
   .select-group{ flex:1 1 45%; text-align:left; }
   .select-group label{ display:block; font-size:13px; font-weight:600; color:#4c6b4c; margin-bottom:5px; padding-left:4px; }
-  .select-group select{ width:100%; font-size:15px; padding:10px 12px; border:1.5px solid #a5d8a0; border-radius:10px; outline:none; background: #fff; box-sizing: border-box; }
+  .select-group select{ width:100%; font-size:15px; padding:10px 12px; border:1.5px solid #a5d8a0; border-radius:10px; outline:none; background: #fff; }
 
   .zone-hint { max-width: 600px; margin: 10px auto 0; font-size: 13px; font-weight: bold; color: #d32f2f; text-align: center; background: #ffebee; padding: 6px; border-radius: 8px; display: none; }
 
@@ -50,6 +49,7 @@
   .chip-row .label{ width:100%; text-align:center; font-size:13px; color:#4c6b4c; font-weight:600; }
   .chip{ position: relative; font-size:14px; padding:8px 15px; border-radius:999px; border:1.5px solid transparent; background:rgba(255,255,255,.7); color:#4c6b4c; cursor:pointer; }
   .chip.active{ background:var(--green); border-color:#3d8b40; color:#fff; font-weight:700; }
+  .price-hint { max-width: 600px; margin: 10px auto 0; font-size: 15px; font-weight: bold; color: #e65100; text-align: center; }
 
   #list{ width:100%; max-width:600px; margin:20px auto 0; text-align:left; }
   .item{ position:relative; display:flex; width: 100%; gap:12px; padding-bottom:18px; }
@@ -133,6 +133,11 @@
   </div>
 
   <div id="mainApp">
+    <div class="wallet-bar">
+      <div class="wallet-balance">💰 <span id="txtBalance">余额</span>: RM <span id="walletAmount">0.00</span></div>
+      <button class="kyc-btn" id="btnKyc" onclick="window.openKycModal()">实名认证</button>
+    </div>
+
     <div class="user-bar">
       <span>👤 <span id="userCode" style="color:#1565c0; font-weight:bold;">HIBRO-0000</span> (<span id="userEmail"></span>)</span>
       <button id="logoutBtn" class="logout-btn">退出</button>
@@ -154,16 +159,9 @@
       </div>
     </div>
 
-    <!-- C2C 发帖区 -->
     <div class="input-row">
       <input id="demandInput" type="text" maxlength="60" placeholder="输入你的需求...">
-      <div class="price-submit-row">
-        <div class="price-input-row">
-          <label id="lblPrice">💰 愿意出价: RM</label>
-          <input id="priceInput" type="number" min="0" placeholder="0" value="">
-        </div>
-        <button id="submitBtn" type="button">发布</button>
-      </div>
+      <button id="submitBtn" type="button">发布</button>
     </div>
 
     <div class="upload-row">
@@ -185,36 +183,12 @@
 
     <div class="zone-hint" id="zoneHint"></div>
     <div class="chip-row" id="catRow"><div class="label" id="lblCat">🏷️ 分类：</div></div>
+    <div class="price-hint" id="priceHint"></div>
 
     <div id="list" class="loading">正在加载云端数据...</div>
     <div id="count" style="text-align:center; color:#666; margin-top:10px; font-size:14px;"></div>
   </div>
 
-  <!-- 实名认证弹窗 -->
-  <div id="kycModal" class="modal">
-    <div class="modal-content" style="padding: 20px; max-height: 90vh; overflow-y: auto;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3 style="margin:0; color:#1565c0;" id="txtKycTitle">🛡️ 成为认证接单员</h3>
-        <button style="background:none; border:none; font-size:24px; cursor:pointer;" onclick="document.getElementById('kycModal').style.display='none'">×</button>
-      </div>
-      <p style="font-size:13px; color:#d32f2f; text-align:left; margin-bottom:15px;" id="txtKycDesc">⚠️ 为了保障邻居安全，接单赚钱必须先实名认证。您的真实姓名和 IC 只有管理员能看，邻居只能看到你的“外号”。</p>
-      <div id="kycFormArea">
-        <div class="form-group"><label id="lblKycName">外号/昵称 (对外显示)</label><input type="text" id="kycName" placeholder="如: 水管阿强"></div>
-        <div class="form-group"><label id="lblKycReal">真实姓名 (仅后台可见)</label><input type="text" id="kycRealName" placeholder="身份证上的名字"></div>
-        <div class="form-group"><label id="lblKycIc">身份证号码 (IC)</label><input type="text" id="kycIc" placeholder="如: 990101-14-5555"></div>
-        <div class="form-group"><label id="lblKycBank">收款银行/电子钱包</label><input type="text" id="kycBank" placeholder="如: Maybank 1122334455"></div>
-        
-        <div class="form-group"><label id="lblKycIcF">上传 IC 正面</label><label for="kycIcFront" class="form-file" id="lblIcFront">📸 点击上传</label><input type="file" id="kycIcFront" accept="image/*" style="display:none;"></div>
-        <div class="form-group"><label id="lblKycIcB">上传 IC 背面</label><label for="kycIcBack" class="form-file" id="lblIcBack">📸 点击上传</label><input type="file" id="kycIcBack" accept="image/*" style="display:none;"></div>
-        <div class="form-group"><label id="lblKycSelfie">本人自拍照</label><label for="kycSelfie" class="form-file" id="lblSelfie">🤳 点击上传</label><input type="file" id="kycSelfie" accept="image/*" style="display:none;"></div>
-        
-        <button class="form-submit" id="btnSubmitKyc" onclick="window.submitKyc()">提交审核</button>
-      </div>
-      <div id="kycPendingArea" style="display:none; text-align:center; padding: 20px;"><h3 style="color:#ff9800;">⏳ 审核中，请等待管理员通过</h3></div>
-    </div>
-  </div>
-
-  <!-- 客服弹窗 -->
   <div id="csModal" class="modal">
     <div class="modal-content" style="padding: 20px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -224,6 +198,27 @@
       <textarea id="csTextarea" style="width:100%; height:100px; margin-bottom:10px; padding:10px; box-sizing:border-box;" placeholder="请描述您的问题..."></textarea>
       <button onclick="window.submitTicket()" style="width:100%; padding:10px; background:#2196F3; color:white; border:none; border-radius:5px; cursor:pointer;" id="btnCsSubmit">提交</button>
       <button onclick="document.getElementById('csModal').style.display='none'" style="width:100%; padding:10px; background:#eee; border:none; margin-top:5px; border-radius:5px; cursor:pointer;" id="btnCsClose">取消 / 关闭</button>
+    </div>
+  </div>
+
+  <div id="kycModal" class="modal">
+    <div class="modal-content" style="padding: 20px; max-height: 90vh; overflow-y: auto;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3 style="margin:0; color:#1565c0;" id="txtKycTitle">🛡️ 接单员实名认证</h3>
+        <button style="background:none; border:none; font-size:24px; cursor:pointer;" onclick="document.getElementById('kycModal').style.display='none'">×</button>
+      </div>
+      <p style="font-size:12px; color:#d32f2f; text-align:left; margin-bottom:15px;" id="txtKycDesc">⚠️ 身份信息仅用于平台安全审核。只有通过认证，才能接收费单赚钱。</p>
+      <div id="kycFormArea">
+        <div class="form-group"><label id="lblKycName">外号/昵称 (对外显示)</label><input type="text" id="kycName"></div>
+        <div class="form-group"><label id="lblKycReal">真实姓名 (仅后台可见)</label><input type="text" id="kycRealName"></div>
+        <div class="form-group"><label id="lblKycIc">身份证号码 (IC)</label><input type="text" id="kycIc"></div>
+        <div class="form-group"><label id="lblKycBank">收款银行/电子钱包</label><input type="text" id="kycBank"></div>
+        <div class="form-group"><label id="lblKycIcF">上传 IC 正面</label><label for="kycIcFront" class="form-file" id="lblIcFront">📸 点击上传</label><input type="file" id="kycIcFront" accept="image/*" style="display:none;"></div>
+        <div class="form-group"><label id="lblKycIcB">上传 IC 背面</label><label for="kycIcBack" class="form-file" id="lblIcBack">📸 点击上传</label><input type="file" id="kycIcBack" accept="image/*" style="display:none;"></div>
+        <div class="form-group"><label id="lblKycSelfie">本人自拍照</label><label for="kycSelfie" class="form-file" id="lblSelfie">🤳 点击上传</label><input type="file" id="kycSelfie" accept="image/*" style="display:none;"></div>
+        <button class="form-submit" id="btnSubmitKyc" onclick="window.submitKyc()">提交审核</button>
+      </div>
+      <div id="kycPendingArea" style="display:none; text-align:center; padding: 20px;"><h3 style="color:#ff9800;">⏳ 审核中</h3></div>
     </div>
   </div>
 
@@ -256,10 +251,10 @@
       lblCat: '🏷️ 分类：', btnSubmit: '发布', inputPlac: '输入你的需求...', upload: '📷 附加图片', logout: '退出', 
       gpsOn: '📍 定位成功', gpsLoading: '📍 正在获取位置...', sortLatest: '最新发布', sortDist: '距离最近', 
       range2: '2 公里内', range5: '5 公里内', range10: '10 公里内', rangeAll: '全城',
-      chatTitle: '💬 与 {0} 聊天中', chatSend: '发送', lblPrice: '💰 愿意出价: RM', 
-      zoneHint: '⚠️ 当前仅显示【{0}】区域',
+      chatTitle: '💬 与 {0} 聊天中', chatSend: '发送', balance: '余额', kycBtn: '实名认证', kycVerified: '✅ 已认证', kycPending: '⏳ 审核中',
+      priceHint: '💰 需托管: RM {0}', freeHint: '🆓 免费帮忙', zoneHint: '⚠️ 当前仅显示【{0}】区域',
       csTitle: '🎧 客服与投诉', csPlac: '请描述您的问题...', csSubmit: '提交', csClose: '取消 / 关闭',
-      kycTitle: '🛡️ 成为认证接单员', kycDesc: '⚠️ 为了保障邻居安全，接单赚钱必须先实名认证。您的真实姓名和 IC 只有管理员能看，邻居只能看到你的“外号”。',
+      kycTitle: '🛡️ 接单员实名认证', kycDesc: '⚠️ 身份信息仅用于平台安全审核。只有通过认证，才能接收费单赚钱。',
       kycName: '外号/昵称 (对外显示)', kycReal: '真实姓名 (仅后台可见)', kycIc: '身份证号码 (IC)', kycBank: '收款银行/电子钱包',
       kycF: '上传 IC 正面', kycB: '上传 IC 背面', kycS: '本人自拍照', kycUp: '📸 点击上传', kycSubmit: '提交审核'
     },
@@ -269,10 +264,10 @@
       lblCat: '🏷️ Kategori:', btnSubmit: 'Hantar', inputPlac: 'Masukkan keperluan anda...', upload: '📷 Lampir Gambar', logout: 'Keluar', 
       gpsOn: '📍 Lokasi Berjaya', gpsLoading: '📍 Mendapatkan lokasi...', sortLatest: 'Terkini', sortDist: 'Terdekat', 
       range2: 'Dalam 2 KM', range5: 'Dalam 5 KM', range10: 'Dalam 10 KM', rangeAll: 'Seluruh Bandar',
-      chatTitle: '💬 Berbual dengan {0}', chatSend: 'Hantar', lblPrice: '💰 Tawaran Harga: RM', 
-      zoneHint: '⚠️ Hanya kawasan【{0}】',
+      chatTitle: '💬 Berbual dengan {0}', chatSend: 'Hantar', balance: 'Baki', kycBtn: 'Pengesahan Identiti', kycVerified: '✅ Disahkan', kycPending: '⏳ Menunggu',
+      priceHint: '💰 Perlu bayar: RM {0}', freeHint: '🆓 Bantuan Percuma', zoneHint: '⚠️ Hanya kawasan【{0}】',
       csTitle: '🎧 Pusat Khidmat & Aduan', csPlac: 'Terangkan masalah anda...', csSubmit: 'Hantar', csClose: 'Batal / Tutup',
-      kycTitle: '🛡️ Sahkan Identiti Pekerja', kycDesc: '⚠️ Untuk keselamatan, pekerja mesti disahkan. Nama sebenar & IC hanya untuk admin. Jiran hanya nampak "Nama Samaran".',
+      kycTitle: '🛡️ Pengesahan Identiti Pekerja', kycDesc: '⚠️ Maklumat identiti hanya untuk semakan keselamatan. Lulus pengesahan untuk terima tugasan berbayar.',
       kycName: 'Nama Samaran (Papar Awam)', kycReal: 'Nama Sebenar (Admin Sahaja)', kycIc: 'Nombor IC', kycBank: 'Akaun Bank / e-Wallet',
       kycF: 'Muat naik IC Depan', kycB: 'Muat naik IC Belakang', kycS: 'Gambar Selfie', kycUp: '📸 Klik muat naik', kycSubmit: 'Hantar Semakan'
     },
@@ -282,10 +277,10 @@
       lblCat: '🏷️ Category:', btnSubmit: 'Post', inputPlac: 'Enter your request...', upload: '📷 Attach Image', logout: 'Logout', 
       gpsOn: '📍 Location Found', gpsLoading: '📍 Getting location...', sortLatest: 'Latest', sortDist: 'Nearest', 
       range2: 'Within 2 KM', range5: 'Within 5 KM', range10: 'Within 10 KM', rangeAll: 'Whole City',
-      chatTitle: '💬 Chatting with {0}', chatSend: 'Send', lblPrice: '💰 Offer Price: RM', 
-      zoneHint: '⚠️ Showing【{0}】only',
+      chatTitle: '💬 Chatting with {0}', chatSend: 'Send', balance: 'Balance', kycBtn: 'Verify ID', kycVerified: '✅ Verified', kycPending: '⏳ Pending',
+      priceHint: '💰 Escrow: RM {0}', freeHint: '🆓 Free Help', zoneHint: '⚠️ Showing【{0}】only',
       csTitle: '🎧 Support & Complaints', csPlac: 'Describe your issue...', csSubmit: 'Submit', csClose: 'Cancel / Close',
-      kycTitle: '🛡️ Helper Verification', kycDesc: '⚠️ For safety, helpers must be verified. Real name & IC are for admin only. Neighbors only see your "Nickname".',
+      kycTitle: '🛡️ Helper Verification', kycDesc: '⚠️ Identity info is for security review only. Get verified to earn money.',
       kycName: 'Nickname (Public)', kycReal: 'Real Name (Admin Only)', kycIc: 'IC Number', kycBank: 'Bank / e-Wallet Account',
       kycF: 'Upload IC Front', kycB: 'Upload IC Back', kycS: 'Selfie Photo', kycUp: '📸 Click to upload', kycSubmit: 'Submit Review'
     }
@@ -311,10 +306,10 @@
     document.getElementById('lblState').textContent = t('lblState');
     document.getElementById('lblDistrict').textContent = t('lblDistrict');
     document.getElementById('lblCat').textContent = t('lblCat');
-    document.getElementById('lblPrice').textContent = t('lblPrice');
     document.getElementById('demandInput').placeholder = t('inputPlac');
     document.getElementById('submitBtn').textContent = t('btnSubmit');
     document.getElementById('lblUpload').textContent = t('upload');
+    document.getElementById('txtBalance').textContent = t('balance');
     
     document.getElementById('sortSelect').options[0].text = t('sortLatest');
     document.getElementById('sortSelect').options[1].text = t('sortDist');
@@ -345,6 +340,7 @@
 
     buildCatChips();
     updateZoneHint();
+    if (myProfile) loadProfile();
   }
 
   window.changeLanguage = (lang) => {
@@ -374,13 +370,13 @@
   ];
   
   const CATS = [
-    { key:'urgent',  nameZh:'紧急', nameEn:'Urgent', nameMs:'Kecemasan', icon:'⚡' },
-    { key:'tools',   nameZh:'借工具', nameEn:'Borrow Tools', nameMs:'Pinjam Alatan', icon:'🔧' },
-    { key:'errand',  nameZh:'代跑腿', nameEn:'Errand', nameMs:'Jasa Kurier', icon:'🛒' },
-    { key:'cleaning',nameZh:'保洁服务', nameEn:'Cleaning', nameMs:'Pembersihan', icon:'🧹' },
-    { key:'plumbing',nameZh:'通下水道', nameEn:'Plumbing', nameMs:'Paip Tersumbat', icon:'🪠' },
-    { key:'pet',     nameZh:'宠物', nameEn:'Pets', nameMs:'Haiwan Peliharaan', icon:'🐾' },
-    { key:'chat',    nameZh:'闲聊', nameEn:'Chat', nameMs:'Sembang', icon:'💬' }
+    { key:'urgent',  nameZh:'紧急', nameEn:'Urgent', nameMs:'Kecemasan', icon:'⚡', price: 0 },
+    { key:'tools',   nameZh:'借工具', nameEn:'Borrow Tools', nameMs:'Pinjam Alatan', icon:'🔧', price: 2 },
+    { key:'errand',  nameZh:'代跑腿', nameEn:'Errand', nameMs:'Jasa Kurier', icon:'🛒', price: 5 },
+    { key:'cleaning',nameZh:'保洁服务', nameEn:'Cleaning', nameMs:'Pembersihan', icon:'🧹', price: 15 },
+    { key:'plumbing',nameZh:'通下水道', nameEn:'Plumbing', nameMs:'Paip Tersumbat', icon:'🪠', price: 20 },
+    { key:'pet',     nameZh:'宠物', nameEn:'Pets', nameMs:'Haiwan Peliharaan', icon:'🐾', price: 3 },
+    { key:'chat',    nameZh:'闲聊', nameEn:'Chat', nameMs:'Sembang', icon:'💬', price: 0 }
   ];
 
   let STATE_MAP = {}; FULL_MALAYSIA.forEach(s => STATE_MAP[s.key] = s);
@@ -395,15 +391,15 @@
   const authBox = document.getElementById('authBox'), mainApp = document.getElementById('mainApp');
   const emailInput = document.getElementById('emailInput'), passwordInput = document.getElementById('passwordInput');
   const authMsg = document.getElementById('authMsg'), userEmailSpan = document.getElementById('userEmail');
-  const userCodeSpan = document.getElementById('userCode');
+  const userCodeSpan = document.getElementById('userCode'), walletAmount = document.getElementById('walletAmount');
+  const btnKyc = document.getElementById('btnKyc');
   const listEl = document.getElementById('list'), inputEl = document.getElementById('demandInput');
-  const priceInput = document.getElementById('priceInput');
   const btnEl = document.getElementById('submitBtn'), countEl = document.getElementById('count');
   const catRow = document.getElementById('catRow'), gpsStatus = document.getElementById('gpsStatus');
   const rangeSelect = document.getElementById('rangeSelect'), sortSelect = document.getElementById('sortSelect');
   const pubStateSel = document.getElementById('publishState'), pubDistSel = document.getElementById('publishDistrict');
   const imageInput = document.getElementById('imageInput'), imagePreview = document.getElementById('imagePreview');
-  const zoneHint = document.getElementById('zoneHint');
+  const zoneHint = document.getElementById('zoneHint'), priceHint = document.getElementById('priceHint');
   const chatTitle = document.getElementById('chatTitle');
 
   let currentCat = 'urgent', currentPubState = 'sarawak', currentPubDist = '';
@@ -425,11 +421,12 @@
       
       await loadProfile();
 
+      authBox.style.display = 'none'; mainApp.style.display = 'block';
+      
       initSelectors(); 
       buildCatChips(); 
       applyLanguageUI(); 
-
-      authBox.style.display = 'none'; mainApp.style.display = 'block';
+      
       getUserLocation(); fetchData(); setupRealtime();
 
       if (homePollTimer) clearInterval(homePollTimer);
@@ -443,10 +440,19 @@
   async function loadProfile() {
     let { data, error } = await supabase.from('wallets').select('*').eq('user_id', myUserCode).single();
     if (!data) {
-      await supabase.from('wallets').insert([{ user_id: myUserCode, kyc_status: 'unverified' }]);
-      myProfile = { kyc_status: 'unverified', real_name: '匿名' };
+      await supabase.from('wallets').insert([{ user_id: myUserCode, balance: 0.00, kyc_status: 'unverified' }]);
+      myProfile = { balance: 0.00, kyc_status: 'unverified' };
     } else {
       myProfile = data;
+    }
+    
+    walletAmount.textContent = parseFloat(myProfile.balance).toFixed(2);
+    if (myProfile.kyc_status === 'verified') {
+      btnKyc.textContent = t('kycVerified'); btnKyc.classList.add('verified');
+    } else if (myProfile.kyc_status === 'pending') {
+      btnKyc.textContent = t('kycPending'); btnKyc.classList.add('verified');
+    } else {
+      btnKyc.textContent = t('kycBtn'); btnKyc.classList.remove('verified');
     }
   }
 
@@ -515,8 +521,13 @@
   async function addItem() {
     const text = inputEl.value.trim();
     if (!text) { inputEl.focus(); return; }
-    const priceVal = parseFloat(priceInput.value) || 0;
     
+    const cat = CAT_MAP[currentCat];
+    if (cat.price > 0 && myProfile.balance < cat.price) {
+      alert(`余额不足！发布此任务需要 RM ${cat.price}。当前余额 RM ${myProfile.balance}。\n(提示：如需充值请联系管理员)`);
+      return;
+    }
+
     btnEl.disabled = true; btnEl.textContent = '...';
 
     let imageUrl = null;
@@ -529,34 +540,53 @@
     const newItem = {
       text: text, cat: currentCat, state: currentPubState, district: currentPubDist,
       done: false, user_id: currentUser.id, lat: myLat, lng: myLng, radius_km: 2, image_url: imageUrl, 
-      likes: [], price: priceVal 
+      likes: [], price: cat.price 
     };
 
     const { data, error } = await supabase.from('demands').insert([newItem]).select();
     
+    if (!error && cat.price > 0) {
+      const newBal = myProfile.balance - cat.price;
+      await supabase.from('wallets').update({ balance: newBal }).eq('user_id', myUserCode);
+      myProfile.balance = newBal;
+      walletAmount.textContent = newBal.toFixed(2);
+    }
+
     btnEl.disabled = false; btnEl.textContent = t('btnSubmit');
     if (error) { alert('发布失败：' + error.message); return; }
     
-    inputEl.value = ''; priceInput.value = ''; imageInput.value = ''; selectedFile = null; imagePreview.style.display = 'none';
+    inputEl.value = ''; imageInput.value = ''; selectedFile = null; imagePreview.style.display = 'none';
     fetchData(true);
   }
 
-  async function modifyPrice(itemId, currentPrice) {
-    const newPrice = prompt(`当前帖子标价为 RM ${currentPrice}。\n如果双方私下谈好了新价格，请输入新的金额：`, currentPrice);
-    if (newPrice === null || isNaN(newPrice) || parseFloat(newPrice) < 0) return alert('价格无效');
-    
+  async function confirmDone(itemId, itemPrice) {
+    if(!confirm(`确定任务已顺利完成吗？\n点击确认后，平台将把 RM ${itemPrice} 转入接单员钱包。`)) return;
+    await supabase.from('demands').update({ done: true }).eq('id', itemId);
+    const { data: msgs } = await supabase.from('messages').select('sender_id').eq('demand_id', itemId).order('created_at', { ascending: false }).limit(1);
+    if (msgs && msgs.length > 0) {
+      const helperCode = 'HIBRO-' + msgs[0].sender_id.split('-')[0].toUpperCase();
+      const { data: helperWallet } = await supabase.from('wallets').select('*').eq('user_id', helperCode).single();
+      if (helperWallet) {
+        const newBal = parseFloat(helperWallet.balance) + parseFloat(itemPrice);
+        await supabase.from('wallets').update({ balance: newBal }).eq('user_id', helperCode);
+        alert(`✅ 任务完成！已将 RM ${itemPrice} 转入接单员 (${helperCode}) 的钱包。`);
+      }
+    }
+    fetchData(true);
+  }
+
+  async function requestRepricing(itemId, oldPrice) {
+    const newPrice = prompt(`当前定价为 RM ${oldPrice}。\n如果遇到特殊情况需要加钱，请输入新的价格 (如: 150)：`);
+    if (!newPrice || isNaN(newPrice) || parseFloat(newPrice) <= oldPrice) return alert('价格无效');
+    const diff = parseFloat(newPrice) - parseFloat(oldPrice);
+    if (myProfile.balance < diff) return alert(`余额不足以支付差价 (需要 RM ${diff})`);
+    if(!confirm(`确认提高至 RM ${newPrice} 吗？`)) return;
+    const newBal = myProfile.balance - diff;
+    await supabase.from('wallets').update({ balance: newBal }).eq('user_id', myUserCode);
+    myProfile.balance = newBal; walletAmount.textContent = newBal.toFixed(2);
     await supabase.from('demands').update({ price: parseFloat(newPrice) }).eq('id', itemId);
-    alert('✅ 价格已更新！');
     fetchData(true);
   }
-
-  async function toggleDone(id, status) { 
-    if(!confirm(`确定任务已完成吗？`)) return;
-    await supabase.from('demands').update({ done: !status }).eq('id', id); 
-    fetchData(true);
-  }
-  
-  async function removeItem(id) { if(confirm('确定删除吗？')) await supabase.from('demands').delete().eq('id', id); }
 
   window.openKycModal = () => {
     document.getElementById('kycModal').style.display = 'flex';
@@ -647,9 +677,9 @@
 
         let actionBtnHtml = '';
         if (isMine) {
-           if (!item.done) actionBtnHtml = `<button class="repricing-btn" onclick="window.modifyPrice('${item.id}', ${itemPrice})">💰 修改价格</button><button class="done-btn" onclick="window.toggleDone('${item.id}', ${item.done})">✓ 已完成</button>`;
+           if (!item.done) actionBtnHtml = `<button class="repricing-btn" onclick="window.requestRepricing('${item.id}', ${itemPrice})">💰 协商加价</button><button class="done-btn" onclick="window.confirmDone('${item.id}', ${itemPrice})">✓ 确认完成并打款</button>`;
         } else {
-           if (myProfile.kyc_status !== 'verified') {
+           if (itemPrice > 0 && myProfile.kyc_status !== 'verified') {
               actionBtnHtml = `<button class="help-btn" style="background:#999;" onclick="window.openKycModal()">🛡️ 需实名认证才能接单</button>`;
            } else {
               actionBtnHtml = `<button class="help-btn" onclick="window.openChat('${item.id}', '${item.user_id}', '${myProfile.real_name || '邻居'}')">💬 我来帮你 (RM ${itemPrice})</button>`;
@@ -724,9 +754,14 @@
         currentCat = e.currentTarget.dataset.key; 
         catRow.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
         e.currentTarget.classList.add('active'); 
-        render();
+        updatePriceHint(); render();
       });
     });
+    updatePriceHint();
+  }
+  function updatePriceHint() {
+    const cat = CAT_MAP[currentCat];
+    if (cat) priceHint.innerHTML = cat.price > 0 ? t('priceHint', cat.price) : t('freeHint');
   }
 
   window.openChat = async (demandId, receiverId, titleText) => {
