@@ -24,14 +24,17 @@
   .gps-bar { max-width: 600px; margin: 0 auto 15px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; background: #fff; padding: 10px 15px; border-radius: 10px; font-size: 14px; box-shadow: 0 2px 6px rgba(0,0,0,.05); }
   .select-mini { padding: 5px; border-radius: 5px; border: 1px solid #a5d8a0; outline: none; font-weight: bold; color: #2e7d32; }
 
-  /* 发帖区 */
   .input-row{ display:flex; flex-direction:column; gap:10px; width:100%; max-width:600px; margin:10px auto 0; }
-  #demandInput{ width:100%; font-size:17px; padding:14px 18px; border:none; border-radius:999px; outline:none; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.08); box-sizing: border-box; }
-  .price-submit-row { display:flex; gap:10px; align-items:center; justify-content:center; width: 100%; }
-  .price-input-row { display:flex; align-items:center; gap: 5px; background: #fff; padding: 5px 15px; border-radius: 999px; box-shadow: 0 2px 6px rgba(0,0,0,.08); flex: 1; }
-  .price-input-row label { font-size:14px; font-weight:bold; color:#e65100; white-space: nowrap; }
-  #priceInput { width: 100%; font-size:16px; padding:10px 0; border:none; outline:none; text-align:center; font-weight:bold; color: #4a3b00; }
-  #submitBtn{ flex:0 0 auto; font-size:17px; font-weight:700; padding:14px 30px; border:none; border-radius:999px; background:#ffd400; color:#4a3b00; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,.12); }
+  .input-top{ display:flex; gap:10px; }
+  #demandInput{ flex:1 1 auto; font-size:17px; padding:14px 18px; border:none; border-radius:999px; outline:none; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.08); }
+  
+  /* 价格输入框（默认隐藏，按分类后显现） */
+  .price-input-row { display:none; gap:10px; align-items:center; justify-content:center; background:#fff3e0; padding:10px; border-radius:12px; border:1px dashed #ff9800; }
+  .price-input-row label { font-size:14px; font-weight:bold; color:#e65100; }
+  #priceInput { width: 120px; font-size:16px; padding:10px; border:2px solid #ff9800; border-radius:10px; outline:none; text-align:center; font-weight:bold; color:#d32f2f; }
+  #priceUnit { font-size:14px; font-weight:bold; color:#e65100; }
+  
+  #submitBtn{ flex:0 0 auto; font-size:17px; font-weight:700; padding:14px 26px; border:none; border-radius:999px; background:#ffd400; color:#4a3b00; cursor:pointer; }
   
   .upload-row{ max-width:600px; margin: 10px auto 0; display: flex; align-items: center; gap: 10px; }
   .upload-label { background: #fff; padding: 8px 15px; border-radius: 8px; font-size: 14px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,.08); display: inline-flex; align-items: center; gap: 5px; }
@@ -41,7 +44,7 @@
   .select-row{ display:flex; flex-wrap:wrap; justify-content:center; gap:10px; max-width:600px; margin:16px auto 0; }
   .select-group{ flex:1 1 45%; text-align:left; }
   .select-group label{ display:block; font-size:13px; font-weight:600; color:#4c6b4c; margin-bottom:5px; padding-left:4px; }
-  .select-group select{ width:100%; font-size:15px; padding:10px 12px; border:1.5px solid #a5d8a0; border-radius:10px; outline:none; background: #fff; box-sizing: border-box; }
+  .select-group select{ width:100%; font-size:15px; padding:10px 12px; border:1.5px solid #a5d8a0; border-radius:10px; outline:none; background: #fff; }
 
   .zone-hint { max-width: 600px; margin: 10px auto 0; font-size: 13px; font-weight: bold; color: #d32f2f; text-align: center; background: #ffebee; padding: 6px; border-radius: 8px; display: none; }
 
@@ -63,13 +66,16 @@
   
   .bubble-head{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px; }
   .tag{ font-size:12px; font-weight:600; padding:3px 10px; border-radius:999px; background:#eceff1; color:#455a64; }
-  .tag.urgent{ background:#ffebee; color:#c62828; } .tag.tools { background:#e3f2fd; color:#1565c0; }
-  .tag.errand{ background:#fff3e0; color:#e65100; } .tag.pet   { background:#f3e5f5; color:#6a1b9a; }
-  .tag.chat  { background:#eceff1; color:#455a64; } .tag.dist-tag { background:#fffde7; color:#f57f17; border:1px solid #fff59d;}
-  .tag.radius-tag { background:#e1f5fe; color:#0277bd; }
+  
+  /* 紧急专属红色 */
+  .tag.urgent{ background:#b71c1c; color:#fff; } 
+  .tag.tools { background:#e3f2fd; color:#1565c0; } .tag.errand{ background:#fff3e0; color:#e65100; } 
+  .tag.pet   { background:#f3e5f5; color:#6a1b9a; } .tag.chat  { background:#eceff1; color:#455a64; } 
+  .tag.dist-tag { background:#fffde7; color:#f57f17; border:1px solid #fff59d;}
   .tag.price-tag { background: #ffea00; color: #b26500; font-size: 13px; font-weight: 800; border: 1px solid #ffd54f; }
   .tag.cleaning { background:#f3e5f5; color:#7b1fa2; } .tag.plumbing { background:#e0f7fa; color:#00695c; }
-  .tag.elderly  { background:#fff8e1; color:#f57f17; } /* 陪伴老人专属颜色 */
+  .tag.elder { background:#e8eaf6; color:#283593; } .tag.kid { background:#fce4ec; color:#ad1457; }
+  .tag.math { background:#e0f2f1; color:#004d40; } .tag.piano { background:#fff8e1; color:#f57f17; }
 
   .text { margin:0; font-size:18px; color:#222; word-break:break-word; white-space:pre-wrap; }
   .item.done .text{ text-decoration:line-through; color:#7a8c7a; }
@@ -103,14 +109,9 @@
 
   .form-group { margin-bottom: 15px; text-align: left; }
   .form-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #333; }
-  .form-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
-  .form-file { border: 1px dashed #2196F3; padding: 15px; border-radius: 8px; text-align: center; background: #e3f2fd; cursor: pointer; font-size: 13px; font-weight: bold; color: #1565c0; display: block; }
+  .form-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
+  .form-file { border: 1px dashed #2196F3; padding: 15px; border-radius: 8px; text-align: center; background: #e3f2fd; cursor: pointer; font-size: 13px; font-weight: bold; color: #1565c0; }
   .form-submit { width: 100%; padding: 12px; background: #2196F3; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-
-  /* 评分星星 */
-  .star-rating { display: flex; justify-content: center; gap: 10px; margin: 20px 0; }
-  .star { font-size: 40px; cursor: pointer; color: #ccc; transition: color 0.2s; }
-  .star.active { color: #ffd700; }
 </style>
 </head>
 <body>
@@ -131,8 +132,8 @@
   <div id="authBox">
     <h3 id="txtAuthTitle">住户实名认证登录</h3>
     <div class="auth-msg" id="authMsg" style="color:red; min-height:20px;"></div>
-    <input type="email" id="emailInput" class="auth-input" placeholder="请输入邮箱" style="width:100%; padding:10px; margin-bottom:10px; box-sizing:border-box;">
-    <input type="password" id="passwordInput" class="auth-input" placeholder="请输入密码" style="width:100%; padding:10px; margin-bottom:10px; box-sizing:border-box;">
+    <input type="email" id="emailInput" class="auth-input" placeholder="请输入邮箱" style="width:100%; padding:10px; margin-bottom:10px;">
+    <input type="password" id="passwordInput" class="auth-input" placeholder="请输入密码" style="width:100%; padding:10px; margin-bottom:10px;">
     <button id="loginBtn" class="auth-btn" style="width:100%; padding:12px; background:var(--green); color:white; border:none; border-radius:8px; font-weight:bold; margin-bottom:10px;">登 录</button>
     <button id="signupBtn" class="auth-btn secondary" style="width:100%; padding:12px; background:#eee; border:none; border-radius:8px; font-weight:bold;">注册新账号</button>
   </div>
@@ -159,14 +160,15 @@
       </div>
     </div>
 
-    <!-- 发帖区 -->
     <div class="input-row">
-      <input id="demandInput" type="text" maxlength="60" placeholder="输入你的需求...">
-      <div class="price-submit-row">
-        <div class="price-input-row">
-          <label id="lblPrice">💰 愿意出价: RM</label>
-          <input id="priceInput" type="number" min="0" placeholder="0" value="">
-        </div>
+      <div class="input-top">
+        <input id="demandInput" type="text" maxlength="60" placeholder="输入你的需求...">
+      </div>
+      <!-- 出价框：点分类后自动显现 -->
+      <div class="price-input-row" id="priceRow">
+        <label>💰 愿意出价: RM</label>
+        <input id="priceInput" type="number" min="0" placeholder="0" value="">
+        <span id="priceUnit">/ 次</span>
         <button id="submitBtn" type="button">发布</button>
       </div>
     </div>
@@ -197,45 +199,25 @@
 
   <!-- 实名认证弹窗 -->
   <div id="kycModal" class="modal">
-    <div class="modal-content" style="padding: 20px; max-height: 90vh; overflow-y: auto;">
+    <div class="modal-content" style="padding: 20px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
         <h3 style="margin:0; color:#1565c0;" id="txtKycTitle">🛡️ 成为认证接单员</h3>
         <button style="background:none; border:none; font-size:24px; cursor:pointer;" onclick="document.getElementById('kycModal').style.display='none'">×</button>
       </div>
-      <p style="font-size:13px; color:#d32f2f; text-align:left; margin-bottom:15px;" id="txtKycDesc">⚠️ 为了保障邻居安全，接单赚钱必须先实名认证。您的真实姓名和 IC 只有管理员能看，邻居只能看到你的“外号”和“信用分”。</p>
+      <p style="font-size:13px; color:#d32f2f; text-align:left; margin-bottom:15px;" id="txtKycDesc">⚠️ 为了保障邻居安全，接单赚钱必须先实名认证。您的真实姓名和 IC 只有管理员能看，邻居只能看到你的“外号”。</p>
       <div id="kycFormArea">
         <div class="form-group"><label id="lblKycName">外号/昵称 (对外显示)</label><input type="text" id="kycName" placeholder="如: 水管阿强"></div>
-        <div class="form-group"><label id="lblKycReal">真实姓名 (仅后台可见)</label><input type="text" id="kycRealName" placeholder="身份证上的名字"></div>
-        <div class="form-group"><label id="lblKycIc">身份证号码 (IC)</label><input type="text" id="kycIc" placeholder="如: 990101-14-5555"></div>
-        <div class="form-group"><label id="lblKycBank">收款银行/电子钱包</label><input type="text" id="kycBank" placeholder="如: Maybank 1122334455"></div>
-        
+        <div class="form-group"><label id="lblKycIc">真实姓名 (仅后台可见)</label><input type="text" id="kycRealName" placeholder="身份证上的名字"></div>
+        <div class="form-group"><label id="lblKycBank">身份证号码 (IC)</label><input type="text" id="kycIc" placeholder="如: 990101-14-5555"></div>
         <div class="form-group"><label id="lblKycIcF">上传 IC 正面</label><label for="kycIcFront" class="form-file" id="lblIcFront">📸 点击上传</label><input type="file" id="kycIcFront" accept="image/*" style="display:none;"></div>
         <div class="form-group"><label id="lblKycIcB">上传 IC 背面</label><label for="kycIcBack" class="form-file" id="lblIcBack">📸 点击上传</label><input type="file" id="kycIcBack" accept="image/*" style="display:none;"></div>
         <div class="form-group"><label id="lblKycSelfie">本人自拍照</label><label for="kycSelfie" class="form-file" id="lblSelfie">🤳 点击上传</label><input type="file" id="kycSelfie" accept="image/*" style="display:none;"></div>
-        
         <button class="form-submit" id="btnSubmitKyc" onclick="window.submitKyc()">提交审核</button>
       </div>
       <div id="kycPendingArea" style="display:none; text-align:center; padding: 20px;"><h3 style="color:#ff9800;">⏳ 审核中，请等待管理员通过</h3></div>
     </div>
   </div>
 
-  <!-- 评分弹窗 -->
-  <div id="ratingModal" class="modal">
-    <div class="modal-content" style="padding: 20px; text-align: center;">
-      <h3 style="color:#e65100; margin-top:0;">🌟 请为接单员打分</h3>
-      <p style="font-size:14px; color:#666;" id="ratingDesc">他的服务态度如何？</p>
-      <div class="star-rating" id="starContainer">
-        <span class="star" onclick="window.setRating(1)">★</span>
-        <span class="star" onclick="window.setRating(2)">★</span>
-        <span class="star" onclick="window.setRating(3)">★</span>
-        <span class="star" onclick="window.setRating(4)">★</span>
-        <span class="star" onclick="window.setRating(5)">★</span>
-      </div>
-      <button onclick="window.submitRating()" style="width:100%; padding:12px; background:#ffd700; color:#4a3b00; font-weight:bold; border:none; border-radius:8px; font-size:16px; cursor:pointer;">提交评价并结单</button>
-    </div>
-  </div>
-
-  <!-- 客服弹窗 -->
   <div id="csModal" class="modal">
     <div class="modal-content" style="padding: 20px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -275,39 +257,39 @@
       mainTitle: '邻里帮帮帮', subtitle: '住户互助平台', csBtn: '🎧 客服中心', authTitle: '住户实名认证登录', 
       btnLogin: '登 录', btnSignup: '注册新账号', lblState: '📍 州/直辖区：', lblDistrict: '🏘️ 县/分区：', 
       lblCat: '🏷️ 分类：', btnSubmit: '发布', inputPlac: '输入你的需求...', upload: '📷 附加图片', logout: '退出', 
-      gpsOn: '📍 定位成功', gpsLoading: '📍 正在获取位置...', sortLatest: '最新发布', sortDist: '距离最近', 
+      gpsOn: '📍 定位成功', sortLatest: '最新发布', sortDist: '距离最近', 
       range2: '2 公里内', range5: '5 公里内', range10: '10 公里内', rangeAll: '全城',
-      chatTitle: '💬 与 {0} 聊天中', chatSend: '发送', lblPrice: '💰 愿意出价: RM', 
+      chatTitle: '💬 与 {0} 聊天中', chatSend: '发送', 
       zoneHint: '⚠️ 当前仅显示【{0}】区域',
       csTitle: '🎧 客服与投诉', csPlac: '请描述您的问题...', csSubmit: '提交', csClose: '取消 / 关闭',
-      kycTitle: '🛡️ 成为认证接单员', kycDesc: '⚠️ 为了保障邻居安全，接单赚钱必须先实名认证。您的真实姓名和 IC 只有管理员能看，邻居只能看到你的“外号”和“信用分”。',
-      kycName: '外号/昵称 (对外显示)', kycReal: '真实姓名 (仅后台可见)', kycIc: '身份证号码 (IC)', kycBank: '收款银行/电子钱包',
+      kycTitle: '🛡️ 成为认证接单员', kycDesc: '⚠️ 为了保障邻居安全，接单赚钱必须先实名认证。您的真实姓名和 IC 只有管理员能看，邻居只能看到你的“外号”。',
+      kycName: '外号/昵称 (对外显示)', kycReal: '真实姓名 (仅后台可见)', kycIc: '身份证号码 (IC)',
       kycF: '上传 IC 正面', kycB: '上传 IC 背面', kycS: '本人自拍照', kycUp: '📸 点击上传', kycSubmit: '提交审核'
     },
     ms: {
       mainTitle: 'Hibro Bantuan Jiran', subtitle: 'Platform Bantuan Jiran', csBtn: '🎧 Pusat Khidmat', authTitle: 'Log Masuk Penduduk', 
       btnLogin: 'Log Masuk', btnSignup: 'Daftar Akaun', lblState: '📍 Negeri/Wilayah:', lblDistrict: '🏘️ Daerah/Bahagian:', 
       lblCat: '🏷️ Kategori:', btnSubmit: 'Hantar', inputPlac: 'Masukkan keperluan anda...', upload: '📷 Lampir Gambar', logout: 'Keluar', 
-      gpsOn: '📍 Lokasi Berjaya', gpsLoading: '📍 Mendapatkan lokasi...', sortLatest: 'Terkini', sortDist: 'Terdekat', 
+      gpsOn: '📍 Lokasi Berjaya', sortLatest: 'Terkini', sortDist: 'Terdekat', 
       range2: 'Dalam 2 KM', range5: 'Dalam 5 KM', range10: 'Dalam 10 KM', rangeAll: 'Seluruh Bandar',
-      chatTitle: '💬 Berbual dengan {0}', chatSend: 'Hantar', lblPrice: '💰 Tawaran Harga: RM', 
+      chatTitle: '💬 Berbual dengan {0}', chatSend: 'Hantar',
       zoneHint: '⚠️ Hanya kawasan【{0}】',
       csTitle: '🎧 Pusat Khidmat & Aduan', csPlac: 'Terangkan masalah anda...', csSubmit: 'Hantar', csClose: 'Batal / Tutup',
-      kycTitle: '🛡️ Sahkan Identiti Pekerja', kycDesc: '⚠️ Untuk keselamatan, pekerja mesti disahkan. Nama sebenar & IC hanya untuk admin. Jiran hanya nampak "Nama Samaran" dan "Skor Kredit".',
-      kycName: 'Nama Samaran (Papar Awam)', kycReal: 'Nama Sebenar (Admin Sahaja)', kycIc: 'Nombor IC', kycBank: 'Akaun Bank / e-Wallet',
+      kycTitle: '🛡️ Sahkan Identiti Pekerja', kycDesc: '⚠️ Untuk keselamatan, pekerja mesti disahkan. Nama sebenar & IC hanya untuk admin. Jiran hanya nampak "Nama Samaran".',
+      kycName: 'Nama Samaran (Papar Awam)', kycReal: 'Nama Sebenar (Admin Sahaja)', kycIc: 'Nombor IC',
       kycF: 'Muat naik IC Depan', kycB: 'Muat naik IC Belakang', kycS: 'Gambar Selfie', kycUp: '📸 Klik muat naik', kycSubmit: 'Hantar Semakan'
     },
     en: {
       mainTitle: 'Hibro Mutual Aid', subtitle: 'Neighborhood Mutual Aid', csBtn: '🎧 Support Center', authTitle: 'Resident Login', 
       btnLogin: 'Login', btnSignup: 'Sign Up', lblState: '📍 State/Territory:', lblDistrict: '🏘️ District:', 
       lblCat: '🏷️ Category:', btnSubmit: 'Post', inputPlac: 'Enter your request...', upload: '📷 Attach Image', logout: 'Logout', 
-      gpsOn: '📍 Location Found', gpsLoading: '📍 Getting location...', sortLatest: 'Latest', sortDist: 'Nearest', 
+      gpsOn: '📍 Location Found', sortLatest: 'Latest', sortDist: 'Nearest', 
       range2: 'Within 2 KM', range5: 'Within 5 KM', range10: 'Within 10 KM', rangeAll: 'Whole City',
-      chatTitle: '💬 Chatting with {0}', chatSend: 'Send', lblPrice: '💰 Offer Price: RM', 
+      chatTitle: '💬 Chatting with {0}', chatSend: 'Send',
       zoneHint: '⚠️ Showing【{0}】only',
       csTitle: '🎧 Support & Complaints', csPlac: 'Describe your issue...', csSubmit: 'Submit', csClose: 'Cancel / Close',
-      kycTitle: '🛡️ Helper Verification', kycDesc: '⚠️ For safety, helpers must be verified. Real name & IC are for admin only. Neighbors only see your "Nickname" and "Credit Score".',
-      kycName: 'Nickname (Public)', kycReal: 'Real Name (Admin Only)', kycIc: 'IC Number', kycBank: 'Bank / e-Wallet Account',
+      kycTitle: '🛡️ Helper Verification', kycDesc: '⚠️ For safety, helpers must be verified. Real name & IC are for admin only. Neighbors only see your "Nickname".',
+      kycName: 'Nickname (Public)', kycReal: 'Real Name (Admin Only)', kycIc: 'IC Number',
       kycF: 'Upload IC Front', kycB: 'Upload IC Back', kycS: 'Selfie Photo', kycUp: '📸 Click to upload', kycSubmit: 'Submit Review'
     }
   };
@@ -332,7 +314,6 @@
     document.getElementById('lblState').textContent = t('lblState');
     document.getElementById('lblDistrict').textContent = t('lblDistrict');
     document.getElementById('lblCat').textContent = t('lblCat');
-    document.getElementById('lblPrice').textContent = t('lblPrice');
     document.getElementById('demandInput').placeholder = t('inputPlac');
     document.getElementById('submitBtn').textContent = t('btnSubmit');
     document.getElementById('lblUpload').textContent = t('upload');
@@ -354,7 +335,6 @@
     document.getElementById('lblKycName').textContent = t('kycName');
     document.getElementById('lblKycReal').textContent = t('kycReal');
     document.getElementById('lblKycIc').textContent = t('kycIc');
-    document.getElementById('lblKycBank').textContent = t('kycBank');
     document.getElementById('lblKycIcF').textContent = t('kycF');
     document.getElementById('lblKycIcB').textContent = t('kycB');
     document.getElementById('lblKycSelfie').textContent = t('kycS');
@@ -366,7 +346,6 @@
 
     buildCatChips();
     updateZoneHint();
-    if (myProfile) loadProfile();
   }
 
   window.changeLanguage = (lang) => {
@@ -395,16 +374,19 @@
     { key:'putrajaya', name:'布城 WP Putrajaya', districts:['布城 Putrajaya']}
   ];
   
-  // 新增：陪伴老人 (elderly) 默认价格 98
+  // 💡 这里定义所有的分类和它们对应的默认价格
   const CATS = [
-    { key:'urgent',  nameZh:'紧急', nameEn:'Urgent', nameMs:'Kecemasan', icon:'⚡', price: 0 },
-    { key:'tools',   nameZh:'借工具', nameEn:'Borrow Tools', nameMs:'Pinjam Alatan', icon:'🔧', price: 0 },
-    { key:'errand',  nameZh:'代跑腿', nameEn:'Errand', nameMs:'Jasa Kurier', icon:'🛒', price: 0 },
-    { key:'cleaning',nameZh:'保洁服务', nameEn:'Cleaning', nameMs:'Pembersihan', icon:'🧹', price: 0 },
-    { key:'plumbing',nameZh:'通下水道', nameEn:'Plumbing', nameMs:'Paip Tersumbat', icon:'🪠', price: 0 },
-    { key:'elderly', nameZh:'陪伴老人', nameEn:'Elderly Care', nameMs:'Teman Warga Emas', icon:'👵', price: 98 },
-    { key:'pet',     nameZh:'宠物', nameEn:'Pets', nameMs:'Haiwan Peliharaan', icon:'🐾', price: 0 },
-    { key:'chat',    nameZh:'闲聊', nameEn:'Chat', nameMs:'Sembang', icon:'💬', price: 0 }
+    { key:'urgent',  nameZh:'紧急', nameEn:'Urgent', nameMs:'Kecemasan', icon:'⚡', price: 0, unitZh:'', unitEn:'', unitMs:'' },
+    { key:'tools',   nameZh:'借工具', nameEn:'Borrow Tools', nameMs:'Pinjam Alatan', icon:'🔧', price: 5, unitZh:'/ 次', unitEn:'/ time', unitMs:'/ kali' },
+    { key:'errand',  nameZh:'代跑腿', nameEn:'Errand', nameMs:'Jasa Kurier', icon:'🛒', price: 5, unitZh:'/ 次', unitEn:'/ time', unitMs:'/ kali' },
+    { key:'cleaning',nameZh:'保洁服务', nameEn:'Cleaning', nameMs:'Pembersihan', icon:'🧹', price: 45, unitZh:'/ 次', unitEn:'/ time', unitMs:'/ kali' },
+    { key:'plumbing',nameZh:'通下水道', nameEn:'Plumbing', nameMs:'Paip Tersumbat', icon:'🪠', price: 98, unitZh:'/ 次', unitEn:'/ time', unitMs:'/ kali' },
+    { key:'pet',     nameZh:'宠物', nameEn:'Pets', nameMs:'Haiwan Peliharaan', icon:'🐾', price: 8, unitZh:'/ 次', unitEn:'/ time', unitMs:'/ kali' },
+    { key:'elder',   nameZh:'陪伴老人', nameEn:'Elder Care', nameMs:'Teman Warga Emas', icon:'👴', price: 98, unitZh:'/ 次', unitEn:'/ time', unitMs:'/ kali' },
+    { key:'kid',     nameZh:'陪娃/陪小孩', nameEn:'Babysitting', nameMs:'Jaga Kanak-kanak', icon:'👶', price: 68, unitZh:'/ 次', unitEn:'/ time', unitMs:'/ kali' },
+    { key:'math',    nameZh:'教数学 (每题)', nameEn:'Math Tutor (Per Q)', nameMs:'Tunjuk Ajar Matematik (Setiap Soalan)', icon:'📐', price: 1, unitZh:'/ 题', unitEn:'/ Q', unitMs:'/ soalan' },
+    { key:'piano',   nameZh:'教弹钢琴 (每小时)', nameEn:'Piano Tutor (Hourly)', nameMs:'Tunjuk Ajar Piano (Setiap Jam)', icon:'🎹', price: 20, unitZh:'/ 小时', unitEn:'/ hour', unitMs:'/ jam' },
+    { key:'chat',    nameZh:'闲聊', nameEn:'Chat', nameMs:'Sembang', icon:'💬', price: 0, unitZh:'', unitEn:'', unitMs:'' }
   ];
 
   let STATE_MAP = {}; FULL_MALAYSIA.forEach(s => STATE_MAP[s.key] = s);
@@ -415,13 +397,18 @@
     if (currentLang === 'ms') return cat.nameMs;
     return cat.nameZh;
   }
+  function getCatUnit(cat) {
+    if (currentLang === 'en') return cat.unitEn;
+    if (currentLang === 'ms') return cat.unitMs;
+    return cat.unitZh;
+  }
 
   const authBox = document.getElementById('authBox'), mainApp = document.getElementById('mainApp');
   const emailInput = document.getElementById('emailInput'), passwordInput = document.getElementById('passwordInput');
   const authMsg = document.getElementById('authMsg'), userEmailSpan = document.getElementById('userEmail');
   const userCodeSpan = document.getElementById('userCode');
   const listEl = document.getElementById('list'), inputEl = document.getElementById('demandInput');
-  const priceInput = document.getElementById('priceInput');
+  const priceRow = document.getElementById('priceRow'), priceInput = document.getElementById('priceInput'), priceUnit = document.getElementById('priceUnit');
   const btnEl = document.getElementById('submitBtn'), countEl = document.getElementById('count');
   const catRow = document.getElementById('catRow'), gpsStatus = document.getElementById('gpsStatus');
   const rangeSelect = document.getElementById('rangeSelect'), sortSelect = document.getElementById('sortSelect');
@@ -436,8 +423,6 @@
   let incomingMessages = [], chatDemandId = null, chatReceiverId = null, chatChannel = null;
   let chatPollTimer = null, homePollTimer = null;
   let kycFiles = { front: null, back: null, selfie: null };
-  let pendingRatingItem = null;
-  let selectedRating = 5;
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&': '&amp;','<': '&lt;','>': '&gt;','"': '&quot;',"'": '&#39;'}[c])); }
   
@@ -453,11 +438,7 @@
 
       authBox.style.display = 'none'; mainApp.style.display = 'block';
       
-      initSelectors(); 
-      buildCatChips(); 
-      applyLanguageUI(); 
-      
-      getUserLocation(); fetchData(); setupRealtime();
+      applyLanguageUI(); initSelectors(); getUserLocation(); fetchData(); setupRealtime();
 
       if (homePollTimer) clearInterval(homePollTimer);
       homePollTimer = setInterval(() => {
@@ -471,7 +452,7 @@
     let { data, error } = await supabase.from('wallets').select('*').eq('user_id', myUserCode).single();
     if (!data) {
       await supabase.from('wallets').insert([{ user_id: myUserCode, kyc_status: 'unverified' }]);
-      myProfile = { kyc_status: 'unverified', real_name: '匿名', rating: 5.0 };
+      myProfile = { kyc_status: 'unverified', real_name: '匿名' };
     } else {
       myProfile = data;
     }
@@ -542,7 +523,10 @@
   async function addItem() {
     const text = inputEl.value.trim();
     if (!text) { inputEl.focus(); return; }
-    const priceVal = parseFloat(priceInput.value) || 0;
+    
+    // 如果是免费分类（紧急/闲聊），价格直接为 0
+    const cat = CAT_MAP[currentCat];
+    const priceVal = cat.price === 0 ? 0 : (parseFloat(priceInput.value) || 0);
     
     btnEl.disabled = true; btnEl.textContent = '...';
 
@@ -564,7 +548,7 @@
     btnEl.disabled = false; btnEl.textContent = t('btnSubmit');
     if (error) { alert('发布失败：' + error.message); return; }
     
-    inputEl.value = ''; priceInput.value = ''; imageInput.value = ''; selectedFile = null; imagePreview.style.display = 'none';
+    inputEl.value = ''; imageInput.value = ''; selectedFile = null; imagePreview.style.display = 'none';
     fetchData(true);
   }
 
@@ -577,44 +561,12 @@
     fetchData(true);
   }
 
-  async function initiateConfirmDone(itemId) {
-    const { data: msgs } = await supabase.from('messages').select('sender_id').eq('demand_id', itemId).order('created_at', { ascending: false }).limit(1);
-    if (!msgs || msgs.length === 0) return alert('该任务还没有人接单哦！');
-    
-    pendingRatingItem = { id: itemId, helperId: msgs[0].sender_id };
-    document.getElementById('starContainer').querySelectorAll('.star').forEach(s => s.classList.remove('active'));
-    document.getElementById('ratingModal').style.display = 'flex';
-  }
-
-  window.setRating = (val) => {
-    selectedRating = val;
-    const stars = document.getElementById('starContainer').querySelectorAll('.star');
-    stars.forEach((s, idx) => {
-      if (idx < val) s.classList.add('active');
-      else s.classList.remove('active');
-    });
-  };
-  
-  window.submitRating = async () => {
-    if(!pendingRatingItem) return;
-    const helperCode = 'HIBRO-' + pendingRatingItem.helperId.split('-')[0].toUpperCase();
-    const itemId = pendingRatingItem.id;
-
-    await supabase.from('demands').update({ done: true }).eq('id', itemId);
-    
-    const { data: hw } = await supabase.from('wallets').select('rating').eq('user_id', helperCode).single();
-    if (hw) {
-      let oldR = hw.rating || 5.0;
-      let newR = ((oldR * 4) + selectedRating) / 5; 
-      await supabase.from('wallets').update({ rating: parseFloat(newR.toFixed(1)) }).eq('user_id', helperCode);
-    }
-    
-    document.getElementById('ratingModal').style.display = 'none';
-    alert(`✅ 任务已结单，感谢您的评价！`);
-    pendingRatingItem = null;
+  async function toggleDone(id, status) { 
+    if(!confirm(`确定任务已完成吗？`)) return;
+    await supabase.from('demands').update({ done: !status }).eq('id', id); 
     fetchData(true);
-  };
-
+  }
+  
   async function removeItem(id) { if(confirm('确定删除吗？')) await supabase.from('demands').delete().eq('id', id); }
 
   window.openKycModal = () => {
@@ -646,9 +598,8 @@
     const nick = document.getElementById('kycName').value.trim();
     const realName = document.getElementById('kycRealName').value.trim();
     const ic = document.getElementById('kycIc').value.trim();
-    const bank = document.getElementById('kycBank').value.trim();
     
-    if (!nick || !realName || !ic || !bank || !kycFiles.front || !kycFiles.back || !kycFiles.selfie) return alert('请填完整并上传照片！');
+    if (!nick || !realName || !ic || !kycFiles.front || !kycFiles.back || !kycFiles.selfie) return alert('请填完整并上传照片！');
     document.getElementById('btnSubmitKyc').textContent = '...'; document.getElementById('btnSubmitKyc').disabled = true;
     
     try {
@@ -657,9 +608,8 @@
       
       await supabase.from('wallets').update({ 
         kyc_status: 'pending', 
-        real_name: nick,
+        real_name: nick, 
         ic_number: `${realName} | ${ic}`, 
-        bank_info: bank,
         ic_front_url: fUrl, 
         ic_back_url: bUrl, 
         selfie_url: sUrl 
@@ -706,13 +656,12 @@
 
         let actionBtnHtml = '';
         if (isMine) {
-           if (!item.done) actionBtnHtml = `<button class="repricing-btn" onclick="window.modifyPrice('${item.id}', ${itemPrice})">💰 修改价格</button><button class="done-btn" onclick="window.initiateConfirmDone('${item.id}')">✓ 完成并评价</button>`;
+           if (!item.done) actionBtnHtml = `<button class="repricing-btn" onclick="window.modifyPrice('${item.id}', ${itemPrice})">💰 修改价格</button><button class="done-btn" onclick="window.toggleDone('${item.id}', ${item.done})">✓ 已完成</button>`;
         } else {
            if (myProfile.kyc_status !== 'verified') {
               actionBtnHtml = `<button class="help-btn" style="background:#999;" onclick="window.openKycModal()">🛡️ 需实名认证才能接单</button>`;
            } else {
-              const stars = myProfile.rating ? ` (⭐${myProfile.rating})` : '';
-              actionBtnHtml = `<button class="help-btn" onclick="window.openChat('${item.id}', '${item.user_id}', '${myProfile.real_name || '邻居'}')">💬 我来帮你 (RM ${itemPrice})${stars}</button>`;
+              actionBtnHtml = `<button class="help-btn" onclick="window.openChat('${item.id}', '${item.user_id}', '${myProfile.real_name || '邻居'}')">💬 我来帮你</button>`;
            }
         }
 
@@ -722,7 +671,7 @@
           <span class="dot"></span>
           <div class="bubble">
             <div class="bubble-head">
-              <span class="tag price-tag">💰 RM ${itemPrice}</span>
+              <span class="tag price-tag">💰 ${itemPrice > 0 ? 'RM ' + itemPrice : '免费'}</span>
               ${distHtml}
               <span class="tag ${cat.key}">${cat.icon} ${getCatName(cat)}</span>
               ${item.done ? '<span class="tag" style="background:#e0e0e0;color:#616161;margin-left:auto;">✓ 已结单</span>' : ''}
@@ -775,26 +724,40 @@
     zoneHint.style.display = 'block';
     zoneHint.textContent = t('zoneHint', currentPubDist);
   }
+  
+  // 【核心更新】分类按钮点击联动出价框
   function buildCatChips() {
     let html = `<div class="label">${t('lblCat')}</div>`;
     CATS.forEach(c => { html += `<button class="chip ${c.key === currentCat ? 'active' : ''}" data-key="${c.key}">${c.icon} ${getCatName(c)}</button>`; });
     catRow.innerHTML = html;
+    
     catRow.querySelectorAll('.chip').forEach(btn => {
       btn.addEventListener('click', (e) => {
-        const key = e.currentTarget.dataset.key;
-        currentCat = key; 
-        
-        // 【核心优化】如果点击的是带默认价格的分类（比如陪伴老人），自动把价格填进去
-        const catObj = CAT_MAP[key];
-        if (catObj && catObj.price > 0) {
-          document.getElementById('priceInput').value = catObj.price;
-        }
-
+        currentCat = e.currentTarget.dataset.key; 
         catRow.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
         e.currentTarget.classList.add('active'); 
+        
+        // 切换分类时，联动价格输入框
+        const cat = CAT_MAP[currentCat];
+        if (cat.price > 0) {
+          priceRow.style.display = 'flex';       // 显示出价框
+          priceInput.value = cat.price;          // 自动填入默认价格
+          priceUnit.textContent = getCatUnit(cat); // 显示单位（/次，/题，/小时）
+        } else {
+          priceRow.style.display = 'flex';       
+          priceInput.value = '0';                
+          priceUnit.textContent = '';            // 免费没有单位
+        }
+        
         render();
       });
     });
+
+    // 初始加载时执行一次联动
+    const initCat = CAT_MAP[currentCat];
+    priceRow.style.display = 'flex';
+    priceInput.value = initCat.price;
+    priceUnit.textContent = getCatUnit(initCat);
   }
 
   window.openChat = async (demandId, receiverId, titleText) => {
@@ -826,13 +789,13 @@
   window.submitTicket = async () => {
     const content = document.getElementById('csTextarea').value.trim();
     if(!content) return;
+    
     await supabase.from('tickets').insert([{ user_email: myUserCode, content }]);
-    alert('已提交'); document.getElementById('csModal').style.display = 'none';
+    
+    document.getElementById('csTextarea').value = ''; 
+    alert('✅ 已成功提交给客服！');
+    document.getElementById('csModal').style.display = 'none';
   };
-
-  window.initiateConfirmDone = initiateConfirmDone;
-  window.setRating = setRating;
-  window.submitRating = submitRating;
 
   btnEl.addEventListener('click', addItem);
   checkUser();
