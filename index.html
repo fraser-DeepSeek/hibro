@@ -52,18 +52,20 @@
   .chip{ position: relative; font-size:14px; padding:8px 15px; border-radius:999px; border:1.5px solid transparent; background:rgba(255,255,255,.7); color:#4c6b4c; cursor:pointer; }
   .chip.active{ background:var(--green); border-color:#3d8b40; color:#fff; font-weight:700; }
   
-  /* 紧急分类：激活时深红色 */
   .chip.urgent-chip.active { background: #b71c1c; border-color: #7f0000; color: white; }
 
-  /* 未读红点 */
   .red-dot { position: absolute; top: -2px; right: -2px; width: 12px; height: 12px; background: #ff3b30; border-radius: 50%; border: 2px solid #fff; display: none; box-shadow: 0 2px 4px rgba(255,59,48,0.4); }
 
   #list{ width:100%; max-width:600px; margin:20px auto 0; text-align:left; }
   .item{ position:relative; display:flex; width: 100%; gap:12px; padding-bottom:18px; }
-  .item::before{ content:""; position:absolute; left:7px; top:20px; bottom:-2px; width:2px; background:var(--line); }
+  .item::before{ content:""; position:absolute; left:9px; top:20px; bottom:-2px; width:2px; background:var(--line); }
   .item:last-child::before{ display:none; }
-  .dot{ flex:0 0 auto; width:16px; height:16px; margin-top:8px; border-radius:50%; background:#bdbdbd; }
+  
+  /* 【新增】左侧可点击的圆点（变成红色悬停） */
+  .dot{ flex:0 0 auto; width:20px; height:20px; margin-top:6px; border-radius:50%; background:#bdbdbd; cursor:pointer; border: 2px solid transparent; transition: all 0.2s; z-index: 2; }
+  .dot:hover { background: #ff5252; border-color: #fff; transform: scale(1.2); box-shadow: 0 2px 6px rgba(255,82,82,0.5); }
   .item.latest .dot{ background:var(--green); }
+  .item.latest .dot:hover { background: #ff5252; }
   
   .bubble{ flex:1 1 auto; width: 100%; padding:12px 14px; border-radius:14px; background:rgba(255,255,255,.6); }
   .item.latest .bubble{ background:#fff; box-shadow:0 4px 14px rgba(0,0,0,.10); }
@@ -127,7 +129,6 @@
 
   #toast { display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ff5252; color: white; padding: 12px 24px; border-radius: 30px; font-weight: bold; z-index: 2000; box-shadow: 0 4px 12px rgba(255,82,82,0.4); cursor: pointer; animation: dropDown 0.3s ease-out; }
   @keyframes dropDown { from { top: -50px; opacity: 0; } to { top: 20px; opacity: 1; } }
-  @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 152, 0, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 152, 0, 0); } }
 </style>
 </head>
 <body>
@@ -214,7 +215,6 @@
     <div id="count" style="text-align:center; color:#666; margin-top:10px; font-size:14px;"></div>
   </div>
 
-  <!-- 私聊列表弹窗 -->
   <div id="chatListModal" class="modal">
     <div class="modal-content chat-list-content">
       <div class="chat-header" style="background:#ff9800;">
@@ -225,7 +225,6 @@
     </div>
   </div>
 
-  <!-- 实名认证弹窗 -->
   <div id="kycModal" class="modal">
     <div class="modal-content" style="padding: 20px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -454,8 +453,9 @@
   let incomingMessages = [], chatDemandId = null, chatReceiverId = null, chatChannel = null;
   let chatPollTimer = null, homePollTimer = null;
   let kycFiles = { front: null, back: null, selfie: null };
-  
+  let hiddenIds = JSON.parse(localStorage.getItem('hibro_hidden_ids') || '[]');
   let lastReadTimes = JSON.parse(localStorage.getItem('hibro_last_read') || '{}');
+  let isFetchingMsgs = false; // 防止请求堆叠
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&': '&amp;','<': '&lt;','>': '&gt;','"': '&quot;',"'": '&#39;'}[c])); }
   
@@ -591,6 +591,22 @@
     fetchData(true);
   }
 
+  // 【新增】左侧圆点点击处理：自己的帖子删除，别人的帖子隐藏
+  window.deleteOrHide = async (id, isMine) => {
+    if (isMine) {
+      if (confirm('确定要彻底删除这条求助信息吗？\n(所有邻居都将看不到此信息)')) {
+        await supabase.from('demands').delete().eq('id', id);
+        fetchData(true);
+      }
+    } else {
+      if (confirm('确定将这条信息隐藏吗？\n(仅在你的屏幕上隐藏，不影响原帖)')) {
+        hiddenIds.push(id);
+        localStorage.setItem('hibro_hidden_ids', JSON.stringify(hiddenIds));
+        render();
+      }
+    }
+  };
+
   window.modifyPrice = async (itemId, currentPrice) => {
     const newPrice = prompt(`当前帖子标价为 RM ${currentPrice}。\n如果双方私下谈好了新价格，请输入新的金额：`, currentPrice);
     if (newPrice === null || isNaN(newPrice) || parseFloat(newPrice) < 0) return alert('价格无效');
@@ -664,6 +680,10 @@
     let filtered = globalItems.filter(it => {
       if (currentCat !== 'all' && it.cat !== currentCat) return false;
       const isMine = it.user_id === currentUser.id;
+      
+      // 【新增】过滤隐藏列表
+      if (!isMine && hiddenIds.includes(it.id)) return false;
+
       if (!isMine) {
         if (!it.state || !it.district) return false; 
         if (it.state !== currentPubState || it.district !== currentPubDist) return false;
@@ -696,14 +716,12 @@
         let actionBtnHtml = '';
         if (isMine) {
            if (!item.done) {
-              // 【修复】发帖人专属：查看私聊列表按钮
               const relatedMsgs = incomingMessages.filter(m => m.demand_id === item.id);
               const uniqueSenders = [...new Set(relatedMsgs.map(m => m.sender_id))];
               let replyBtnHtml = '';
               if (uniqueSenders.length > 0) {
                 replyBtnHtml = `<button class="reply-btn" onclick="window.openChatList('${item.id}')">💬 查看私聊 (${uniqueSenders.length})</button>`;
               }
-              // 【修复】价格修改按钮
               actionBtnHtml = `${replyBtnHtml}<button class="repricing-btn" onclick="window.modifyPrice('${item.id}', ${itemPrice})">💰 修改价格</button><button class="done-btn" onclick="window.toggleDone('${item.id}', ${item.done})">✓ 已完成</button>`;
            }
         } else {
@@ -716,8 +734,9 @@
 
         const row = document.createElement('div');
         row.className = 'item' + (item.done ? ' done' : '');
+        // 【修改】左侧圆点变为可点击的隐藏/删除按钮
         row.innerHTML = `
-          <span class="dot"></span>
+          <span class="dot" onclick="window.deleteOrHide('${item.id}', ${isMine})" title="点击隐藏或删除"></span>
           <div class="bubble">
             <div class="bubble-head">
               <span class="tag price-tag">💰 ${itemPrice > 0 ? 'RM ' + itemPrice : '免费'}</span>
@@ -810,7 +829,6 @@
   function buildCatChips() {
     let html = `<div class="label">${t('lblCat')}</div>`;
     CATS.forEach(c => { 
-      // 【修复】紧急按钮深红专属Class
       const urgentClass = c.key === 'urgent' ? 'urgent-chip' : '';
       html += `<button class="chip ${urgentClass} ${c.key === currentCat ? 'active' : ''}" data-key="${c.key}">
                  ${c.icon} ${getCatName(c)}
@@ -823,7 +841,6 @@
       btn.addEventListener('click', (e) => {
         currentCat = e.currentTarget.dataset.key; 
         
-        // 【修复】点开分类后，立刻更新已读时间，消除红点
         lastReadTimes[currentCat] = new Date().toISOString();
         localStorage.setItem('hibro_last_read', JSON.stringify(lastReadTimes));
         document.getElementById(`dot-${currentCat}`).style.display = 'none';
@@ -849,7 +866,6 @@
     }
   }
 
-  // 【修复】检查未读红点
   function checkUnreadStatus() {
     if (!currentUser) return;
     CATS.forEach(cat => {
@@ -859,7 +875,7 @@
       const lastRead = lastReadTimes[cat.key] ? new Date(lastReadTimes[cat.key]).getTime() : 0;
       
       const hasNew = globalItems.some(it => {
-        if (it.cat !== cat.key || it.user_id === currentUser.id) return false;
+        if (it.cat !== cat.key || it.user_id === currentUser.id || hiddenIds.includes(it.id)) return false;
         if (!it.state || !it.district) return false;
         if (it.state !== currentPubState || it.district !== currentPubDist) return false;
         
@@ -875,34 +891,77 @@
         return true;
       });
 
-      // 如果你没有在看这个分类，且有新消息，红点就亮着；如果你正在看这个分类，红点必须灭掉
       if (hasNew && currentCat !== cat.key) dotEl.style.display = 'block';
       else if (currentCat === cat.key) dotEl.style.display = 'none';
     });
   }
 
+  // ================== 私聊逻辑（修复延迟问题） ==================
   window.openChat = async (demandId, receiverId, titleText) => {
     chatDemandId = demandId; chatReceiverId = receiverId;
     chatTitle.textContent = t('chatTitle', titleText);
     document.getElementById('chatModal').style.display = 'flex';
+    
+    // 立即拉取一次
     await loadMessages();
+    
+    // 【核心修复】把轮询调至 1 秒，并且防冲突（isFetchingMsgs）
+    if (chatPollTimer) clearInterval(chatPollTimer);
+    chatPollTimer = setInterval(() => { 
+        if (chatDemandId) loadMessages(); 
+    }, 1000);
   };
+
   window.closeChat = () => {
     document.getElementById('chatModal').style.display = 'none';
+    if (chatChannel) { supabase.removeChannel(chatChannel); chatChannel = null; }
+    if (chatPollTimer) { clearInterval(chatPollTimer); chatPollTimer = null; }
     chatDemandId = null; chatReceiverId = null;
   };
+
+  let lastMsgHash = ""; 
+
   async function loadMessages() {
-    const { data } = await supabase.from('messages').select('*').eq('demand_id', chatDemandId).order('created_at', { ascending: true });
-    if (!data) return;
-    const myMsgs = data.filter(m => (m.sender_id === currentUser.id && m.receiver_id === chatReceiverId) || (m.sender_id === chatReceiverId && m.receiver_id === currentUser.id));
-    document.getElementById('chatMessages').innerHTML = myMsgs.map(m => `<div class="msg-bubble ${m.sender_id === currentUser.id ? 'msg-mine' : 'msg-other'}">${esc(m.content)}</div>`).join('');
-    document.getElementById('chatMessages').scrollTop = 999999;
+    if (isFetchingMsgs || !chatDemandId) return;
+    isFetchingMsgs = true;
+    
+    try {
+        const { data } = await supabase.from('messages').select('*').eq('demand_id', chatDemandId).order('created_at', { ascending: true });
+        if (data) {
+            const myMsgs = data.filter(m => (m.sender_id === currentUser.id && m.receiver_id === chatReceiverId) || (m.sender_id === chatReceiverId && m.receiver_id === currentUser.id));
+            
+            // 用最后一条消息的 ID 和时间作为哈希，只有变化了才重绘（防闪烁）
+            const currentHash = myMsgs.length > 0 ? myMsgs[myMsgs.length-1].id + myMsgs.length : "empty";
+            
+            if (currentHash !== lastMsgHash) {
+                lastMsgHash = currentHash;
+                document.getElementById('chatMessages').innerHTML = myMsgs.map(m => `<div class="msg-bubble ${m.sender_id === currentUser.id ? 'msg-mine' : 'msg-other'}">${esc(m.content)}</div>`).join('');
+                document.getElementById('chatMessages').scrollTop = 999999;
+            }
+        }
+    } catch(e) {}
+    
+    isFetchingMsgs = false;
   }
+
   window.sendMsg = async () => {
     const val = document.getElementById('chatInput').value.trim();
     if (!val) return;
     document.getElementById('chatInput').value = '';
+    
+    // 乐观更新：立刻在屏幕上显示
+    const tempDiv = document.createElement('div');
+    tempDiv.className = 'msg-bubble msg-mine';
+    tempDiv.textContent = val;
+    if (document.getElementById('chatMessages').querySelector('div[style]')) document.getElementById('chatMessages').innerHTML = ''; 
+    document.getElementById('chatMessages').appendChild(tempDiv);
+    document.getElementById('chatMessages').scrollTop = 999999;
+
+    // 发送到数据库
     await supabase.from('messages').insert([{ demand_id: chatDemandId, sender_id: currentUser.id, receiver_id: chatReceiverId, content: val }]);
+    
+    document.getElementById('chatInput').focus();
+    // 强制刷新一次，拉取真实数据
     loadMessages(); 
   };
 
