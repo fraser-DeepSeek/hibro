@@ -52,9 +52,10 @@
   .chip{ position: relative; font-size:14px; padding:8px 15px; border-radius:999px; border:1.5px solid transparent; background:rgba(255,255,255,.7); color:#4c6b4c; cursor:pointer; }
   .chip.active{ background:var(--green); border-color:#3d8b40; color:#fff; font-weight:700; }
   
-  /* 紧急按钮激活时深红 */
+  /* 紧急分类：激活时深红色 */
   .chip.urgent-chip.active { background: #b71c1c; border-color: #7f0000; color: white; }
 
+  /* 未读红点 */
   .red-dot { position: absolute; top: -2px; right: -2px; width: 12px; height: 12px; background: #ff3b30; border-radius: 50%; border: 2px solid #fff; display: none; box-shadow: 0 2px 4px rgba(255,59,48,0.4); }
 
   #list{ width:100%; max-width:600px; margin:20px auto 0; text-align:left; }
@@ -100,7 +101,6 @@
   .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
   .modal-content { background: #fff; width: 90%; max-width: 400px; border-radius: 15px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
   
-  /* 聊天列表样式 */
   .chat-list-content { max-height: 75vh; }
   .chat-list-body { overflow-y: auto; flex: 1; background: #f5f7f5; }
   .chat-list-item { padding: 15px; border-bottom: 1px solid #eee; display: flex; flex-direction: column; gap: 5px; cursor: pointer; text-align: left; }
@@ -127,6 +127,7 @@
 
   #toast { display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ff5252; color: white; padding: 12px 24px; border-radius: 30px; font-weight: bold; z-index: 2000; box-shadow: 0 4px 12px rgba(255,82,82,0.4); cursor: pointer; animation: dropDown 0.3s ease-out; }
   @keyframes dropDown { from { top: -50px; opacity: 0; } to { top: 20px; opacity: 1; } }
+  @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 152, 0, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 152, 0, 0); } }
 </style>
 </head>
 <body>
@@ -454,7 +455,6 @@
   let chatPollTimer = null, homePollTimer = null;
   let kycFiles = { front: null, back: null, selfie: null };
   
-  // 记录已读时间
   let lastReadTimes = JSON.parse(localStorage.getItem('hibro_last_read') || '{}');
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&': '&amp;','<': '&lt;','>': '&gt;','"': '&quot;',"'": '&#39;'}[c])); }
@@ -591,7 +591,6 @@
     fetchData(true);
   }
 
-  // 【修复】开放给全局调用
   window.modifyPrice = async (itemId, currentPrice) => {
     const newPrice = prompt(`当前帖子标价为 RM ${currentPrice}。\n如果双方私下谈好了新价格，请输入新的金额：`, currentPrice);
     if (newPrice === null || isNaN(newPrice) || parseFloat(newPrice) < 0) return alert('价格无效');
@@ -601,7 +600,6 @@
     fetchData(true);
   }
 
-  // 【修复】开放给全局调用
   window.toggleDone = async (id, status) => { 
     if(!confirm(`确定任务已完成吗？`)) return;
     await supabase.from('demands').update({ done: !status }).eq('id', id); 
@@ -698,13 +696,14 @@
         let actionBtnHtml = '';
         if (isMine) {
            if (!item.done) {
-              // 【修复】加上查看私聊入口
+              // 【修复】发帖人专属：查看私聊列表按钮
               const relatedMsgs = incomingMessages.filter(m => m.demand_id === item.id);
               const uniqueSenders = [...new Set(relatedMsgs.map(m => m.sender_id))];
               let replyBtnHtml = '';
               if (uniqueSenders.length > 0) {
                 replyBtnHtml = `<button class="reply-btn" onclick="window.openChatList('${item.id}')">💬 查看私聊 (${uniqueSenders.length})</button>`;
               }
+              // 【修复】价格修改按钮
               actionBtnHtml = `${replyBtnHtml}<button class="repricing-btn" onclick="window.modifyPrice('${item.id}', ${itemPrice})">💰 修改价格</button><button class="done-btn" onclick="window.toggleDone('${item.id}', ${item.done})">✓ 已完成</button>`;
            }
         } else {
@@ -759,7 +758,6 @@
     await supabase.from('demands').update({ likes: currentLikes }).eq('id', id);
   };
 
-  // 【修复】聊天列表弹窗逻辑
   window.openChatList = (demandId) => {
     const relatedMsgs = incomingMessages.filter(m => m.demand_id === demandId);
     const uniqueSenders = [...new Set(relatedMsgs.map(m => m.sender_id))];
@@ -809,11 +807,10 @@
     zoneHint.textContent = t('zoneHint', currentPubDist);
   }
   
-  // 【修复】分类红点逻辑
   function buildCatChips() {
     let html = `<div class="label">${t('lblCat')}</div>`;
     CATS.forEach(c => { 
-      // 紧急分类加一个特殊的 class
+      // 【修复】紧急按钮深红专属Class
       const urgentClass = c.key === 'urgent' ? 'urgent-chip' : '';
       html += `<button class="chip ${urgentClass} ${c.key === currentCat ? 'active' : ''}" data-key="${c.key}">
                  ${c.icon} ${getCatName(c)}
@@ -826,7 +823,7 @@
       btn.addEventListener('click', (e) => {
         currentCat = e.currentTarget.dataset.key; 
         
-        // 更新已读时间
+        // 【修复】点开分类后，立刻更新已读时间，消除红点
         lastReadTimes[currentCat] = new Date().toISOString();
         localStorage.setItem('hibro_last_read', JSON.stringify(lastReadTimes));
         document.getElementById(`dot-${currentCat}`).style.display = 'none';
@@ -878,6 +875,7 @@
         return true;
       });
 
+      // 如果你没有在看这个分类，且有新消息，红点就亮着；如果你正在看这个分类，红点必须灭掉
       if (hasNew && currentCat !== cat.key) dotEl.style.display = 'block';
       else if (currentCat === cat.key) dotEl.style.display = 'none';
     });
