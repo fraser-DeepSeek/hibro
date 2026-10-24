@@ -28,13 +28,11 @@
   .input-top{ display:flex; gap:10px; }
   #demandInput{ flex:1 1 auto; font-size:17px; padding:14px 18px; border:none; border-radius:999px; outline:none; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.08); }
   
-  /* 价格输入框（默认隐藏，按分类后显现） */
   .price-input-row { display:none; gap:10px; align-items:center; justify-content:center; background:#fff3e0; padding:10px; border-radius:12px; border:1px dashed #ff9800; }
   .price-input-row label { font-size:14px; font-weight:bold; color:#e65100; }
-  #priceInput { width: 120px; font-size:16px; padding:10px; border:2px solid #ff9800; border-radius:10px; outline:none; text-align:center; font-weight:bold; color:#d32f2f; }
+  #priceInput { width: 100px; font-size:16px; padding:10px; border:2px solid #ff9800; border-radius:10px; outline:none; text-align:center; font-weight:bold; color:#d32f2f; }
   #priceUnit { font-size:14px; font-weight:bold; color:#e65100; }
-  
-  #submitBtn{ flex:0 0 auto; font-size:17px; font-weight:700; padding:14px 26px; border:none; border-radius:999px; background:#ffd400; color:#4a3b00; cursor:pointer; }
+  #submitBtn{ flex:0 0 auto; font-size:17px; font-weight:700; padding:10px 26px; border:none; border-radius:999px; background:#ffd400; color:#4a3b00; cursor:pointer; }
   
   .upload-row{ max-width:600px; margin: 10px auto 0; display: flex; align-items: center; gap: 10px; }
   .upload-label { background: #fff; padding: 8px 15px; border-radius: 8px; font-size: 14px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,.08); display: inline-flex; align-items: center; gap: 5px; }
@@ -67,7 +65,6 @@
   .bubble-head{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px; }
   .tag{ font-size:12px; font-weight:600; padding:3px 10px; border-radius:999px; background:#eceff1; color:#455a64; }
   
-  /* 紧急专属红色 */
   .tag.urgent{ background:#b71c1c; color:#fff; } 
   .tag.tools { background:#e3f2fd; color:#1565c0; } .tag.errand{ background:#fff3e0; color:#e65100; } 
   .tag.pet   { background:#f3e5f5; color:#6a1b9a; } .tag.chat  { background:#eceff1; color:#455a64; } 
@@ -76,6 +73,7 @@
   .tag.cleaning { background:#f3e5f5; color:#7b1fa2; } .tag.plumbing { background:#e0f7fa; color:#00695c; }
   .tag.elder { background:#e8eaf6; color:#283593; } .tag.kid { background:#fce4ec; color:#ad1457; }
   .tag.math { background:#e0f2f1; color:#004d40; } .tag.piano { background:#fff8e1; color:#f57f17; }
+  .tag.moving { background:#e0f2fe; color:#0284c7; } .tag.repair { background:#fef08a; color:#854d0e; } .tag.other { background:#e2e8f0; color:#475569; }
 
   .text { margin:0; font-size:18px; color:#222; word-break:break-word; white-space:pre-wrap; }
   .item.done .text{ text-decoration:line-through; color:#7a8c7a; }
@@ -164,7 +162,6 @@
       <div class="input-top">
         <input id="demandInput" type="text" maxlength="60" placeholder="输入你的需求...">
       </div>
-      <!-- 出价框：点分类后自动显现 -->
       <div class="price-input-row" id="priceRow">
         <label>💰 愿意出价: RM</label>
         <input id="priceInput" type="number" min="0" placeholder="0" value="">
@@ -197,7 +194,6 @@
     <div id="count" style="text-align:center; color:#666; margin-top:10px; font-size:14px;"></div>
   </div>
 
-  <!-- 实名认证弹窗 -->
   <div id="kycModal" class="modal">
     <div class="modal-content" style="padding: 20px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -207,8 +203,8 @@
       <p style="font-size:13px; color:#d32f2f; text-align:left; margin-bottom:15px;" id="txtKycDesc">⚠️ 为了保障邻居安全，接单赚钱必须先实名认证。您的真实姓名和 IC 只有管理员能看，邻居只能看到你的“外号”。</p>
       <div id="kycFormArea">
         <div class="form-group"><label id="lblKycName">外号/昵称 (对外显示)</label><input type="text" id="kycName" placeholder="如: 水管阿强"></div>
-        <div class="form-group"><label id="lblKycIc">真实姓名 (仅后台可见)</label><input type="text" id="kycRealName" placeholder="身份证上的名字"></div>
-        <div class="form-group"><label id="lblKycBank">身份证号码 (IC)</label><input type="text" id="kycIc" placeholder="如: 990101-14-5555"></div>
+        <div class="form-group"><label id="lblKycReal">真实姓名 (仅后台可见)</label><input type="text" id="kycRealName" placeholder="身份证上的名字"></div>
+        <div class="form-group"><label id="lblKycIc">身份证号码 (IC)</label><input type="text" id="kycIc" placeholder="如: 990101-14-5555"></div>
         <div class="form-group"><label id="lblKycIcF">上传 IC 正面</label><label for="kycIcFront" class="form-file" id="lblIcFront">📸 点击上传</label><input type="file" id="kycIcFront" accept="image/*" style="display:none;"></div>
         <div class="form-group"><label id="lblKycIcB">上传 IC 背面</label><label for="kycIcBack" class="form-file" id="lblIcBack">📸 点击上传</label><input type="file" id="kycIcBack" accept="image/*" style="display:none;"></div>
         <div class="form-group"><label id="lblKycSelfie">本人自拍照</label><label for="kycSelfie" class="form-file" id="lblSelfie">🤳 点击上传</label><input type="file" id="kycSelfie" accept="image/*" style="display:none;"></div>
@@ -374,11 +370,13 @@
     { key:'putrajaya', name:'布城 WP Putrajaya', districts:['布城 Putrajaya']}
   ];
   
-  // 💡 这里定义所有的分类和它们对应的默认价格
+  // 【新增】加入了搬家、维修、其他
   const CATS = [
     { key:'urgent',  nameZh:'紧急', nameEn:'Urgent', nameMs:'Kecemasan', icon:'⚡', price: 0, unitZh:'', unitEn:'', unitMs:'' },
     { key:'tools',   nameZh:'借工具', nameEn:'Borrow Tools', nameMs:'Pinjam Alatan', icon:'🔧', price: 5, unitZh:'/ 次', unitEn:'/ time', unitMs:'/ kali' },
     { key:'errand',  nameZh:'代跑腿', nameEn:'Errand', nameMs:'Jasa Kurier', icon:'🛒', price: 5, unitZh:'/ 次', unitEn:'/ time', unitMs:'/ kali' },
+    { key:'moving',  nameZh:'搬东西', nameEn:'Moving', nameMs:'Angkat Barang', icon:'📦', price: 38, unitZh:'/ 次', unitEn:'/ time', unitMs:'/ kali' },
+    { key:'repair',  nameZh:'维修服务', nameEn:'Repair', nameMs:'Baiki Barang', icon:'🛠️', price: 35, unitZh:'/ 次', unitEn:'/ time', unitMs:'/ kali' },
     { key:'cleaning',nameZh:'保洁服务', nameEn:'Cleaning', nameMs:'Pembersihan', icon:'🧹', price: 45, unitZh:'/ 次', unitEn:'/ time', unitMs:'/ kali' },
     { key:'plumbing',nameZh:'通下水道', nameEn:'Plumbing', nameMs:'Paip Tersumbat', icon:'🪠', price: 98, unitZh:'/ 次', unitEn:'/ time', unitMs:'/ kali' },
     { key:'pet',     nameZh:'宠物', nameEn:'Pets', nameMs:'Haiwan Peliharaan', icon:'🐾', price: 8, unitZh:'/ 次', unitEn:'/ time', unitMs:'/ kali' },
@@ -386,6 +384,7 @@
     { key:'kid',     nameZh:'陪娃/陪小孩', nameEn:'Babysitting', nameMs:'Jaga Kanak-kanak', icon:'👶', price: 68, unitZh:'/ 次', unitEn:'/ time', unitMs:'/ kali' },
     { key:'math',    nameZh:'教数学 (每题)', nameEn:'Math Tutor (Per Q)', nameMs:'Tunjuk Ajar Matematik (Setiap Soalan)', icon:'📐', price: 1, unitZh:'/ 题', unitEn:'/ Q', unitMs:'/ soalan' },
     { key:'piano',   nameZh:'教弹钢琴 (每小时)', nameEn:'Piano Tutor (Hourly)', nameMs:'Tunjuk Ajar Piano (Setiap Jam)', icon:'🎹', price: 20, unitZh:'/ 小时', unitEn:'/ hour', unitMs:'/ jam' },
+    { key:'other',   nameZh:'其他服务 (自定价格)', nameEn:'Other Services (Custom)', nameMs:'Lain-lain (Harga Sendiri)', icon:'✨', price: -1, unitZh:'', unitEn:'', unitMs:'' },
     { key:'chat',    nameZh:'闲聊', nameEn:'Chat', nameMs:'Sembang', icon:'💬', price: 0, unitZh:'', unitEn:'', unitMs:'' }
   ];
 
@@ -524,10 +523,15 @@
     const text = inputEl.value.trim();
     if (!text) { inputEl.focus(); return; }
     
-    // 如果是免费分类（紧急/闲聊），价格直接为 0
     const cat = CAT_MAP[currentCat];
-    const priceVal = cat.price === 0 ? 0 : (parseFloat(priceInput.value) || 0);
+    let priceVal = parseFloat(priceInput.value) || 0;
+    if (cat.price === 0) priceVal = 0; // 免费类
     
+    // 如果是“其他服务”，且没有填写价格，提醒一下
+    if (currentCat === 'other' && priceVal <= 0) {
+      return alert('选择“其他服务”时，请填写您的预算金额！');
+    }
+
     btnEl.disabled = true; btnEl.textContent = '...';
 
     let imageUrl = null;
@@ -725,7 +729,6 @@
     zoneHint.textContent = t('zoneHint', currentPubDist);
   }
   
-  // 【核心更新】分类按钮点击联动出价框
   function buildCatChips() {
     let html = `<div class="label">${t('lblCat')}</div>`;
     CATS.forEach(c => { html += `<button class="chip ${c.key === currentCat ? 'active' : ''}" data-key="${c.key}">${c.icon} ${getCatName(c)}</button>`; });
@@ -737,27 +740,23 @@
         catRow.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
         e.currentTarget.classList.add('active'); 
         
-        // 切换分类时，联动价格输入框
         const cat = CAT_MAP[currentCat];
-        if (cat.price > 0) {
-          priceRow.style.display = 'flex';       // 显示出价框
-          priceInput.value = cat.price;          // 自动填入默认价格
-          priceUnit.textContent = getCatUnit(cat); // 显示单位（/次，/题，/小时）
-        } else {
+        if (priceRow) {
           priceRow.style.display = 'flex';       
-          priceInput.value = '0';                
-          priceUnit.textContent = '';            // 免费没有单位
+          // 如果选中“其他服务”，清空价格让用户自己填；其他分类自动带出默认价
+          priceInput.value = (currentCat === 'other') ? '' : (cat.price > 0 ? cat.price : 0);
+          priceUnit.textContent = getCatUnit(cat); 
         }
-        
         render();
       });
     });
 
-    // 初始加载时执行一次联动
     const initCat = CAT_MAP[currentCat];
-    priceRow.style.display = 'flex';
-    priceInput.value = initCat.price;
-    priceUnit.textContent = getCatUnit(initCat);
+    if (priceRow) {
+      priceRow.style.display = 'flex';
+      priceInput.value = initCat.price;
+      priceUnit.textContent = getCatUnit(initCat);
+    }
   }
 
   window.openChat = async (demandId, receiverId, titleText) => {
